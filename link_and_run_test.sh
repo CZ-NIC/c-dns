@@ -7,9 +7,9 @@ PWD=`pwd`
 
 
 if [ ! `echo $LD_LIBRARY_PATH | grep $PWD` ]; then
-    export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH
 fi
 
-gcc -L$PWD -Wall main.c -lcdns
+gcc -L$PWD/build -Isrc/ -Wall main.c -lcdns
 valgrind --leak-check=full ./a.out
-#./a.out
+
