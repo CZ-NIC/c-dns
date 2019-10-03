@@ -209,10 +209,14 @@ static int _cdns_init_file_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 /**	https://tools.ietf.org/html/rfc8618#section-7.3 **/
 int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 {
-	assert(ctx);
-	assert(buff_size);
+	if(!ctx) {
+		return E_ERROR;
+	}
+	if(!buff_size) {
+		return E_ERROR;
+	}
 
-    cbor_item_t *root = cbor_new_definite_array(FILE_SIZE);
+    cbor_item_t *root = cbor_new_definite_array(FILE_SIZE); //0x83
     if(!root) {
         return E_ERROR;
     }

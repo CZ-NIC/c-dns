@@ -1,5 +1,7 @@
 #pragma once
 
+#define _DEFAULT_SOURCE
+
 #include <cbor.h>
 #include <time.h>
 #include <endian.h>
