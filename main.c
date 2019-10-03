@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	size_t buff_len = 255UL;
 
 	
-	cdns_serialize_header(&cdns_h, &buff, &buff_len);
+	cdns_serialize_file_preamble(&cdns_h, &buff, &buff_len);
 	if(!buff) {
 		return EXIT_FAILURE;
 	}

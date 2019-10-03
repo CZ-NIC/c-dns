@@ -285,7 +285,7 @@ int cdns_init(cdns_ctx_t *ctx, unsigned int block_size);
 
 int cdns_push(cdns_ctx_t *ctx, cdns_query_response_t *qr);
 
-int cdns_serialize_header(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size);
+int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size);
 
 int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size);
 

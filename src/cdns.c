@@ -207,7 +207,7 @@ static int _cdns_init_file_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3 **/
-int cdns_serialize_header(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
+int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 {
 	assert(ctx);
 	assert(buff_size);
