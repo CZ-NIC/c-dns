@@ -20,15 +20,15 @@ Basic instructions for build. This is not deploy process, it's intended for test
 
 **High priority**
 
-[ ] Enhance library interface
-[ ] Finalize file and block preamble
-[ ] Thread implementation and thread-safety
+* [ ] Enhance library interface
+* [ ] Finalize file and block preamble
+* [ ] Thread implementation and thread-safety
 
 **Medium priotity**
 
-[ ] CBOR (*libcbor*) performance improve
-[ ] Replace `cmake` with autotools (`automake`)
+* [ ] CBOR (*libcbor*) performance improve
+* [ ] Replace `cmake` with autotools (`automake`)
 
 **Low priority**
 
-[ ] Deploy
+* [ ] Deploy
