@@ -67,20 +67,17 @@ typedef struct {
     uint64_t time_offset;
     struct sockaddr_storage *client_address_p; //ORIGIN 'unsigned int client_address_index;'
     uint16_t client_port;
-    uint64_t transaction_id; //TODO restrict byte-size (maybe)
+    uint16_t transaction_id; //TODO should be 16-bit but I'm not sure
     cdns_query_response_signature_t *qr_signature; //ORIGIN 'unsigned int qr_signature_index;'
-    uint8_t client_hoplimit; //TODO change byte-size (maybe)
+    uint8_t client_hoplimit;
     int64_t response_delay;
-    const char * query_name_p; //ORIGIN 'unsigned int query_name_index;'
+    uint8_t **query_name_p; //ORIGIN 'unsigned int query_name_index;'
     uint16_t query_size;
     uint16_t response_size;
-    cdns_response_processing_data_t *response_processing_data; //TODO
-    cdns_query_response_extended_t *query_extended; //TODO
-    cdns_query_response_extended_t *response_extended; //TODO
+    cdns_response_processing_data_t *response_processing_data_p; //TODO
+    cdns_query_response_extended_t *query_extended_p; //TODO
+    cdns_query_response_extended_t *response_extended_p; //TODO
 } cdns_query_response_t;
-
-
-
 
 typedef struct {
     uint8_t ae_type;
@@ -100,6 +97,8 @@ typedef struct {
 typedef struct {
     //opts
     unsigned int block_size;
+    uint32_t query_response_hints;
+    uint32_t query_response_signature_hints;
 
     //ctx
     cdns_block_statistics_t stats;
@@ -112,9 +111,9 @@ typedef enum { //TODO
 } cdns_ret_t;
 
 
-int cdns_init(cdns_ctx_t *ctx, unsigned int block_size);
+int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size);
 
-int cdns_push(cdns_ctx_t *ctx, cdns_query_response_t *qr);
+int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr);
 
 int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size);
 

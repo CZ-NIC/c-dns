@@ -26,7 +26,24 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	CDNS_TEST_PRINT;
-	
+
+	cdns_query_response_t query = {
+		.time_offset = time(NULL),
+    	.client_address_p = NULL,
+    	.client_port = 53,
+    	.transaction_id = 1,
+    	.qr_signature = NULL,
+    	.client_hoplimit = 0xFF,
+    	.response_delay = time(NULL),
+    	.query_name_p = "www.nic.cz",
+    	.query_size = 10UL,
+    	.response_size = 0xFFFF,
+    	.response_processing_data_p = NULL,
+    	.query_extended_p = NULL,
+    	.response_extended_p = NULL
+	};
+	cdns_push(&cdns_h, &query);
+
 	buff_len = 255UL;
 	cdns_serialize_block(&cdns_h, &buff, &buff_len);
 	if(!buff) {
