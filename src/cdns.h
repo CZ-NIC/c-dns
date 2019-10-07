@@ -53,13 +53,13 @@ typedef struct {
 // Block
 typedef struct {
     uint64_t time_offset;
-    unsigned int client_address_index;
+    struct sockaddr_storage *client_address_p; //ORIGIN 'unsigned int client_address_index;'
     uint16_t client_port;
     uint64_t transaction_id; //TODO restrict byte-size (maybe)
     cdns_query_response_signature_t *qr_signature; //ORIGIN 'unsigned int qr_signature_index;'
     uint8_t client_hoplimit; //TODO change byte-size (maybe)
     int64_t response_delay;
-    unsigned int query_name_index; //TODO make it pointer to struct
+    const char * query_name_p; //ORIGIN 'unsigned int query_name_index;'
     uint16_t query_size;
     uint16_t response_size;
     //TODO
