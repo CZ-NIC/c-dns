@@ -187,3 +187,27 @@ typedef enum {
     QUERY_RESPONSE_SIGNATURE_SIZE
 } cdns_queryresponsesignature_key_t;
 
+typedef enum {
+    TIME_OFFSET                 = 0,
+    CLIENT_ADDRESS_INDEX        = 1,
+    CLIENT_PORT                 = 2,
+    TRANSACTION_ID              = 3,
+    QR_SIGNATURE_INDEX          = 4,
+    CLIENT_HOPLIMIT             = 5,
+    RESPONSE_DELAY              = 6,
+    QUERY_NAME_INDEX            = 7,
+    QUERY_SIZE                  = 8,
+    RESPONSE_SIZE               = 9,
+    RESPONSE_PROCESSING_DATA    = 10,
+    QUERY_EXTENDED              = 11,
+    RESPONSE_EXTENDED           = 12,
+
+    QUERY_RESPONSE_SIZE
+} cdns_queryresponse_key_t;
+
+typedef enum {
+    BAILIWICK_INDEX     = 0,
+    PROCESSING_FLAGS    = 1,
+
+    RESPONSE_PROCESSING_DATA_SIZE
+} cdns_responseprocessingdata_key_t;

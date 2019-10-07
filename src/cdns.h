@@ -52,6 +52,18 @@ typedef struct {
 
 // Block
 typedef struct {
+    unsigned int bailiwick_index;
+    unsigned int processing_flags;
+} cdns_response_processing_data_t;
+
+typedef struct {
+    unsigned int question_index;
+    unsigned int answer_index;
+    unsigned int authority_index;
+    unsigned int additional_index;
+} cdns_query_response_extended_t;
+
+typedef struct {
     uint64_t time_offset;
     struct sockaddr_storage *client_address_p; //ORIGIN 'unsigned int client_address_index;'
     uint16_t client_port;
@@ -62,11 +74,13 @@ typedef struct {
     const char * query_name_p; //ORIGIN 'unsigned int query_name_index;'
     uint16_t query_size;
     uint16_t response_size;
-    //TODO
-    //response-processing-data;
-    //query-extended;
-    //response-extended;
+    cdns_response_processing_data_t *response_processing_data; //TODO
+    cdns_query_response_extended_t *query_extended; //TODO
+    cdns_query_response_extended_t *response_extended; //TODO
 } cdns_query_response_t;
+
+
+
 
 typedef struct {
     uint8_t ae_type;
