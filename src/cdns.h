@@ -111,7 +111,7 @@ typedef enum { //TODO
 } cdns_ret_t;
 
 
-int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size);
+int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size, const uint32_t query_response_hints, const uint32_t query_response_signature_hints);
 
 int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr);
 

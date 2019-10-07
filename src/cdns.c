@@ -1,14 +1,15 @@
 #include "cdns.h"
 
-int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size)
+int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size, const uint32_t query_response_hints, const uint32_t query_response_signature_hints)
 {
 	if (ctx == NULL) {
 		return E_ERROR;
 	}
 	assert(block_size);
 
-	//opts
 	ctx->block_size = block_size;
+	ctx->query_response_hints = query_response_hints;
+	ctx->query_response_signature_hints = query_response_signature_hints;
 
 	//ctx
 	memset(&(ctx->stats), 0, sizeof(cdns_block_statistics_t));
@@ -55,7 +56,7 @@ static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, cbor_item_t 
 			| RESPONSE_AUTHORITY_SECTIONS_H
 			| RESPONSE_ADDITIONAL_SECTIONS_H
 			;
-			
+
 	struct cbor_pair query_response_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_HINTS )),
 		.value	= cbor_move(cbor_build_uint32( htobe32(query_response_hints_val) ))
