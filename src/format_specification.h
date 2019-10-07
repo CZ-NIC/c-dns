@@ -1,6 +1,5 @@
 #pragma once
 
-
 // C-DNS keys
 
 typedef enum {
@@ -187,3 +186,4 @@ typedef enum {
 
     QUERY_RESPONSE_SIGNATURE_SIZE
 } cdns_queryresponsesignature_key_t;
+

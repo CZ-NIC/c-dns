@@ -11,7 +11,6 @@ if [ ! `echo $LD_LIBRARY_PATH | grep $PWD` ]; then
 fi
 
 gcc -L$PWD/build -Isrc/ -Wall main.c -lcdns \
-&& ./a.out
-#    && valgrind --leak-check=full ./a.out
+    && valgrind --leak-check=full ./a.out
     
 

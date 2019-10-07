@@ -24,7 +24,6 @@ typedef struct {
     unsigned int malformed_items;
 } cdns_block_statistics_t;
 
-
 // Block Tables
 typedef struct {
     uint16_t rrtype;
