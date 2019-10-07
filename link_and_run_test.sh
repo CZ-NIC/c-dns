@@ -10,6 +10,8 @@ if [ ! `echo $LD_LIBRARY_PATH | grep $PWD` ]; then
     export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH
 fi
 
-gcc -L$PWD/build -Isrc/ -Wall main.c -lcdns
-valgrind --leak-check=full ./a.out
+gcc -L$PWD/build -Isrc/ -Wall main.c -lcdns \
+&& ./a.out
+#    && valgrind --leak-check=full ./a.out
+    
 
