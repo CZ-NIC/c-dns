@@ -2,8 +2,10 @@
 
 int cdns_init(cdns_ctx_t *ctx, unsigned int block_size)
 {
-	assert(ctx);
-	assert(block_size > 0);
+	if (ctx == NULL) {
+		return E_ERROR;
+	}
+	assert(block_size);
 
 	//opts
 	ctx->block_size = block_size;
@@ -16,8 +18,14 @@ int cdns_init(cdns_ctx_t *ctx, unsigned int block_size)
 
 int cdns_push(cdns_ctx_t *ctx, cdns_query_response_t *qr)
 {
-	assert(ctx);
-	assert(qr);
+	if (ctx == NULL) {
+		return E_ERROR;
+	}
+	if (qr == NULL) {
+		return E_ERROR;
+	}
+
+
 	//TODO - most important part => add Q/R to block
 	// need to be thread-safe
 
@@ -209,10 +217,10 @@ static int _cdns_init_file_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 /**	https://tools.ietf.org/html/rfc8618#section-7.3 **/
 int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 {
-	if(!ctx) {
+	if(ctx == NULL) {
 		return E_ERROR;
 	}
-	if(!buff_size) {
+	if(buff_size == NULL) {
 		return E_ERROR;
 	}
 
@@ -428,8 +436,13 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2 **/
 int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 {
-	assert(ctx);
-	assert(buff_size);
+	if (ctx == NULL) {
+		return E_ERROR;
+	}
+	if (buff_size == NULL) {
+		return E_ERROR;
+	}
+
 
 	cbor_item_t *root = cbor_new_definite_map( BLOCK_SIZE );
 
@@ -507,9 +520,14 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 
 int cdns_serialize_end(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 {
-	assert(ctx);
-	assert(buff_size);
+	if (ctx == NULL) {
+		return E_ERROR;
+	}
+	if (buff_size == NULL) {
+		return E_ERROR;
+	}
 	
+
 	if (*buff == NULL) {
 		*buff = (unsigned char *)calloc(2UL, 1UL);
 	}

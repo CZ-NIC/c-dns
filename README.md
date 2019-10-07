@@ -22,7 +22,7 @@ Basic instructions for build. This is not deploy process, it's intended for test
 
 * [ ] Enhance library interface
 * [ ] Finalize file and block preamble
-* [ ] Thread implementation and thread-safety
+* [ ] Threaded implementation and thread-safety
 
 **Medium priotity**
 
@@ -36,7 +36,8 @@ Basic instructions for build. This is not deploy process, it's intended for test
 # Development info
 
 ## Input format (DNSTap)
-### Query
+
+**Query**
 
     +----------+--------------------+
     |          | type               |
@@ -49,7 +50,7 @@ Basic instructions for build. This is not deploy process, it's intended for test
     |          | query_time_nsec    |
     +----------+--------------------+
 
-### Response
+**Response**
 
     +----------+--------------------+
     |          | type               |
@@ -62,9 +63,9 @@ Basic instructions for build. This is not deploy process, it's intended for test
     |          | response_time_nsec |
     +----------+--------------------+
 
-### Values info
+**Values info**
 
     message.type := [ Query / Response ]
     message.socket_family := [ IPv4 / IPv6 ]
     message.socket_protocol := [ UDP / TCP ]
-    message.[response / query]_message := DNS message in wire format
+    message.[ query / response ]_message := DNS message in wire format
