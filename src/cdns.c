@@ -50,12 +50,14 @@ static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, cbor_item_t 
 
 	struct cbor_pair query_response_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_HINTS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_hints) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_hints) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.query_response_hints ))
 	};
 
 	struct cbor_pair query_response_signature_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_SIGNATURE_HINTS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_signature_hints) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_signature_hints) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.query_response_signature_hints ))
 	};
 
 	struct cbor_pair rr_hints  = {
@@ -82,12 +84,14 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, cbor_item_
 
 	struct cbor_pair ticks_per_second = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)TICKS_PER_SECOND )),
-		.value	= cbor_move(cbor_build_uint64( htobe64(CLOCKS_PER_SEC) ))
+		//.value	= cbor_move(cbor_build_uint64( htobe64(CLOCKS_PER_SEC) ))
+		.value	= cbor_move(cbor_build_uint64( CLOCKS_PER_SEC ))
 	};
 
 	struct cbor_pair max_block_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MAX_BLOCK_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.block_size) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.block_size) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.block_size ))
 	};
 
 	cbor_item_t *storage_hints_map = cbor_new_definite_map(STORAGE_HINTS_SIZE);
@@ -205,7 +209,9 @@ int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, si
 	_cdns_init_file_preamble(ctx, file_preamble);
 	cbor_array_set(root, FILE_PREAMBLE, cbor_move(file_preamble));
 
-	cbor_item_t *block_array = cbor_new_indefinite_array();
+	cbor_item_t *block_array = cbor_new_indefinite_array(); //TODO better would be definite array
+	// Thanks to definite array we will not need function `cdns_serialize_end()`
+	// This solution is here because of `libcbor` feature that counting number of elements in array to keep file format valid when not used correctly
 	cbor_array_set(root, FILE_BLOCKS, cbor_move(block_array));
 
 	size_t len = 0;
@@ -214,7 +220,7 @@ int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, si
 	} else {
 		len = cbor_serialize_alloc(root, buff, buff_size);
 	}
-	--len; //Remove end of indefinite array (for append in future)
+	--len; //Remove end of indefinite array (for append in future - read TODO comment above)
 
 	*buff_size = len;
 
@@ -228,8 +234,10 @@ static int _cdns_init_bp_earliest_time(const cdns_ctx_t *ctx, cbor_item_t *root)
 	assert(ctx);
 	assert(root);
 
-	cbor_array_set(root, EPOCH_TIME, cbor_move(cbor_build_uint64( htobe64(time(NULL)) )));
-	cbor_array_set(root, TICKS, cbor_move(cbor_build_uint64( htobe64(0UL) )));
+	//cbor_array_set(root, EPOCH_TIME, cbor_move(cbor_build_uint64( htobe64(time(NULL)) )));
+	//cbor_array_set(root, TICKS, cbor_move(cbor_build_uint64( htobe64(0UL) )));
+	cbor_array_set(root, EPOCH_TIME, cbor_move(cbor_build_uint64( time(NULL) )));
+	cbor_array_set(root, TICKS, cbor_move(cbor_build_uint64( 0UL )));
 
 	return E_SUCCESS;
 }
@@ -249,7 +257,8 @@ static int _cdns_init_block_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	struct cbor_pair block_parameters_index = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)BLOCK_PARAMETERS_INDEX )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(0) )) //TODO - 0 is default value
+		//.value	= cbor_move(cbor_build_uint32( htobe32(0) )) //TODO - 0 is default value
+		.value	= cbor_move(cbor_build_uint32( 0 )) //TODO - 0 is default value
 	};
 
 	cbor_map_add(root, earliest_time);
@@ -266,32 +275,38 @@ static int _cdns_init_block_statistics(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	struct cbor_pair processed_messages = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)PROCESSED_MESSAGES )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.processed_messages) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.processed_messages) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.processed_messages ))
 	};
 
 	struct cbor_pair qr_data_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QR_DATA_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.qr_data_items) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.qr_data_items) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.qr_data_items ))
 	};
 
 	struct cbor_pair unmatched_queries = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_QUERIES )),
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_queries) ))
 		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_queries) ))
 	};
 
 	struct cbor_pair unmatched_responses = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_RESPONSES )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_responses) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_responses) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.unmatched_responses ))
 	};
 
 	struct cbor_pair discarded_opcode = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)DISCARDED_OPCODE )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.discarded_opcode) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.discarded_opcode) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.discarded_opcode ))
 	};
 
 	struct cbor_pair malformed_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MALFORMED_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.malformed_items) ))
+		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.malformed_items) ))
+		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.malformed_items ))
 	};
 
 	cbor_map_add(root, processed_messages);

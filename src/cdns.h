@@ -156,7 +156,7 @@ typedef struct {
 
 typedef struct {
     cdns_block_statistics_t stats;
-    cdns_query_response_t *queries_responses;
+    cdns_query_response_t *queries_responses; //Array
 } cdns_storage_t;
 
 typedef struct {
