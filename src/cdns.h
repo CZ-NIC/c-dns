@@ -67,7 +67,7 @@ typedef enum {
     ADDRESS_EVENT_COUNTS_H  = 1 << 1
 } cdns_otherdata_hints_t;
 
-// Block Statistics
+/* Storage */
 typedef struct {
     unsigned int processed_messages;
     unsigned int qr_data_items;
@@ -77,7 +77,6 @@ typedef struct {
     unsigned int malformed_items;
 } cdns_block_statistics_t;
 
-// Block Tables
 typedef struct {
     uint16_t rrtype;
     uint16_t rrclass;
@@ -165,11 +164,14 @@ typedef struct {
     cdns_storage_t storage;
 } cdns_ctx_t;
 
-typedef enum { //TODO
-    E_SUCCESS               = 0,
-    E_ERROR                 = -1
+/* Other */
+
+typedef enum {
+    E_SUCCESS = 0,
+    E_ERROR   = -1
 } cdns_ret_t;
 
+/* Functions */
 
 int cdns_init(cdns_ctx_t *ctx,
         const unsigned int block_size,

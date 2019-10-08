@@ -1,7 +1,5 @@
 #pragma once
 
-// C-DNS keys
-
 typedef enum {
     FILE_TYPE_ID = 0,
     FILE_PREAMBLE = 1,

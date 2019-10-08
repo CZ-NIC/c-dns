@@ -194,7 +194,7 @@ int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, si
 		return E_ERROR;
 	}
 
-    cbor_item_t *root = cbor_new_definite_array(FILE_SIZE); //0x83
+    cbor_item_t *root = cbor_new_definite_array(FILE_SIZE);
     if(!root) {
         return E_ERROR;
     }

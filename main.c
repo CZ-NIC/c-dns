@@ -48,17 +48,19 @@ int main(int argc, char **argv)
 		;
 
 	uint8_t rr_hints
-			= TTL_H
-			| RDATA_INDEX_H
-			;
+		= TTL_H
+		| RDATA_INDEX_H
+		;
 
 	uint8_t other_data_hints
-			= MALFORMED_MESSAGES_H
-			| ADDRESS_EVENT_COUNTS_H
-			;
+		= MALFORMED_MESSAGES_H
+		| ADDRESS_EVENT_COUNTS_H
+		;
+
+	unsigned int block_size = 20000;
 
 	cdns_ctx_t cdns_h = {0};
-	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
+	if (cdns_init(&cdns_h, block_size, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
 		return EXIT_FAILURE;
 	}
 
