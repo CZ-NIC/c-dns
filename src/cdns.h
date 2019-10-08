@@ -14,6 +14,59 @@
 #define VERSION_MINOR   0
 #define VERSION_PRIVATE 0
 
+/* Hints */
+
+typedef enum {
+    TIME_OFFSET_H                   = 1 << 0,
+    CLIENT_ADDRESS_INDEX_H          = 1 << 1,
+    CLIENT_PORT_H                   = 1 << 2,
+    TRANSACTION_ID_H                = 1 << 3,
+    QR_SIGNATURE_INDEX_H            = 1 << 4,
+    CLIENT_HOPLIMIT_H               = 1 << 5,
+    RESPONSE_DELAY_H                = 1 << 6,
+    QUERY_NAME_INDEX_H              = 1 << 7,
+    QUERY_SIZE_H                    = 1 << 8,
+    RESPONSE_SIZE_H                 = 1 << 9,
+    RESPONSE_PROCESSING_DATA_H      = 1 << 10,
+    QUERY_QUESTION_SECTIONS_H       = 1 << 11,
+    QUERY_ANSWER_SECTIONS_H         = 1 << 12,
+    QUERY_AUTHORITY_SECTIONS_H      = 1 << 13,
+    QUERY_ADDITIONAL_SECTIONS_H     = 1 << 14,
+    RESPONSE_ANSWER_SECTIONS_H      = 1 << 15,
+    RESPONSE_AUTHORITY_SECTIONS_H   = 1 << 16,
+    RESPONSE_ADDITIONAL_SECTIONS_H  = 1 << 17
+} cdns_queryresponse_hints_t;
+
+typedef enum {
+    SERVER_ADDRESS_INDEX_H  = 1 << 0,
+    SERVER_PORT_H           = 1 << 1,
+    QR_TRANSPORT_FLAGS_H    = 1 << 2,
+    QR_TYPE_H               = 1 << 3,
+    QR_SIG_FLAGS_H          = 1 << 4,
+    QUERY_OPCODE_H          = 1 << 5,
+    QR_DNS_FLAGS_H          = 1 << 6,
+    QUERY_RCODE_H           = 1 << 7,
+    QUERY_CLASSTYPE_INDEX_H = 1 << 8,
+    QUERY_QDCOUNT_H         = 1 << 9,
+    QUERY_ANCOUNT_H         = 1 << 10,
+    QUERY_NSCOUNT_H         = 1 << 11,
+    QUERY_ARCOUNT_H         = 1 << 12,
+    QUERY_EDNS_VERSION_H    = 1 << 13,
+    QUERY_UDP_SIZE_H        = 1 << 14,
+    QUERY_OPT_RDATA_INDEX_H = 1 << 15,
+    RESPONSE_RCODE_H        = 1 << 16
+} cdns_queryresponsesignature_hints_t;
+
+typedef enum {
+    TTL_H           = 1 << 0,
+    RDATA_INDEX_H   = 1 << 1
+} cdns_rr_hints_t;
+
+typedef enum {
+    MALFORMED_MESSAGES_H    = 1 << 0,
+    ADDRESS_EVENT_COUNTS_H  = 1 << 1
+} cdns_otherdata_hints_t;
+
 // Block Statistics
 typedef struct {
     unsigned int processed_messages;
@@ -103,14 +156,13 @@ typedef struct {
 } cdns_options_t;
 
 typedef struct {
-
+    cdns_block_statistics_t stats;
+    cdns_query_response_t *queries_responses;
 } cdns_storage_t;
 
 typedef struct {
     cdns_options_t options;
-    //ctx
-    cdns_block_statistics_t stats;
-    cdns_query_response_t *queries_responses; //TODO make it array
+    cdns_storage_t storage;
 } cdns_ctx_t;
 
 typedef enum { //TODO

@@ -21,7 +21,7 @@ int cdns_init(cdns_ctx_t *ctx,
 	ctx->options.other_data_hints = other_data_hints;
 
 	//ctx
-	memset(&(ctx->stats), 0, sizeof(cdns_block_statistics_t));
+	memset(&(ctx->storage.stats), 0, sizeof(cdns_block_statistics_t));
 
 	return E_SUCCESS;
 }
@@ -266,32 +266,32 @@ static int _cdns_init_block_statistics(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	struct cbor_pair processed_messages = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)PROCESSED_MESSAGES )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.processed_messages) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.processed_messages) ))
 	};
 
 	struct cbor_pair qr_data_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QR_DATA_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.qr_data_items) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.qr_data_items) ))
 	};
 
 	struct cbor_pair unmatched_queries = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_QUERIES )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.unmatched_queries) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_queries) ))
 	};
 
 	struct cbor_pair unmatched_responses = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_RESPONSES )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.unmatched_responses) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_responses) ))
 	};
 
 	struct cbor_pair discarded_opcode = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)DISCARDED_OPCODE )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.discarded_opcode) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.discarded_opcode) ))
 	};
 
 	struct cbor_pair malformed_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MALFORMED_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->stats.malformed_items) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.malformed_items) ))
 	};
 
 	cbor_map_add(root, processed_messages);
@@ -483,7 +483,7 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 	cbor_decref(&root);
 
 	//TODO clear all buffers
-	memset(&(ctx->stats), 0, sizeof(cdns_block_statistics_t));
+	memset(&(ctx->storage.stats), 0, sizeof(cdns_block_statistics_t));
 	
 	return E_SUCCESS;
 }

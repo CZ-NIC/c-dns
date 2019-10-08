@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 
 	uint8_t rr_hints
 			= TTL_H
+			| RDATA_INDEX_H
 			;
 
 	uint8_t other_data_hints
