@@ -6,7 +6,7 @@ Daemon that converts DNS transmission to C-DNS file format.
 
 ## Build
 
-Basic instructions for build. This is not deploy process, it's intended for testing.
+Basic instructions for build. This is not deploy process, it's intended just for testing.
 
     mkdir build
     cd build
@@ -68,4 +68,4 @@ Basic instructions for build. This is not deploy process, it's intended for test
     message.type := [ Query / Response ]
     message.socket_family := [ IPv4 / IPv6 ]
     message.socket_protocol := [ UDP / TCP ]
-    message.[ query / response ]_message := DNS message in wire format
+    message.[ query / response ]_message := DNS message in wire format //TODO what's inside??
