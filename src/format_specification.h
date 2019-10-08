@@ -22,7 +22,7 @@ typedef enum {
     COLLECTION_PARAMETERS = 1,
 
     BLOCK_PARAMETERS_SIZE
-} cdns_blockparameters_ket_t;
+} cdns_blockparameters_key_t;
 
 typedef enum {
     TICKS_PER_SECOND            = 0,
