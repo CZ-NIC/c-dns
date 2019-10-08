@@ -99,6 +99,8 @@ typedef struct {
     unsigned int block_size;
     uint32_t query_response_hints;
     uint32_t query_response_signature_hints;
+    uint8_t rr_hints;
+    uint8_t other_data_hints;
 
     //ctx
     cdns_block_statistics_t stats;

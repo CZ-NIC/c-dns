@@ -39,65 +39,24 @@ static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, cbor_item_t 
 	assert(ctx);
 	assert(root);
 
-	uint32_t query_response_hints_val 
-			= TIME_OFFSET_H 
-			| CLIENT_PORT_H 
-			| TRANSACTION_ID_H 
-			| CLIENT_HOPLIMIT_H 
-			| RESPONSE_DELAY_H
-			| QUERY_SIZE_H
-			| RESPONSE_SIZE_H
-			| RESPONSE_PROCESSING_DATA_H
-			| QUERY_QUESTION_SECTIONS_H
-			| QUERY_ANSWER_SECTIONS_H
-			| QUERY_AUTHORITY_SECTIONS_H
-			| QUERY_ADDITIONAL_SECTIONS_H
-			| RESPONSE_ANSWER_SECTIONS_H
-			| RESPONSE_AUTHORITY_SECTIONS_H
-			| RESPONSE_ADDITIONAL_SECTIONS_H
-			;
-
 	struct cbor_pair query_response_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_HINTS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(query_response_hints_val) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->query_response_hints) ))
 	};
 
-	uint32_t query_response_signature_hints_val
-			= SERVER_PORT_H
-			| QR_TRANSPORT_FLAGS_H
-			| QR_TYPE_H
-			| QR_SIG_FLAGS_H
-			| QUERY_OPCODE_H
-			| QR_DNS_FLAGS_H
-			| QUERY_RCODE_H
-			| QUERY_QDCOUNT_H
-			| QUERY_ANCOUNT_H
-			| QUERY_NSCOUNT_H
-			| QUERY_ARCOUNT_H
-			| QUERY_EDNS_VERSION_H
-			| QUERY_UDP_SIZE_H
-			| RESPONSE_RCODE_H
-			;
 	struct cbor_pair query_response_signature_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_SIGNATURE_HINTS )),
-		.value	= cbor_move(cbor_build_uint32( htobe32(query_response_signature_hints_val) ))
+		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->query_response_signature_hints) ))
 	};
 
-	uint8_t rr_hints_val
-			= TTL_H
-			;
 	struct cbor_pair rr_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)RR_HINTS )),
-		.value	= cbor_move(cbor_build_uint8( rr_hints_val ))
+		.value	= cbor_move(cbor_build_uint8( ctx->rr_hints ))
 	};
 
-	uint8_t other_data_hints_val
-			= MALFORMED_MESSAGES_H
-			| ADDRESS_EVENT_COUNTS_H
-			;
 	struct cbor_pair other_data_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)OTHER_DATA_HINTS )),
-		.value	= cbor_move(cbor_build_uint8( other_data_hints_val ))
+		.value	= cbor_move(cbor_build_uint8( ctx->other_data_hints ))
 	};
 
 	cbor_map_add(root, query_response_hints);

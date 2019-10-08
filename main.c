@@ -47,6 +47,15 @@ int main(int argc, char **argv)
     	| RESPONSE_RCODE_H
 		;
 
+	uint8_t rr_hints
+			= TTL_H
+			;
+
+	uint8_t other_data_hints
+			= MALFORMED_MESSAGES_H
+			| ADDRESS_EVENT_COUNTS_H
+			;
+
 	cdns_ctx_t cdns_h = {0};
 	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints)) {
 		return EXIT_FAILURE;
