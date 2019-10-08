@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 			;
 
 	cdns_ctx_t cdns_h = {0};
-	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints)) {
+	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
 		return EXIT_FAILURE;
 	}
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     	.qr_signature = NULL,
     	.client_hoplimit = 0xFF,
     	.response_delay = time(NULL),
-    	.query_name_p = "www.nic.cz",
+    	.query_name_p = (uint8_t*)"www.nic.cz",
     	.query_size = 10UL,
     	.response_size = 0xFFFF,
     	.response_processing_data_p = NULL,

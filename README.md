@@ -6,7 +6,7 @@ Daemon that converts DNS transmission to C-DNS file format.
 
 ## Build
 
-Basic instructions for build. This is not deploy process, it's intended just for testing.
+Basic instructions for build. This is not deploy process, it's intended just for development or testing.
 
     mkdir build
     cd build

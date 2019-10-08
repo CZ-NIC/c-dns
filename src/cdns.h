@@ -71,7 +71,7 @@ typedef struct {
     cdns_query_response_signature_t *qr_signature; //ORIGIN 'unsigned int qr_signature_index;'
     uint8_t client_hoplimit;
     int64_t response_delay;
-    uint8_t **query_name_p; //ORIGIN 'unsigned int query_name_index;'
+    uint8_t *query_name_p; //ORIGIN 'unsigned int query_name_index;'
     uint16_t query_size;
     uint16_t response_size;
     cdns_response_processing_data_t *response_processing_data_p; //TODO
@@ -95,13 +95,19 @@ typedef struct {
 } cdns_malformed_message_t;
 
 typedef struct {
-    //opts
     unsigned int block_size;
     uint32_t query_response_hints;
     uint32_t query_response_signature_hints;
     uint8_t rr_hints;
     uint8_t other_data_hints;
+} cdns_options_t;
 
+typedef struct {
+
+} cdns_storage_t;
+
+typedef struct {
+    cdns_options_t options;
     //ctx
     cdns_block_statistics_t stats;
     cdns_query_response_t *queries_responses; //TODO make it array
@@ -113,7 +119,12 @@ typedef enum { //TODO
 } cdns_ret_t;
 
 
-int cdns_init(cdns_ctx_t *ctx, const unsigned int block_size, const uint32_t query_response_hints, const uint32_t query_response_signature_hints);
+int cdns_init(cdns_ctx_t *ctx,
+        const unsigned int block_size,
+        const uint32_t query_response_hints,
+        const uint32_t query_response_signature_hints,
+        const uint8_t rr_hints,
+        const uint8_t other_data_hints);
 
 int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr);
 
