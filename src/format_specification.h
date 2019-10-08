@@ -50,7 +50,20 @@ typedef enum {
     STORAGE_HINTS_SIZE
 } cdns_storagehints_key_t;
 
-//TODO in header is stored more info, watch RFC-8618, i was just lazy implements it for PoC
+typedef enum {
+    QUERY_TIMEOUT       = 0,
+    SKEW_TIMEOUT        = 1,
+    SNAPLEN             = 2,
+    PROMISC             = 3,
+    INTERFACES          = 4,
+    SERVER_ADDRESSES    = 5,
+    VLAN_IDS            = 6,
+    FILTER              = 7,
+    GENERATOR_ID        = 8,
+    HOST_ID             = 9,
+
+    COLLECTION_PARAMETERS_SIZE
+} cdns_collectionparameters_key_t;
 
 typedef enum {
     BLOCK_PREAMBLE          = 0,
@@ -77,8 +90,6 @@ typedef enum {
 
     EARLIEST_TIME_SIZE
 } cdns_earliesttime_key_t;
-
-//TODO end implementation of block header
 
 typedef enum {
     PROCESSED_MESSAGES  = 0,
@@ -135,6 +146,23 @@ typedef enum {
 } cdns_queryresponsesignature_key_t;
 
 typedef enum {
+    NAME_INDEX      = 0,
+    CLASSTYPE_INDEX = 1
+} cdns_question_key_t;
+
+typedef enum {
+    //cdns_question_key_t
+    TTL         = 2,
+    RDATA_INDEX = 3
+} cdns_rr_key_t;
+
+typedef enum {
+    //cdns_question_key_t
+    MM_TRANSPORT_FLAGS  = 2,
+    MM_PAYLOAD          = 3
+} cdns_malformedmessagedata_key_t;
+
+typedef enum {
     TIME_OFFSET                 = 0,
     CLIENT_ADDRESS_INDEX        = 1,
     CLIENT_PORT                 = 2,
@@ -158,3 +186,27 @@ typedef enum {
 
     RESPONSE_PROCESSING_DATA_SIZE
 } cdns_responseprocessingdata_key_t;
+
+typedef enum {
+    QUESTION_INDEX      = 0,
+    ANSWER_INDEX        = 1,
+    AUTHORITY_INDEX     = 2,
+    ADDITIONAL_INDEX    = 3,
+
+    QUESTION_RESPONSE_EXTENDED_SIZE
+} cdns_questionresponseextended_key_t;
+
+typedef enum {
+    AE_TYPE             = 0,
+    AE_CODE             = 1,
+    AE_ADDRESS_INDEX    = 2,
+    AE_TRANSPORT_FLAGS  = 3,
+    AE_COUNT            = 4,
+
+   ADDRESS_EVENT_COUNT_SIZE
+} cdns_addresseventcount_key_t;
+
+typedef enum {
+    //cdns_question_key_t
+    MESSAGE_DATA_INDEX  = 3
+} cdns_malformedmessage_key_t;
