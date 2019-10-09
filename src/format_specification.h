@@ -153,13 +153,17 @@ typedef enum {
 typedef enum {
     //cdns_question_key_t
     TTL         = 2,
-    RDATA_INDEX = 3
+    RDATA_INDEX = 3,
+
+    RR_SIZE
 } cdns_rr_key_t;
 
 typedef enum {
     //cdns_question_key_t
     MM_TRANSPORT_FLAGS  = 2,
-    MM_PAYLOAD          = 3
+    MM_PAYLOAD          = 3,
+
+    MALFORMED_MESSAGE_DATA_SIZE
 } cdns_malformedmessagedata_key_t;
 
 typedef enum {
@@ -208,5 +212,7 @@ typedef enum {
 
 typedef enum {
     //cdns_question_key_t
-    MESSAGE_DATA_INDEX  = 3
+    MESSAGE_DATA_INDEX  = 3,
+
+    MALFORMED_MESSAGE_SIZE
 } cdns_malformedmessage_key_t;
