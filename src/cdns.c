@@ -125,11 +125,41 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( rr_types_array )
 	};
 
+	/** OPTIONAL
+	struct cbor_pair storage_flags = {
+		.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_FLAGS )),
+		.value	= cbor_move(cbor_build_uint8( (uint8_t)7 ))
+	};
+	**/
+
 	cbor_map_add(root, ticks_per_second);
 	cbor_map_add(root, max_block_items);
 	cbor_map_add(root, storage_hints);
 	cbor_map_add(root, opcodes);
 	cbor_map_add(root, rr_types);
+	//OPTIONAL cbor_map_add(root, storage_flags);
+
+	return E_SUCCESS;
+}
+
+/**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.2 **/
+static int _cdns_init_fp_bp_collection_parameters(const cdns_ctx_t *ctx, const int idx, cbor_item_t *root)
+{
+	assert(ctx);
+	assert(root);
+
+	struct cbor_pair query_timeout = {
+		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_TIMEOUT )),
+		.value	= cbor_move(cbor_build_uint32( 0 ))
+	};
+
+	struct cbor_pair promisc = {
+		.key	= cbor_move(cbor_build_uint8( (uint8_t)PROMISC )),
+		.value	= cbor_move(cbor_build_bool( true ))
+	};
+
+	cbor_map_add(root, query_timeout);
+	cbor_map_add(root, promisc);
 
 	return E_SUCCESS;
 }
@@ -140,11 +170,11 @@ static int _cdns_init_fp_block_parameters(const cdns_ctx_t *ctx, cbor_item_t *ro
 	assert(ctx);
 	assert(root);
 
-	for(size_t i = 0; i < ctx->options.block_parameters_size; ++i) {
+	for(size_t idx = 0; idx < ctx->options.block_parameters_size; ++idx) {
 		cbor_item_t *block_parameters_map = cbor_new_definite_map(BLOCK_PARAMETERS_SIZE);
 
 		cbor_item_t *storage_parameters_map = cbor_new_definite_map(STORAGE_PARAMETERS_SIZE);
-		_cdns_init_fp_bp_storage_parameters(ctx, i, storage_parameters_map);
+		_cdns_init_fp_bp_storage_parameters(ctx, idx, storage_parameters_map);
 
 		struct cbor_pair storage_parameters = {
 			.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_PARAMETERS )),
@@ -152,8 +182,8 @@ static int _cdns_init_fp_block_parameters(const cdns_ctx_t *ctx, cbor_item_t *ro
 		};
 
 		cbor_item_t *collection_parameters_map = cbor_new_definite_map(COLLECTION_PARAMETERS_SIZE);
-		//TODO init
-
+		_cdns_init_fp_bp_collection_parameters(ctx, idx, collection_parameters_map);
+		
 		struct cbor_pair collection_parameters = {
 			.key	= cbor_move(cbor_build_uint8( (uint8_t)COLLECTION_PARAMETERS )),
 			.value	= cbor_move( collection_parameters_map )
@@ -521,13 +551,13 @@ int cdns_serialize_end(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size)
 		return E_ERROR;
 	}
 	
-
 	if (*buff == NULL) {
 		*buff = (unsigned char *)calloc(2UL, 1UL);
 	}
 	
 	(*buff)[0] = 0xFF;
 	*buff_size = 1UL;
+	
 
 	return E_SUCCESS;
 }
