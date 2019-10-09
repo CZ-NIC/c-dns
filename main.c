@@ -114,6 +114,7 @@ int main(int argc, char **argv)
 	fprintf(stdout, "\n");
 	fflush(stdout);
 	
+	cdns_deinit(&cdns_h);
 	free(buff);
 
 	return EXIT_SUCCESS;

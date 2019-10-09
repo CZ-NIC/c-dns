@@ -14,14 +14,27 @@ int cdns_init(cdns_ctx_t *ctx,
 		return E_ERROR;
 	}
 
-	ctx->options.block_size = block_size;
-	ctx->options.query_response_hints = query_response_hints;
-	ctx->options.query_response_signature_hints = query_response_signature_hints;
-	ctx->options.rr_hints = rr_hints;
-	ctx->options.other_data_hints = other_data_hints;
+	//TODO for future, init as alloc
+	//		Other solution would be store it locally in library and pass descriptor
 
-	//ctx
+	ctx->options.block_size = block_size;
+	ctx->options.block_parameters_size = 1U;
+	ctx->options.block_parameters = calloc(ctx->options.block_parameters_size, sizeof(cdns_block_parameters_t));
+	ctx->options.block_parameters[0].query_response_hints = query_response_hints;
+	ctx->options.block_parameters[0].query_response_signature_hints = query_response_signature_hints;
+	ctx->options.block_parameters[0].rr_hints = rr_hints;
+	ctx->options.block_parameters[0].other_data_hints = other_data_hints;
+
+	// storage
 	memset(&(ctx->storage.stats), 0, sizeof(cdns_block_statistics_t));
+
+	return E_SUCCESS;
+}
+
+int cdns_deinit(cdns_ctx_t *ctx)
+{
+	free(ctx->options.block_parameters);
+	ctx->options.block_parameters = NULL;
 
 	return E_SUCCESS;
 }
@@ -43,31 +56,29 @@ int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr)
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.1.1 **/
-static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, cbor_item_t *root)
+static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, const int idx, cbor_item_t *root)
 {
 	assert(ctx);
 	assert(root);
 
 	struct cbor_pair query_response_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_HINTS )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_hints) ))
-		.value	= cbor_move(cbor_build_uint32( ctx->options.query_response_hints ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.block_parameters[idx].query_response_hints ))
 	};
 
 	struct cbor_pair query_response_signature_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QUERY_RESPONSE_SIGNATURE_HINTS )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.query_response_signature_hints) ))
-		.value	= cbor_move(cbor_build_uint32( ctx->options.query_response_signature_hints ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.block_parameters[idx].query_response_signature_hints ))
 	};
 
 	struct cbor_pair rr_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)RR_HINTS )),
-		.value	= cbor_move(cbor_build_uint8( ctx->options.rr_hints ))
+		.value	= cbor_move(cbor_build_uint8( ctx->options.block_parameters[idx].rr_hints ))
 	};
 
 	struct cbor_pair other_data_hints  = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)OTHER_DATA_HINTS )),
-		.value	= cbor_move(cbor_build_uint8( ctx->options.other_data_hints ))
+		.value	= cbor_move(cbor_build_uint8( ctx->options.block_parameters[idx].other_data_hints ))
 	};
 
 	cbor_map_add(root, query_response_hints);
@@ -77,25 +88,23 @@ static int _cdns_init_fp_bp_sp_storage_hints(const cdns_ctx_t *ctx, cbor_item_t 
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.1 **/
-static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, cbor_item_t *root)
+static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int idx, cbor_item_t *root)
 {
 	assert(ctx);
 	assert(root);
 
 	struct cbor_pair ticks_per_second = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)TICKS_PER_SECOND )),
-		//.value	= cbor_move(cbor_build_uint64( htobe64(CLOCKS_PER_SEC) ))
 		.value	= cbor_move(cbor_build_uint64( CLOCKS_PER_SEC ))
 	};
 
 	struct cbor_pair max_block_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MAX_BLOCK_ITEMS )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->options.block_size) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->options.block_size ))
 	};
 
 	cbor_item_t *storage_hints_map = cbor_new_definite_map(STORAGE_HINTS_SIZE);
-	_cdns_init_fp_bp_sp_storage_hints(ctx, storage_hints_map);
+	_cdns_init_fp_bp_sp_storage_hints(ctx, idx, storage_hints_map);
 
 	struct cbor_pair storage_hints = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_HINTS )),
@@ -131,20 +140,30 @@ static int _cdns_init_fp_block_parameters(const cdns_ctx_t *ctx, cbor_item_t *ro
 	assert(ctx);
 	assert(root);
 
-	cbor_item_t *block_parameters_map = cbor_new_definite_map(BLOCK_PARAMETERS_SIZE);
+	for(size_t i = 0; i < ctx->options.block_parameters_size; ++i) {
+		cbor_item_t *block_parameters_map = cbor_new_definite_map(BLOCK_PARAMETERS_SIZE);
 
-	cbor_item_t *storage_parameters_map = cbor_new_definite_map(STORAGE_PARAMETERS_SIZE);
-	_cdns_init_fp_bp_storage_parameters(ctx, storage_parameters_map);
+		cbor_item_t *storage_parameters_map = cbor_new_definite_map(STORAGE_PARAMETERS_SIZE);
+		_cdns_init_fp_bp_storage_parameters(ctx, i, storage_parameters_map);
 
-	struct cbor_pair storage_parameters = {
-		.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_PARAMETERS )),
-		.value	= cbor_move( storage_parameters_map )
-	};
+		struct cbor_pair storage_parameters = {
+			.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_PARAMETERS )),
+			.value	= cbor_move( storage_parameters_map )
+		};
 
-	cbor_map_add(block_parameters_map, storage_parameters);
-	//root[COLLECTION_PARAMETERS] is optional => todo
+		cbor_item_t *collection_parameters_map = cbor_new_definite_map(COLLECTION_PARAMETERS_SIZE);
+		//TODO init
 
-	cbor_array_set(root, 0UL, cbor_move(block_parameters_map));
+		struct cbor_pair collection_parameters = {
+			.key	= cbor_move(cbor_build_uint8( (uint8_t)COLLECTION_PARAMETERS )),
+			.value	= cbor_move( collection_parameters_map )
+		};
+
+		cbor_map_add(block_parameters_map, storage_parameters);
+		cbor_map_add(block_parameters_map, collection_parameters);
+
+		cbor_array_push(root, cbor_move(block_parameters_map));
+	}
 
 	return E_SUCCESS;
 }
@@ -165,14 +184,12 @@ static int _cdns_init_file_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move(cbor_build_uint8( (uint8_t)VERSION_MINOR ))
 	};
 
-	/**OPTIONAL**/ struct cbor_pair private_version = {
+	struct cbor_pair private_version = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)PRIVATE_VERSION )),
 		.value	= cbor_move(cbor_build_uint8( (uint8_t)VERSION_PRIVATE ))
 	};
 
-
-	/** One is MANDATORY (default), rest is OPTIONAL **/
-	cbor_item_t *block_parameters_array = cbor_new_definite_array(1UL);
+	cbor_item_t *block_parameters_array = cbor_new_definite_array(ctx->options.block_parameters_size);
 	_cdns_init_fp_block_parameters(ctx, block_parameters_array);
 	
 	struct cbor_pair block_parameters = {
@@ -182,7 +199,7 @@ static int _cdns_init_file_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	cbor_map_add(root, major_version);
 	cbor_map_add(root, minor_version);
-	/**OPTIONAL**/ cbor_map_add(root, private_version);
+	cbor_map_add(root, private_version);
 	cbor_map_add(root, block_parameters);
 
 	return E_SUCCESS;
@@ -234,8 +251,6 @@ static int _cdns_init_bp_earliest_time(const cdns_ctx_t *ctx, cbor_item_t *root)
 	assert(ctx);
 	assert(root);
 
-	//cbor_array_set(root, EPOCH_TIME, cbor_move(cbor_build_uint64( htobe64(time(NULL)) )));
-	//cbor_array_set(root, TICKS, cbor_move(cbor_build_uint64( htobe64(0UL) )));
 	cbor_array_set(root, EPOCH_TIME, cbor_move(cbor_build_uint64( time(NULL) )));
 	cbor_array_set(root, TICKS, cbor_move(cbor_build_uint64( 0UL )));
 
@@ -245,6 +260,7 @@ static int _cdns_init_bp_earliest_time(const cdns_ctx_t *ctx, cbor_item_t *root)
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2.1 **/
 static int _cdns_init_block_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 {
+	assert(ctx);
 	assert(root);
 
 	cbor_item_t *earliest_time_array = cbor_new_definite_array(EARLIEST_TIME_SIZE);
@@ -257,7 +273,6 @@ static int _cdns_init_block_preamble(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	struct cbor_pair block_parameters_index = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)BLOCK_PARAMETERS_INDEX )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(0) )) //TODO - 0 is default value
 		.value	= cbor_move(cbor_build_uint32( 0 )) //TODO - 0 is default value
 	};
 
@@ -275,37 +290,31 @@ static int _cdns_init_block_statistics(const cdns_ctx_t *ctx, cbor_item_t *root)
 
 	struct cbor_pair processed_messages = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)PROCESSED_MESSAGES )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.processed_messages) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.processed_messages ))
 	};
 
 	struct cbor_pair qr_data_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)QR_DATA_ITEMS )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.qr_data_items) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.qr_data_items ))
 	};
 
 	struct cbor_pair unmatched_queries = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_QUERIES )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_queries) ))
 		.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_queries) ))
 	};
 
 	struct cbor_pair unmatched_responses = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)UNMATCHED_RESPONSES )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.unmatched_responses) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.unmatched_responses ))
 	};
 
 	struct cbor_pair discarded_opcode = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)DISCARDED_OPCODE )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.discarded_opcode) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.discarded_opcode ))
 	};
 
 	struct cbor_pair malformed_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MALFORMED_ITEMS )),
-		//.value	= cbor_move(cbor_build_uint32( htobe32(ctx->storage.stats.malformed_items) ))
 		.value	= cbor_move(cbor_build_uint32( ctx->storage.stats.malformed_items ))
 	};
 

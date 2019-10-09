@@ -5,7 +5,6 @@
 
 PWD=`pwd`
 
-
 if [ ! `echo $LD_LIBRARY_PATH | grep $PWD` ]; then
     export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH
 fi
