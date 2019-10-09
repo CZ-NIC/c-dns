@@ -3,11 +3,14 @@ project(cdns VERSION 0.0.1 DESCRIPTION "C-DNS format exporter")
 
 include(GNUInstallDirs)
 
+
+file(GLOB sources "src/*.c")
 add_library(cdns SHARED
-    src/cdns.c
+    ${sources}
 )
 
 target_link_libraries(cdns -lcbor)
+
 
 set_target_properties(cdns PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(cdns PROPERTIES SOVERSION 0)
