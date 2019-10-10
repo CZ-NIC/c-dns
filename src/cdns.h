@@ -160,7 +160,6 @@ typedef struct {
     cdns_block_parameters_t *block_parameters;
 } cdns_options_t;
 
-
 typedef struct {
     cdns_block_statistics_t stats;
     cdns_query_response_t *queries_responses; //Array
