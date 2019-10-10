@@ -17,9 +17,9 @@ int cdns_init(cdns_ctx_t *ctx,
 	//TODO for future, init as alloc
 	//		Other solution would be store it locally in library and pass descriptor
 
-	ctx->options.block_size = block_size;
 	ctx->options.block_parameters_size = 1U;
-	ctx->options.block_parameters = calloc(ctx->options.block_parameters_size, sizeof(cdns_block_parameters_t));
+	ctx->options.block_parameters = (cdns_block_parameters_t *)calloc(ctx->options.block_parameters_size, sizeof(cdns_block_parameters_t));
+	ctx->options.block_parameters[0].block_size = block_size;
 	ctx->options.block_parameters[0].query_response_hints = query_response_hints;
 	ctx->options.block_parameters[0].query_response_signature_hints = query_response_signature_hints;
 	ctx->options.block_parameters[0].rr_hints = rr_hints;
@@ -100,7 +100,7 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 
 	struct cbor_pair max_block_items = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)MAX_BLOCK_ITEMS )),
-		.value	= cbor_move(cbor_build_uint32( ctx->options.block_size ))
+		.value	= cbor_move(cbor_build_uint32( ctx->options.block_parameters[idx].block_size ))
 	};
 
 	cbor_item_t *storage_hints_map = cbor_new_definite_map(STORAGE_HINTS_SIZE);
@@ -372,7 +372,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 	assert(ctx);
 	assert(root);
 
-	cbor_item_t *ip_address_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *ip_address_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	_cdns_init_bt_ip_address(ctx, ip_address_array);
 
 	struct cbor_pair ip_address = {
@@ -380,7 +380,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( ip_address_array )
 	};
 
-	cbor_item_t *classtype_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *classtype_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair classtype = {
@@ -388,7 +388,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( classtype_array )
 	};
 
-	cbor_item_t *name_rdata_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *name_rdata_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair name_rdata = {
@@ -396,7 +396,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( name_rdata_array )
 	};
 
-	cbor_item_t *qr_siq_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *qr_siq_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair qr_sig = {
@@ -404,7 +404,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( qr_siq_array )
 	};
 
-	cbor_item_t *qlist_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *qlist_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair qlist = {
@@ -412,7 +412,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( qlist_array )
 	};
 
-	cbor_item_t *qrr_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *qrr_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair qrr = {
@@ -420,7 +420,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( qrr_array )
 	};
 
-	cbor_item_t *rrlist_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *rrlist_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair rrlist = {
@@ -428,7 +428,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( rrlist_array )
 	};
 
-	cbor_item_t *rr_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *rr_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair rr = {
@@ -436,7 +436,7 @@ static int _cdns_init_block_tables(const cdns_ctx_t *ctx, cbor_item_t *root)
 		.value	= cbor_move( rr_array )
 	};
 
-	cbor_item_t *malformed_message_data_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *malformed_message_data_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair malformed_message_data = {
@@ -494,7 +494,7 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 		.value	= cbor_move( block_tables_map )
 	};
 
-	cbor_item_t *query_responses_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *query_responses_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair query_responses = {
@@ -502,7 +502,7 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 		.value	= cbor_move( query_responses_array )
 	};
 
-	cbor_item_t *address_event_counts_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *address_event_counts_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair address_event_counts = {
@@ -510,7 +510,7 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 		.value	= cbor_move( address_event_counts_array )
 	};
 
-	cbor_item_t *malformed_messages_array = cbor_new_definite_array(ctx->options.block_size);
+	cbor_item_t *malformed_messages_array = cbor_new_definite_array(ctx->options.block_parameters[0].block_size);
 	//TODO init
 
 	struct cbor_pair malformed_messages = {

@@ -148,6 +148,7 @@ typedef struct {
 } cdns_malformed_message_t;
 
 typedef struct {
+    unsigned int block_size;
     uint32_t query_response_hints;
     uint32_t query_response_signature_hints;
     uint8_t rr_hints;
@@ -155,7 +156,6 @@ typedef struct {
 } cdns_block_parameters_t;
 
 typedef struct {
-    unsigned int block_size;
     unsigned int block_parameters_size;
     cdns_block_parameters_t *block_parameters;
 } cdns_options_t;
