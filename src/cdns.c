@@ -111,33 +111,32 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( storage_hints_map )
 	};
 
-	cbor_item_t *opcodes_array = cbor_new_indefinite_array(); //TODO
+	//TODO Huston we got a problem
+	// In file preamble we have to store opcodes recorded by the collecting implementation
+	cbor_item_t *opcodes_array = cbor_new_definite_array( 16UL );
 
 	struct cbor_pair opcodes = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)OPCODES )),
 		.value	= cbor_move( opcodes_array )
 	};
 
-	cbor_item_t *rr_types_array = cbor_new_indefinite_array(); //TODO
+	//TODO Huston we got a same problem again
+	// In file preamble we have to store opcodes recorded by the collecting implementation
+	cbor_item_t *rr_types_array = cbor_new_definite_array( 65536UL );
 
 	struct cbor_pair rr_types = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)RR_TYPES )),
 		.value	= cbor_move( rr_types_array )
 	};
 
-	/** OPTIONAL
-	struct cbor_pair storage_flags = {
-		.key	= cbor_move(cbor_build_uint8( (uint8_t)STORAGE_FLAGS )),
-		.value	= cbor_move(cbor_build_uint8( (uint8_t)7 ))
-	};
-	**/
+	//TODO optionals
 
 	cbor_map_add(root, ticks_per_second);
 	cbor_map_add(root, max_block_items);
 	cbor_map_add(root, storage_hints);
 	cbor_map_add(root, opcodes);
 	cbor_map_add(root, rr_types);
-	//OPTIONAL cbor_map_add(root, storage_flags);
+	//TODO optionals
 
 	return E_SUCCESS;
 }
