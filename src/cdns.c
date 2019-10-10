@@ -257,7 +257,7 @@ int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, si
 
 	cbor_item_t *block_array = cbor_new_indefinite_array(); //TODO better would be definite array
 	// Thanks to definite array we will not need function `cdns_serialize_end()`
-	// This solution is here because of `libcbor` feature that counting number of elements in array to keep file format valid when not used correctly
+	// Current solution is here because of `libcbor` feature that counting number of elements in array to keep file format valid even when API is not used correctly
 	cbor_array_set(root, FILE_BLOCKS, cbor_move(block_array));
 
 	size_t len = 0;
@@ -535,7 +535,7 @@ int cdns_serialize_block(cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_siz
 
 	cbor_decref(&root);
 
-	//TODO clear all buffers
+	//TODO clear all counters
 	memset(&(ctx->storage.stats), 0, sizeof(cdns_block_statistics_t));
 	
 	return E_SUCCESS;
