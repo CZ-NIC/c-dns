@@ -17,6 +17,97 @@ int cdns_init(cdns_ctx_t *ctx,
 	//TODO for future, init as alloc
 	//		Other solution would be store it locally in library and pass descriptor
 
+	static const uint8_t opcodes[] = {
+		(uint8_t)OP_QUERY,
+		(uint8_t)OP_IQUERY,
+		(uint8_t)OP_STATUS,
+		(uint8_t)OP_NOTIFY,
+		(uint8_t)OP_UPDATE,
+		(uint8_t)OP_DSO
+	};
+
+	static const uint16_t rr_types[] = {
+		(uint16_t)A,
+    	(uint16_t)NS,
+    	(uint16_t)MD,
+    	(uint16_t)MF,
+    	(uint16_t)CNAME,
+    	(uint16_t)SOA,
+    	(uint16_t)MB,
+    	(uint16_t)MG,
+    	(uint16_t)MR,
+    	(uint16_t)NULL_R,
+    	(uint16_t)WKS,
+    	(uint16_t)PTR,
+    	(uint16_t)HINFO,
+    	(uint16_t)MINFO,
+    	(uint16_t)MX,
+    	(uint16_t)TXT,
+    	(uint16_t)RP,
+    	(uint16_t)AFSDB,
+    	(uint16_t)X25,
+    	(uint16_t)ISDN,
+    	(uint16_t)RT,
+    	(uint16_t)NSAP,
+    	(uint16_t)NSAP_PTR,
+    	(uint16_t)SIG,
+    	(uint16_t)KEY,
+    	(uint16_t)PX,
+    	(uint16_t)GPOS,
+    	(uint16_t)AAAA,
+    	(uint16_t)LOC,
+    	(uint16_t)NXT,
+    	(uint16_t)EID,
+    	(uint16_t)NIMLOC,
+    	(uint16_t)SRV,
+    	(uint16_t)ATMA,
+    	(uint16_t)NAPTR,
+    	(uint16_t)KX,
+    	(uint16_t)CERTIFICATE,
+    	(uint16_t)A6,
+    	(uint16_t)DNAM,
+    	(uint16_t)SINK,
+    	(uint16_t)OPT,
+    	(uint16_t)APL,
+    	(uint16_t)DS,
+    	(uint16_t)SSHFP,
+    	(uint16_t)IPSECKEY,
+    	(uint16_t)RRSIG,
+    	(uint16_t)NSEC,
+    	(uint16_t)DNSKEY,
+    	(uint16_t)DHCID,
+    	(uint16_t)NSEC3,
+    	(uint16_t)NSEC3PARAM,
+    	(uint16_t)TLSA,
+    	(uint16_t)HIP,
+    	(uint16_t)NINFO,
+    	(uint16_t)RKEY,
+    	(uint16_t)TALINK,
+    	(uint16_t)CDS,
+    	(uint16_t)SPF,
+    	(uint16_t)UINFO,
+    	(uint16_t)UID,
+    	(uint16_t)GID,
+    	(uint16_t)UNSPEC,
+    	(uint16_t)NID,
+    	(uint16_t)L32,
+    	(uint16_t)L64,
+    	(uint16_t)LP,
+    	(uint16_t)EU148,
+    	(uint16_t)EUI64,
+    	(uint16_t)TKEY,
+    	(uint16_t)TSIG,
+    	(uint16_t)IXFR,
+    	(uint16_t)AXFR,
+    	(uint16_t)MAILB,
+    	(uint16_t)MAILA,
+    	(uint16_t)TYPE_ANY,
+    	(uint16_t)URI,
+    	(uint16_t)CAA,
+    	(uint16_t)TA,
+    	(uint16_t)DLV
+	};
+
 	ctx->options.block_parameters_size = 1U;
 	ctx->options.block_parameters = (cdns_block_parameters_t *)calloc(ctx->options.block_parameters_size, sizeof(cdns_block_parameters_t));
 	ctx->options.block_parameters[0].block_size = block_size;
@@ -24,6 +115,12 @@ int cdns_init(cdns_ctx_t *ctx,
 	ctx->options.block_parameters[0].query_response_signature_hints = query_response_signature_hints;
 	ctx->options.block_parameters[0].rr_hints = rr_hints;
 	ctx->options.block_parameters[0].other_data_hints = other_data_hints;
+
+	ctx->options.block_parameters[0].opcodes = (uint8_t *)calloc(sizeof(opcodes) / sizeof(uint8_t), sizeof(uint8_t));
+	memcpy(ctx->options.block_parameters[0].opcodes, opcodes, sizeof(opcodes));
+	
+	ctx->options.block_parameters[0].rr_types = (uint16_t *)calloc(sizeof(rr_types) / sizeof(uint16_t), sizeof(uint16_t));
+	memcpy(ctx->options.block_parameters[0].rr_types, rr_types, sizeof(rr_types));
 
 	// storage
 	memset(&(ctx->storage.stats), 0, sizeof(cdns_block_statistics_t));
@@ -33,6 +130,11 @@ int cdns_init(cdns_ctx_t *ctx,
 
 int cdns_deinit(cdns_ctx_t *ctx)
 {
+	for(size_t idx = 0; idx < ctx->options.block_parameters_size; ++idx) {
+		free(ctx->options.block_parameters[idx].opcodes);
+		free(ctx->options.block_parameters[idx].rr_types);
+	}
+
 	free(ctx->options.block_parameters);
 	ctx->options.block_parameters = NULL;
 
