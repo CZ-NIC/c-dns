@@ -116,10 +116,12 @@ int cdns_init(cdns_ctx_t *ctx,
 	ctx->options.block_parameters[0].rr_hints = rr_hints;
 	ctx->options.block_parameters[0].other_data_hints = other_data_hints;
 
-	ctx->options.block_parameters[0].opcodes = (uint8_t *)calloc(sizeof(opcodes) / sizeof(uint8_t), sizeof(uint8_t));
+	ctx->options.block_parameters[0].opcodes_size = sizeof(opcodes) / sizeof(uint8_t);
+	ctx->options.block_parameters[0].opcodes = (uint8_t *)calloc(ctx->options.block_parameters[0].opcodes_size, sizeof(uint8_t));
 	memcpy(ctx->options.block_parameters[0].opcodes, opcodes, sizeof(opcodes));
 	
-	ctx->options.block_parameters[0].rr_types = (uint16_t *)calloc(sizeof(rr_types) / sizeof(uint16_t), sizeof(uint16_t));
+	ctx->options.block_parameters[0].rr_types_size = sizeof(rr_types) / sizeof(uint16_t);
+	ctx->options.block_parameters[0].rr_types = (uint16_t *)calloc(ctx->options.block_parameters[0].rr_types_size, sizeof(uint16_t));
 	memcpy(ctx->options.block_parameters[0].rr_types, rr_types, sizeof(rr_types));
 
 	// storage
@@ -213,15 +215,22 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( storage_hints_map )
 	};
 
-
-	cbor_item_t *opcodes_array = cbor_new_definite_array( 16UL );
+	const size_t opcodes_size = ctx->options.block_parameters[idx].opcodes_size;
+	cbor_item_t *opcodes_array = cbor_new_definite_array( opcodes_size );
+	for(size_t op_idx = 0; op_idx < opcodes_size; ++op_idx) {
+		cbor_array_push(opcodes_array, cbor_move(cbor_build_uint8( ctx->options.block_parameters[idx].opcodes[op_idx] )));
+	}
 
 	struct cbor_pair opcodes = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)OPCODES )),
 		.value	= cbor_move( opcodes_array )
 	};
 
-	cbor_item_t *rr_types_array = cbor_new_definite_array( 100UL );
+	const size_t rr_types_size = ctx->options.block_parameters[idx].rr_types_size;	
+	cbor_item_t *rr_types_array = cbor_new_definite_array( rr_types_size );
+	for(size_t rr_idx = 0; rr_idx < rr_types_size; ++rr_idx) {
+		cbor_array_set(rr_types_array, rr_idx, cbor_move(cbor_build_uint16( ctx->options.block_parameters[idx].rr_types[rr_idx] )));
+	}
 
 	struct cbor_pair rr_types = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)RR_TYPES )),

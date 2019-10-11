@@ -167,7 +167,9 @@ typedef struct
     uint32_t query_response_signature_hints;
     uint8_t rr_hints;
     uint8_t other_data_hints;
+    unsigned int opcodes_size;
     uint8_t *opcodes;
+    unsigned int rr_types_size;
     uint16_t *rr_types;
 } cdns_block_parameters_t;
 

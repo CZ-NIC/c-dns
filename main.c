@@ -69,8 +69,8 @@ int main(int argc, char **argv)
 	//unsigned char *buff = NULL;
 	//size_t buff_len = 0UL;
 	// #2
-	unsigned char *buff = (unsigned char *)calloc(255UL, 1UL);
-	size_t buff_len = 255UL;
+	unsigned char *buff = (unsigned char *)calloc(1024UL, 1UL);
+	size_t buff_len = 1024UL;
 
 	
 	cdns_serialize_file_preamble(&cdns_h, &buff, &buff_len);
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 	};
 	cdns_push(&cdns_h, &query);
 
-	buff_len = 255UL;
+	buff_len = 1024UL;
 	cdns_serialize_block(&cdns_h, &buff, &buff_len);
 	if(!buff) {
 		return EXIT_FAILURE;
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	CDNS_TEST_PRINT;
 
 		
-	buff_len = 255UL;
+	buff_len = 1024UL;
 	cdns_serialize_end(&cdns_h, &buff, &buff_len);
 	if(!buff) {
 		return EXIT_FAILURE;
