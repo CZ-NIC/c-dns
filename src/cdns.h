@@ -6,6 +6,7 @@
 #include <time.h>
 #include <endian.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 
 #include "format_specification.h"
@@ -152,6 +153,11 @@ typedef struct {
     uint32_t query_response_signature_hints;
     uint8_t rr_hints;
     uint8_t other_data_hints;
+} cdns_block_parameters_t;
+
+typedef struct {
+    unsigned int block_parameters_size;
+    cdns_block_parameters_t *block_parameters;
 } cdns_options_t;
 
 typedef struct {
@@ -179,6 +185,8 @@ int cdns_init(cdns_ctx_t *ctx,
         const uint32_t query_response_signature_hints,
         const uint8_t rr_hints,
         const uint8_t other_data_hints);
+
+int cdns_deinit(cdns_ctx_t *ctx);
 
 int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr);
 
