@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 
 #include "format_specification.h"
+#include "block_table.h"
 
 #define VERSION_MAJOR   1
 #define VERSION_MINOR   0

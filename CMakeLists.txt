@@ -11,6 +11,13 @@ add_library(cdns SHARED
 
 target_link_libraries(cdns -lcbor)
 
+include(CheckCCompilerFlag)
+check_c_compiler_flag(-msse4 SSE4_FLAG)
+if(SSE4_FLAG)
+    target_compile_options(cdns PUBLIC -msse4)
+else()
+    message(FATAL_ERROR "SSE4 is required for compilation!")
+endif()
 
 set_target_properties(cdns PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(cdns PROPERTIES SOVERSION 0)
