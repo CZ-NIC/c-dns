@@ -111,8 +111,7 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( storage_hints_map )
 	};
 
-	//TODO Huston we got a problem
-	// In file preamble we have to store opcodes recorded by the collecting implementation
+
 	cbor_item_t *opcodes_array = cbor_new_definite_array( 16UL );
 
 	struct cbor_pair opcodes = {
@@ -120,9 +119,7 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( opcodes_array )
 	};
 
-	//TODO Huston we got a same problem again
-	// In file preamble we have to store opcodes recorded by the collecting implementation
-	cbor_item_t *rr_types_array = cbor_new_definite_array( 65536UL );
+	cbor_item_t *rr_types_array = cbor_new_definite_array( 100UL );
 
 	struct cbor_pair rr_types = {
 		.key	= cbor_move(cbor_build_uint8( (uint8_t)RR_TYPES )),
