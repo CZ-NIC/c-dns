@@ -6,8 +6,7 @@
 
 int main(int argc, char **argv)
 {
-
-	uint32_t qr_hints
+	const uint32_t qr_hints
 		= TIME_OFFSET_H
     	| CLIENT_ADDRESS_INDEX_H
     	| CLIENT_PORT_H
@@ -27,7 +26,7 @@ int main(int argc, char **argv)
     	| RESPONSE_AUTHORITY_SECTIONS_H
     	| RESPONSE_ADDITIONAL_SECTIONS_H
 		;
-	uint32_t qr_signature_hints
+	const uint32_t qr_signature_hints
 		= SERVER_ADDRESS_INDEX_H
     	| SERVER_PORT_H
     	| QR_TRANSPORT_FLAGS_H
@@ -47,20 +46,126 @@ int main(int argc, char **argv)
     	| RESPONSE_RCODE_H
 		;
 
-	uint8_t rr_hints
+	const uint8_t rr_hints
 		= TTL_H
 		| RDATA_INDEX_H
 		;
 
-	uint8_t other_data_hints
+	const uint8_t other_data_hints
 		= MALFORMED_MESSAGES_H
 		| ADDRESS_EVENT_COUNTS_H
 		;
 
-	unsigned int block_size = 20000;
+	const uint8_t opcodes[] = {
+		OP_QUERY,
+		OP_IQUERY,
+		OP_STATUS,
+		OP_NOTIFY,
+		OP_UPDATE,
+		OP_DSO
+	};
+
+	static const uint16_t rr_types[] = {
+		A,
+    	NS,
+    	MD,
+    	MF,
+    	CNAME,
+    	SOA,
+    	MB,
+    	MG,
+    	MR,
+    	NULL_R,
+    	WKS,
+    	PTR,
+    	HINFO,
+    	MINFO,
+    	MX,
+    	TXT,
+    	RP,
+    	AFSDB,
+    	X25,
+    	ISDN,
+    	RT,
+    	NSAP,
+    	NSAP_PTR,
+    	SIG,
+    	KEY,
+    	PX,
+    	GPOS,
+    	AAAA,
+    	LOC,
+    	NXT,
+    	EID,
+    	NIMLOC,
+    	SRV,
+    	ATMA,
+    	NAPTR,
+    	KX,
+    	CERTIFICATE,
+    	A6,
+    	DNAM,
+    	SINK,
+    	OPT,
+    	APL,
+    	DS,
+    	SSHFP,
+    	IPSECKEY,
+    	RRSIG,
+    	NSEC,
+    	DNSKEY,
+    	DHCID,
+    	NSEC3,
+    	NSEC3PARAM,
+    	TLSA,
+    	HIP,
+    	NINFO,
+    	RKEY,
+    	TALINK,
+    	CDS,
+    	SPF,
+    	UINFO,
+    	UID,
+    	GID,
+    	UNSPEC,
+    	NID,
+    	L32,
+    	L64,
+    	LP,
+    	EU148,
+    	EUI64,
+    	TKEY,
+    	TSIG,
+    	IXFR,
+    	AXFR,
+    	MAILB,
+    	MAILA,
+    	TYPE_ANY,
+    	URI,
+    	CAA,
+    	TA,
+    	DLV
+	};
+
+
+	cdns_storage_parameters_t *storage_parameter = create_storage_parameters(
+			TICKS_PER_SECOND,
+			20000,
+			qr_hints,
+			qr_signature_hints,
+			rr_hints,
+			other_data_hints,
+			opcodes,
+			sizeof(opcodes) / sizeof(uint8_t),
+			rr_types,
+			sizeof(rr_types) / sizeof(uint16_t)
+		);
+	if (storage_parameter == NULL) {
+		return EXIT_FAILURE;
+	}
 
 	cdns_ctx_t cdns_h = {0};
-	if (cdns_init(&cdns_h, block_size, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
+	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
 		return EXIT_FAILURE;
 	}
 
@@ -116,6 +221,8 @@ int main(int argc, char **argv)
 	
 	cdns_deinit(&cdns_h);
 	free(buff);
+
+	delete_storage_parameters(&storage_parameter);
 
 	return EXIT_SUCCESS;
 }

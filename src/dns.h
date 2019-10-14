@@ -1,6 +1,6 @@
 #pragma once
 
-typedef enum Opcode
+typedef enum
 {
     OP_QUERY = 0,
     OP_IQUERY,
