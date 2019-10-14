@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
 typedef struct {
@@ -14,8 +15,8 @@ typedef struct {
     uint64_t ticks_per_second;
     uint32_t max_block_items;
     cdns_storage_hints_t storage_hints;
-    const uint8_t *opcodes;
-    const uint16_t *rr_types;
+    uint8_t *opcodes;
+    uint16_t *rr_types;
 } cdns_storage_parameters_t;
 
 cdns_storage_parameters_t *create_storage_parameters(
@@ -25,9 +26,9 @@ cdns_storage_parameters_t *create_storage_parameters(
         const uint32_t query_response_signature_hints,
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
-        const uint8_t *opcodes,
+        const uint8_t * const opcodes,
         const size_t opcodes_size,
-        const uint16_t *rr_types,
+        const uint16_t * const rr_types,
         const size_t rr_types_size
     );
 

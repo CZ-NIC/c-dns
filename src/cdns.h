@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 
 #include "format_specification.h"
+#include "storage_parameters.h"
 #include "dns.h"
 
 #define VERSION_MAJOR   1

@@ -7,9 +7,9 @@ cdns_storage_parameters_t *create_storage_parameters(
         const uint32_t query_response_signature_hints,
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
-        const uint8_t *opcodes,
+        const uint8_t * const opcodes,
         const size_t opcodes_size,
-        const uint16_t *rr_types,
+        const uint16_t * const rr_types,
         const size_t rr_types_size
     )
 {
@@ -32,14 +32,14 @@ cdns_storage_parameters_t *create_storage_parameters(
     output->storage_hints.rr_hints = rr_hints;
     output->storage_hints.other_data_hints = other_data_hints;
     
-    output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t));
+    output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t)); //TODO create unique ADT structure and push `opcodes` values
     if (output->opcodes == NULL) {
         free(output);
         return NULL;
     }
     memcpy(output->opcodes, opcodes, opcodes_size * sizeof(uint8_t));
-    
-    output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t));
+        
+    output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t)); //TODO create unique ADT structure and push `rr_types` values
     if (output->rr_types == NULL) {
         free(output->opcodes);
         free(output);
