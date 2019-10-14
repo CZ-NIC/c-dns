@@ -8,13 +8,15 @@ cdns_storage_parameters_t *create_storage_parameters(
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
         const uint8_t *opcodes,
-        const uint16_t *rr_types
+        const size_t opcodes_size,
+        const uint16_t *rr_types,
+        const size_t rr_types_size
     )
 {
-    if (opcodes == NULL) {
+    if (opcodes == NULL || !opcodes_size) {
         return NULL;
     }
-    if (rr_types == NULL) {
+    if (rr_types == NULL || !rr_types_size) {
         return NULL;
     }
 
@@ -30,20 +32,27 @@ cdns_storage_parameters_t *create_storage_parameters(
     output->storage_hints.rr_hints = rr_hints;
     output->storage_hints.other_data_hints = other_data_hints;
     
-    //TODO - alloc and fill
-    output->opcodes = opcodes;
-    //memcpy(output->opcodes, opcodes, sizeof(opcodes));
+    output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t));
+    if (output->opcodes == NULL) {
+        free(output);
+        return NULL;
+    }
+    memcpy(output->opcodes, opcodes, opcodes_size * sizeof(uint8_t));
     
-    //TODO - alloc and fill
-    output->rr_types = rr_types;
-    //memcpy(output->rr_types, rr_types, sizeof(rr_types));
+    output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t));
+    if (output->rr_types == NULL) {
+        free(output->opcodes);
+        free(output);
+        return NULL;
+    }
+    memcpy(output->rr_types, rr_types, rr_types_size * sizeof(uint16_t));
 
     return output;
 }
 
 void delete_storage_parameters(cdns_storage_parameters_t **storage_parameters) {
-    //free((*storage_parameters)->opcodes);
-    //free((*storage_parameters)->rr_types);
+    free((*storage_parameters)->opcodes);
+    free((*storage_parameters)->rr_types);
     free(*storage_parameters);
     storage_parameters = NULL;
 }

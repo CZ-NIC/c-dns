@@ -26,7 +26,9 @@ cdns_storage_parameters_t *create_storage_parameters(
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
         const uint8_t *opcodes,
-        const uint16_t *rr_types
+        const size_t opcodes_size,
+        const uint16_t *rr_types,
+        const size_t rr_types_size
     );
 
 void delete_storage_parameters(cdns_storage_parameters_t **storage_parameters);
