@@ -1,4 +1,5 @@
 #include <smmintrin.h>
+#include <string.h>
 #include "block_table.h"
 
 /**
@@ -41,13 +42,16 @@ static uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, 
 
 int block_table_init(block_table_t *bt, size_t capacity)
 {
+    if (!bt)
+        return B_ERROR;
+
     bt->capacity = capacity;
     bt->size = 0U;
     bt->oldest = NULL;
     bt->newest = NULL;
-    bt->table = (block_table_item_t*)malloc(capacity * sizeof(block_table_item_t));
+    bt->table = (block_table_item_t*)calloc(capacity, sizeof(block_table_item_t));
 
-    if (!bt)
+    if (!bt->table)
         return B_ERROR;
     else
         return B_SUCCESS;    
@@ -57,18 +61,55 @@ int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index
 {
     uint32_t hash = block_table_calculate_hash(bt, (const char*)item, size);
     block_table_item_t *tmp = bt->table + hash;
+    block_table_item_t *bucket_end = NULL;
 
-    if (tmp->item) {
-        return B_SUCCESS;
+    // check if this item isn't already in block table
+    if (tmp->value) {
+        if ((tmp->value_size == size) && (memcmp(item, tmp->value, size) == 0)) {
+            *index = tmp->index;
+            return B_DUPLICATE;
+        }
+
+        bucket_end = tmp;
+        tmp = tmp->next_bucket;
+        while (tmp) {
+            if ((tmp->value_size == size) && (memcmp(item, tmp->value, size) == 0)) {
+                *index = tmp->index;
+                return B_DUPLICATE;
+            }
+
+            bucket_end = tmp;
+            tmp = tmp->next_bucket;
+        }
     }
 
+    // allocate new block table item if new value isn't first in the bucket
+    if (!tmp) {
+        tmp = (block_table_item_t*)calloc(1, sizeof(block_table_item_t));
+        if (!tmp)
+            return B_ERROR;
+    }
+
+    // set new block table item
     tmp->index = bt->size;
-    tmp->item = item;
+    tmp->value_size = size;
+    tmp->value = item;
     tmp->prev = bt->newest;
     tmp->next = NULL;
-    bt->newest->next = tmp;
+    tmp->next_bucket = NULL;
+    tmp->prev_bucket = bucket_end;
+    if (bucket_end)
+        bucket_end->next_bucket = tmp;
+
+    // update block table's parameters
+    if (!bt->oldest)
+        bt->oldest = tmp;
+    if (bt->newest)
+        bt->newest->next = tmp;
     bt->newest = tmp;
     bt->size++;
+
+    // set item's index for return
     *index = tmp->index;
 
     return B_SUCCESS;
@@ -78,9 +119,11 @@ void block_table_destroy(block_table_t *bt)
 {
     block_table_item_t *tmp, *item = bt->oldest;
     while (item) {
-        tmp = item->next;
-        free(item);
-        item = tmp;
+        free(item->value);
+        tmp = item;
+        item = item->next;
+        if (tmp->prev_bucket) // item isn't first in bucket and was allocated separately from hash table
+            free(tmp);
     }
 
     bt->capacity = 0U;

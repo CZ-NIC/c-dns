@@ -8,6 +8,7 @@
  */
 typedef enum {
     B_SUCCESS = 0,
+    B_DUPLICATE, // the same item is already in block table
     B_ERROR = -1
 } block_table_ret_t;
 
@@ -16,17 +17,20 @@ typedef enum {
  */
 typedef struct block_table_item {
     size_t index;
-    void *item;
+    size_t value_size;
+    void *value;
     struct block_table_item *next;
     struct block_table_item *prev;
+    struct block_table_item *next_bucket;
+    struct block_table_item *prev_bucket;
 } block_table_item_t;
 
 /**
  * @brief Block table implemented as hash table with stored items connected by doubly-linked list
  */
 typedef struct {
-    size_t capacity;
-    size_t size;
+    size_t capacity; // maximum number of items in hash table
+    size_t size; // current number of items in hash table
     block_table_item_t *oldest;
     block_table_item_t *newest;
     block_table_item_t *table;
