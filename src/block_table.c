@@ -59,6 +59,9 @@ int block_table_init(block_table_t *bt, size_t capacity)
 
 int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index)
 {
+    if (!bt || !item || !index)
+        return B_ERROR;
+
     uint32_t hash = block_table_calculate_hash(bt, (const char*)item, size);
     block_table_item_t *tmp = bt->table + hash;
     block_table_item_t *bucket_end = NULL;
@@ -117,6 +120,9 @@ int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index
 
 void block_table_destroy(block_table_t *bt)
 {
+    if (!bt)
+        return;
+
     block_table_item_t *tmp, *item = bt->oldest;
     while (item) {
         free(item->value);
