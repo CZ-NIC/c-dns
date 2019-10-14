@@ -29,7 +29,7 @@ uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, size_t 
         }
     }
 
-    return (~ret) & (bt->capacity - 1);
+    return (~ret) % bt->capacity;
 }
 
 int block_table_init(block_table_t *bt, size_t capacity)
