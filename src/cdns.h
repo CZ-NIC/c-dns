@@ -74,7 +74,16 @@ typedef enum
     ADDRESS_EVENT_COUNTS_H  = 1 << 1
 } cdns_otherdata_hints_t;
 
-/* Storage */
+
+/* File Preambule */
+
+typedef struct {
+    cdns_storage_parameters_t *storage_parameters;
+    //cdns_collection_parameters_t *collection_parameters;
+} cdns_block_parameters_t;
+
+/* Block Preambule */
+
 typedef struct
 {
     unsigned int processed_messages;
@@ -163,21 +172,8 @@ typedef struct
 
 typedef struct
 {
-    unsigned int block_size;
-    uint32_t query_response_hints;
-    uint32_t query_response_signature_hints;
-    uint8_t rr_hints;
-    uint8_t other_data_hints;
-    unsigned int opcodes_size;
-    uint8_t *opcodes;
-    unsigned int rr_types_size;
-    uint16_t *rr_types;
-} cdns_block_parameters_t;
-
-typedef struct
-{
-    unsigned int block_parameters_size;
-    cdns_block_parameters_t *block_parameters;
+    cdns_block_parameters_t *block_parameters_array;
+    size_t block_parameters_array_size;
 } cdns_options_t;
 
 typedef struct
@@ -203,11 +199,9 @@ typedef enum
 /* Functions */
 
 int cdns_init(cdns_ctx_t *ctx,
-        const unsigned int block_size,
-        const uint32_t query_response_hints,
-        const uint32_t query_response_signature_hints,
-        const uint8_t rr_hints,
-        const uint8_t other_data_hints);
+        cdns_block_parameters_t *block_parameters_array,
+		size_t block_parameters_array_size
+    );
 
 int cdns_deinit(cdns_ctx_t *ctx);
 

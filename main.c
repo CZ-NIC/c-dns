@@ -164,8 +164,14 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	cdns_block_parameters_t block_parameters[] = {
+		{
+			.storage_parameters = storage_parameter
+		}
+	};
+
 	cdns_ctx_t cdns_h = {0};
-	if (cdns_init(&cdns_h, 20000, qr_hints, qr_signature_hints, rr_hints, other_data_hints)) {
+	if (cdns_init(&cdns_h, block_parameters, sizeof(block_parameters) / sizeof(cdns_block_parameters_t))) {
 		return EXIT_FAILURE;
 	}
 
@@ -218,11 +224,11 @@ int main(int argc, char **argv)
 
 	fprintf(stdout, "\n");
 	fflush(stdout);
-	
+
+	delete_storage_parameters(&storage_parameter);
 	cdns_deinit(&cdns_h);
 	free(buff);
 
-	delete_storage_parameters(&storage_parameter);
 
 	return EXIT_SUCCESS;
 }

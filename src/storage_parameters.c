@@ -3,7 +3,7 @@
 cdns_storage_parameters_t *create_storage_parameters(
         const uint64_t ticks_per_second,
         const uint32_t max_block_items,
-        const uint32_t query_response,
+        const uint32_t query_response_hints,
         const uint32_t query_response_signature_hints,
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
@@ -27,10 +27,10 @@ cdns_storage_parameters_t *create_storage_parameters(
 
     output->ticks_per_second = ticks_per_second;
     output->max_block_items = max_block_items;
-    output->storage_hints.query_response = query_response;
-    output->storage_hints.query_response_signature_hints = query_response_signature_hints;
-    output->storage_hints.rr_hints = rr_hints;
-    output->storage_hints.other_data_hints = other_data_hints;
+    output->storage_hints.query_response = query_response_hints;
+    output->storage_hints.query_response_signature = query_response_signature_hints;
+    output->storage_hints.rr = rr_hints;
+    output->storage_hints.other_data = other_data_hints;
     
     output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t)); //TODO create unique ADT structure and push `opcodes` values
     if (output->opcodes == NULL) {

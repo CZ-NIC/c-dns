@@ -6,9 +6,9 @@
 
 typedef struct {
     uint32_t query_response;
-    uint32_t query_response_signature_hints;
-    uint8_t rr_hints;
-    uint8_t other_data_hints;
+    uint32_t query_response_signature;
+    uint8_t rr;
+    uint8_t other_data;
 } cdns_storage_hints_t;
 
 typedef struct {
@@ -22,7 +22,7 @@ typedef struct {
 cdns_storage_parameters_t *create_storage_parameters(
         const uint64_t ticks_per_second,
         const uint32_t max_block_items,
-        const uint32_t query_response,
+        const uint32_t query_response_hints,
         const uint32_t query_response_signature_hints,
         const uint8_t rr_hints,
         const uint8_t other_data_hints,
