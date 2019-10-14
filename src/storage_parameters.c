@@ -38,6 +38,7 @@ cdns_storage_parameters_t *create_storage_parameters(
         return NULL;
     }
     memcpy(output->opcodes, opcodes, opcodes_size * sizeof(uint8_t));
+    output->opcodes_size = opcodes_size;
         
     output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t)); //TODO create unique ADT structure and push `rr_types` values
     if (output->rr_types == NULL) {
@@ -46,6 +47,7 @@ cdns_storage_parameters_t *create_storage_parameters(
         return NULL;
     }
     memcpy(output->rr_types, rr_types, rr_types_size * sizeof(uint16_t));
+    output->rr_types_size = rr_types_size;
 
     return output;
 }

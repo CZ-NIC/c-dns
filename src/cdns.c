@@ -26,12 +26,8 @@ int cdns_init(cdns_ctx_t *ctx,
 
 int cdns_deinit(cdns_ctx_t *ctx)
 {
-	for(size_t idx = 0; idx < ctx->options.block_parameters_array_size; ++idx) {
-		delete_storage_parameters(&(ctx->options.block_parameters_array[idx].storage_parameters)); //TODO maybe remove
-	}
-
-	free(ctx->options.block_parameters_array);
-	ctx->options.block_parameters_array = NULL;
+	//free(ctx->options.block_parameters_array);
+	//ctx->options.block_parameters_array = NULL;
 
 	return E_SUCCESS;
 }
@@ -108,9 +104,7 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( storage_hints_map )
 	};
 
-	// TODO
-	//const size_t opcodes_size = ctx->options.block_parameters_array[idx].storage_parameters->opcodes_size;
-	const size_t opcodes_size = 1UL;
+	const size_t opcodes_size = ctx->options.block_parameters_array[idx].storage_parameters->opcodes_size;
 	cbor_item_t *opcodes_array = cbor_new_definite_array( opcodes_size );
 	for(size_t op_idx = 0; op_idx < opcodes_size; ++op_idx) {
 		cbor_array_push(opcodes_array, cbor_move(cbor_build_uint8( ctx->options.block_parameters_array[idx].storage_parameters->opcodes[op_idx] )));
@@ -121,9 +115,7 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 		.value	= cbor_move( opcodes_array )
 	};
 
-	// TODO
-	//const size_t rr_types_size = ctx->options.block_parameters_array[idx].storage_parameters->rr_types_size;
-	const size_t rr_types_size = 1UL;
+	const size_t rr_types_size = ctx->options.block_parameters_array[idx].storage_parameters->rr_types_size;
 	cbor_item_t *rr_types_array = cbor_new_definite_array( rr_types_size );
 	for(size_t rr_idx = 0; rr_idx < rr_types_size; ++rr_idx) {
 		cbor_array_push(rr_types_array, cbor_move(cbor_build_uint16( ctx->options.block_parameters_array[idx].storage_parameters->rr_types[rr_idx] )));
@@ -135,7 +127,6 @@ static int _cdns_init_fp_bp_storage_parameters(const cdns_ctx_t *ctx, const int 
 	};
 
 	//TODO optionals
-
 	cbor_map_add(root, ticks_per_second);
 	cbor_map_add(root, max_block_items);
 	cbor_map_add(root, storage_hints);

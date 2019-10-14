@@ -16,7 +16,9 @@ typedef struct {
     uint32_t max_block_items;
     cdns_storage_hints_t storage_hints;
     uint8_t *opcodes;
+    size_t opcodes_size;
     uint16_t *rr_types;
+    size_t rr_types_size;
 } cdns_storage_parameters_t;
 
 cdns_storage_parameters_t *create_storage_parameters(

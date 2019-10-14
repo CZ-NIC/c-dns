@@ -171,7 +171,11 @@ int main(int argc, char **argv)
 	};
 
 	cdns_ctx_t cdns_h = {0};
-	if (cdns_init(&cdns_h, block_parameters, sizeof(block_parameters) / sizeof(cdns_block_parameters_t))) {
+	if (cdns_init(
+			&cdns_h,
+			block_parameters,
+			sizeof(block_parameters) / sizeof(cdns_block_parameters_t))
+		) {
 		return EXIT_FAILURE;
 	}
 
