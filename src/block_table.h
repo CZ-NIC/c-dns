@@ -33,15 +33,6 @@ typedef struct {
 } block_table_t;
 
 /**
- * @brief Calculate hash for item's key
- * @param bt Pointer to block table
- * @param data Pointer to start of item's key
- * @param size Size of item's key in bytes
- * @return Hash for item's key
- */
-uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, size_t size);
-
-/**
  * @brief Initialize block table for 'capacity' items
  * @param bt Block table to initialize
  * @param capacity Maximum number of items in block table

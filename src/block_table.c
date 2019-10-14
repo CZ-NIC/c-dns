@@ -1,7 +1,14 @@
 #include <smmintrin.h>
 #include "block_table.h"
 
-uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, size_t size)
+/**
+ * @brief Calculate hash for item's key
+ * @param bt Pointer to block table
+ * @param data Pointer to start of item's key
+ * @param size Size of item's key in bytes
+ * @return Hash for item's key
+ */
+static uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, size_t size)
 {
     const char *end = data + size;
     uint32_t ret = ~0U;
