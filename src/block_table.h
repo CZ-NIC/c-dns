@@ -16,7 +16,7 @@ typedef enum {
  */
 typedef struct block_table_item {
     size_t index;
-    void* item;
+    void *item;
     struct block_table_item *next;
     struct block_table_item *prev;
 } block_table_item_t;
@@ -61,5 +61,6 @@ int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index
 
 /**
  * @brief Free all memory allocated by block table and free all values in stored items
+ * @param bt Block table to free
  */
 void block_table_destroy(block_table_t *bt);
