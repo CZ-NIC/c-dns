@@ -32,13 +32,6 @@ int cdns_deinit(cdns_ctx_t *ctx)
 	return E_SUCCESS;
 }
 
-int cdns_deinit(cdns_ctx_t *ctx)
-{
-	free(ctx->options.block_parameters);
-	ctx->options.block_parameters = NULL;
-
-	return E_SUCCESS;
-}
 
 int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr)
 {
