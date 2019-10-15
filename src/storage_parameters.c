@@ -32,7 +32,7 @@ cdns_storage_parameters_t *create_storage_parameters(
     output->storage_hints.rr = rr_hints;
     output->storage_hints.other_data = other_data_hints;
     
-    output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t)); //TODO create unique ADT structure and push `opcodes` values
+    output->opcodes = (uint8_t *)calloc(opcodes_size, sizeof(uint8_t)); //TODO create unique ( Set ADT ) structure and push `opcodes` values
     if (output->opcodes == NULL) {
         free(output);
         return NULL;
@@ -40,7 +40,7 @@ cdns_storage_parameters_t *create_storage_parameters(
     memcpy(output->opcodes, opcodes, opcodes_size * sizeof(uint8_t));
     output->opcodes_size = opcodes_size;
         
-    output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t)); //TODO create unique ADT structure and push `rr_types` values
+    output->rr_types = (uint16_t *)calloc(rr_types_size, sizeof(uint16_t)); //TODO create unique ( Set ADT ) structure and push `rr_types` values
     if (output->rr_types == NULL) {
         free(output->opcodes);
         free(output);
@@ -52,7 +52,11 @@ cdns_storage_parameters_t *create_storage_parameters(
     return output;
 }
 
-void delete_storage_parameters(cdns_storage_parameters_t **storage_parameters) {
+void delete_storage_parameters(cdns_storage_parameters_t **storage_parameters)
+{
+    if (*storage_parameters == NULL) {
+        return;
+    }
     free((*storage_parameters)->opcodes);
     free((*storage_parameters)->rr_types);
     free(*storage_parameters);

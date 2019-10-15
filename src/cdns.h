@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 
 #include "format_specification.h"
-#include "storage_parameters.h"
+#include "block_parameters.h"
 #include "dns.h"
 
 #define VERSION_MAJOR   1
@@ -73,14 +73,6 @@ typedef enum
     MALFORMED_MESSAGES_H    = 1 << 0,
     ADDRESS_EVENT_COUNTS_H  = 1 << 1
 } cdns_otherdata_hints_t;
-
-
-/* File Preambule */
-
-typedef struct {
-    cdns_storage_parameters_t *storage_parameters;
-    //cdns_collection_parameters_t *collection_parameters;
-} cdns_block_parameters_t;
 
 /* Block Preambule */
 
