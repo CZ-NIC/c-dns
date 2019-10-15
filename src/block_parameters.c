@@ -1,6 +1,6 @@
 #include "block_parameters.h"
 
-cdns_block_parameters_t *create_block_parameters(cdns_storage_parameters_t *storage_parameters)
+cdns_block_parameters_t *create_block_parameters(cdns_storage_parameters_t *storage_parameters, cdns_collection_parameters_t *collection_parameters)
 {
     if (storage_parameters == NULL) {
         return NULL;
@@ -12,6 +12,7 @@ cdns_block_parameters_t *create_block_parameters(cdns_storage_parameters_t *stor
     }
 
     output->storage_parameters = storage_parameters;
+    output->collection_parameters = collection_parameters;
 
     return output;
 }
