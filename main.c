@@ -166,7 +166,8 @@ int main(int argc, char **argv)
 
 	cdns_block_parameters_t block_parameters[] = {
 		{
-			.storage_parameters = storage_parameter
+			.storage_parameters = storage_parameter,
+			.collection_parameters = NULL
 		}
 	};
 

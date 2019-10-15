@@ -176,16 +176,20 @@ static int _cdns_init_fp_block_parameters(const cdns_ctx_t *ctx, cbor_item_t *ro
 			.value	= cbor_move( storage_parameters_map )
 		};
 
-		cbor_item_t *collection_parameters_map = cbor_new_definite_map(COLLECTION_PARAMETERS_SIZE);
-		_cdns_init_fp_bp_collection_parameters(ctx, idx, collection_parameters_map);
-		
-		struct cbor_pair collection_parameters = {
-			.key	= cbor_move(cbor_build_uint8( (uint8_t)COLLECTION_PARAMETERS )),
-			.value	= cbor_move( collection_parameters_map )
-		};
-
 		cbor_map_add(block_parameters_map, storage_parameters);
-		cbor_map_add(block_parameters_map, collection_parameters);
+
+		if (ctx->options.block_parameters_array[idx].collection_parameters != NULL) {
+
+			cbor_item_t *collection_parameters_map = cbor_new_definite_map(COLLECTION_PARAMETERS_SIZE);
+			_cdns_init_fp_bp_collection_parameters(ctx, idx, collection_parameters_map);
+		
+			struct cbor_pair collection_parameters = {
+				.key	= cbor_move(cbor_build_uint8( (uint8_t)COLLECTION_PARAMETERS )),
+				.value	= cbor_move( collection_parameters_map )
+			};
+
+			cbor_map_add(block_parameters_map, collection_parameters);
+		}
 
 		cbor_array_push(root, cbor_move(block_parameters_map));
 	}
