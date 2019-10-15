@@ -86,6 +86,9 @@ int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index
         }
     }
 
+    if (bt->size == bt->capacity)
+        return B_ERROR;
+
     // allocate new block table item if new value isn't first in the bucket
     if (!tmp) {
         tmp = (block_table_item_t*)calloc(1, sizeof(block_table_item_t));

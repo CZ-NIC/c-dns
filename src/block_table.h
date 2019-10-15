@@ -50,7 +50,7 @@ int block_table_init(block_table_t *bt, size_t capacity);
  * @param item New item to insert to block table
  * @param size Size of the new item in bytes
  * @param index Pointer where item's index will be stored if insertion is successful
- * @return B_SUCCESS on successful insertion, B_ERROR otherwise
+ * @return block_table_ret_t error code, B_SUCCESS on successful insertion
  */
 int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index);
 
