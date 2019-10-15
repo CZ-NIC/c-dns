@@ -197,6 +197,8 @@ int cdns_init(cdns_ctx_t *ctx,
 
 int cdns_deinit(cdns_ctx_t *ctx);
 
+int cdns_deinit(cdns_ctx_t *ctx);
+
 int cdns_push(cdns_ctx_t *ctx, const cdns_query_response_t *qr);
 
 int cdns_serialize_file_preamble(const cdns_ctx_t *ctx, unsigned char **buff, size_t *buff_size);
