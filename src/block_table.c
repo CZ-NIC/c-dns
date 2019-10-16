@@ -40,9 +40,14 @@ static uint32_t block_table_calculate_hash(block_table_t *bt, const char *data, 
     return (~ret) % bt->capacity;
 }
 
+block_table_t* block_table_alloc()
+{
+    return (block_table_t*)calloc(1, sizeof(block_table_t));
+}
+
 int block_table_init(block_table_t *bt, size_t capacity)
 {
-    if (!bt)
+    if (!bt || capacity == 0)
         return B_ERROR;
 
     bt->capacity = capacity;
@@ -55,6 +60,23 @@ int block_table_init(block_table_t *bt, size_t capacity)
         return B_ERROR;
     else
         return B_SUCCESS;    
+}
+
+block_table_t* block_table_create(size_t capacity)
+{
+    // Allocate new block table
+    block_table_t* bt = block_table_alloc();
+    if (!bt)
+        return NULL;
+
+    // Initialize new block table for 'capacity' items
+    int ret = block_table_init(bt, capacity);
+    if (ret != B_SUCCESS) {
+        free(bt);
+        return NULL;
+    }
+
+    return bt;
 }
 
 int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index)
@@ -121,23 +143,42 @@ int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index
     return B_SUCCESS;
 }
 
-void block_table_destroy(block_table_t *bt)
+void block_table_discard(block_table_t *bt)
 {
     if (!bt)
         return;
 
+    // free all values currently stored in block table's items
     block_table_item_t *tmp, *item = bt->oldest;
     while (item) {
-        free(item->value);
+        if (item->value)
+            free(item->value);
         tmp = item;
         item = item->next;
         if (tmp->prev_bucket) // item isn't first in bucket and was allocated separately from hash table
             free(tmp);
     }
 
+    // free block table's allocated items
     bt->capacity = 0U;
     bt->size = 0U;
     bt->oldest = NULL;
     bt->newest = NULL;
-    free(bt->table);
+    if (bt->table)
+        free(bt->table);
+}
+
+void block_table_dealloc(block_table_t *bt)
+{
+    if (bt)
+        free(bt);
+}
+
+void block_table_destroy(block_table_t *bt)
+{
+    if (!bt)
+        return;
+
+    block_table_discard(bt);
+    block_table_dealloc(bt);
 }

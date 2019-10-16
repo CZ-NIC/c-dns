@@ -37,12 +37,25 @@ typedef struct {
 } block_table_t;
 
 /**
+ * @brief Allocate new block table
+ * @return Block table allocated with calloc
+ */
+block_table_t* block_table_alloc();
+
+/**
  * @brief Initialize block table for 'capacity' items
  * @param bt Block table to initialize
  * @param capacity Maximum number of items in block table
  * @return B_SUCCESS on successful initialization, B_ERROR otherwise
  */
 int block_table_init(block_table_t *bt, size_t capacity);
+
+/**
+ * @brief Allocate and initialize new block table
+ * @param capacity Maximum number of item's in block table
+ * @return New block table initialized to capacity items
+ */
+block_table_t* block_table_create(size_t capacity);
 
 /**
  * @brief Insert new item into block table
@@ -55,7 +68,19 @@ int block_table_init(block_table_t *bt, size_t capacity);
 int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index);
 
 /**
- * @brief Free all memory allocated by block table and free all values in stored items
+ * @brief Free all resources managed by given block table
+ * @param bt Block table whose resources to discard
+ */
+void block_table_discard(block_table_t *bt);
+
+/**
+ * @brief Free given block table
+ * @param bt Block table to free
+ */
+void block_table_dealloc(block_table_t *bt);
+
+/**
+ * @brief Free all resources managed by block table and free the block table
  * @param bt Block table to free
  */
 void block_table_destroy(block_table_t *bt);
