@@ -79,68 +79,101 @@ block_table_t* block_table_create(size_t capacity)
     return bt;
 }
 
-int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index)
+bool block_table_find(block_table_t *bt, void *item, size_t size, block_table_item_t **hint)
 {
-    if (!bt || !item || !index)
-        return B_ERROR;
+    if (!bt || !item)
+        return false;
 
+    // calculate item's hash
     uint32_t hash = block_table_calculate_hash(bt, (const char*)item, size);
     block_table_item_t *tmp = bt->table + hash;
     block_table_item_t *bucket_end = NULL;
 
-    // check if this item isn't already in block table
     if (tmp->value) {
+        // Check if item is already stored at the beginning of the bucket
         if ((tmp->value_size == size) && (memcmp(item, tmp->value, size) == 0)) {
-            *index = tmp->index;
-            return B_DUPLICATE;
+            *hint = tmp;
+            return true;
         }
 
         bucket_end = tmp;
         tmp = tmp->next_bucket;
-        while (tmp) {
+        while(tmp) {
+            // Check if item is already stored somewhere inside the bucket
             if ((tmp->value_size == size) && (memcmp(item, tmp->value, size) == 0)) {
-                *index = tmp->index;
-                return B_DUPLICATE;
+                *hint = tmp;
+                return true;
             }
 
             bucket_end = tmp;
             tmp = tmp->next_bucket;
         }
+
+        *hint = bucket_end;
+        return false;
     }
+
+    *hint = tmp;
+    return false;
+}
+
+int block_table_insert_hint(block_table_t *bt, void *item, size_t size, size_t *index, block_table_item_t *hint)
+{
+    if (!bt || !item || !index || !hint)
+        return B_ERROR;
 
     if (bt->size == bt->capacity)
         return B_ERROR;
 
-    // allocate new block table item if new value isn't first in the bucket
-    if (!tmp) {
-        tmp = (block_table_item_t*)calloc(1, sizeof(block_table_item_t));
-        if (!tmp)
+    // if hint points to the last item in non-empty bucket, allocate new item at the end of the bucket
+    block_table_item_t *tmp = hint;
+    if (hint->value) {
+        hint = (block_table_item_t*)calloc(1, sizeof(block_table_item_t));
+        if (!hint)
             return B_ERROR;
     }
 
     // set new block table item
-    tmp->index = bt->size;
-    tmp->value_size = size;
-    tmp->value = item;
-    tmp->prev = bt->newest;
-    tmp->next = NULL;
-    tmp->next_bucket = NULL;
-    tmp->prev_bucket = bucket_end;
-    if (bucket_end)
-        bucket_end->next_bucket = tmp;
+    hint->next_bucket = NULL;
+    hint->prev_bucket = tmp->value ? tmp : NULL;
+    if (tmp->value)
+        tmp->next_bucket = hint;
+    hint->index = bt->size;
+    hint->value_size = size;
+    hint->value = item;
+    hint->prev = bt->newest;
+    hint->next = NULL;
 
     // update block table's parameters
     if (!bt->oldest)
-        bt->oldest = tmp;
+        bt->oldest = hint;
     if (bt->newest)
-        bt->newest->next = tmp;
-    bt->newest = tmp;
+        bt->newest->next = hint;
+    bt->newest = hint;
     bt->size++;
 
     // set item's index for return
-    *index = tmp->index;
+    *index = hint->index;
 
     return B_SUCCESS;
+}
+
+int block_table_insert(block_table_t *bt, void *item, size_t size, size_t *index)
+{
+    if (!bt || !item || !index)
+        return B_ERROR;
+
+    block_table_item_t *hint = NULL;
+
+    // try to find if the item isn't already in block table
+    bool found = block_table_find(bt, item, size, &hint);
+    if (found)
+        return B_DUPLICATE;
+
+    if (!hint)
+        return B_ERROR;
+
+    return block_table_insert_hint(bt, item, size, index, hint);
 }
 
 void block_table_discard(block_table_t *bt)
