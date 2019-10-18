@@ -11,6 +11,8 @@
 
 #include "format_specification.h"
 #include "block_table.h"
+#include "block_parameters.h"
+#include "dns.h"
 
 #define VERSION_MAJOR   1
 #define VERSION_MINOR   0
@@ -18,7 +20,8 @@
 
 /* Hints */
 
-typedef enum {
+typedef enum
+{
     TIME_OFFSET_H                   = 1 << 0,
     CLIENT_ADDRESS_INDEX_H          = 1 << 1,
     CLIENT_PORT_H                   = 1 << 2,
@@ -39,7 +42,8 @@ typedef enum {
     RESPONSE_ADDITIONAL_SECTIONS_H  = 1 << 17
 } cdns_queryresponse_hints_t;
 
-typedef enum {
+typedef enum
+{
     SERVER_ADDRESS_INDEX_H  = 1 << 0,
     SERVER_PORT_H           = 1 << 1,
     QR_TRANSPORT_FLAGS_H    = 1 << 2,
@@ -59,18 +63,22 @@ typedef enum {
     RESPONSE_RCODE_H        = 1 << 16
 } cdns_queryresponsesignature_hints_t;
 
-typedef enum {
+typedef enum
+{
     TTL_H           = 1 << 0,
     RDATA_INDEX_H   = 1 << 1
 } cdns_rr_hints_t;
 
-typedef enum {
+typedef enum
+{
     MALFORMED_MESSAGES_H    = 1 << 0,
     ADDRESS_EVENT_COUNTS_H  = 1 << 1
 } cdns_otherdata_hints_t;
 
-/* Storage */
-typedef struct {
+/* Block Preambule */
+
+typedef struct
+{
     unsigned int processed_messages;
     unsigned int qr_data_items;
     unsigned int unmatched_queries;
@@ -79,12 +87,14 @@ typedef struct {
     unsigned int malformed_items;
 } cdns_block_statistics_t;
 
-typedef struct {
+typedef struct
+{
     uint16_t rrtype;
     uint16_t rrclass;
 } cdns_classtype_t;
 
-typedef struct {
+typedef struct
+{
     struct sockaddr_storage *server_address_p; //ORIGIN 'unsigned int server_address_index;'
     uint16_t server_port;
     uint16_t qr_transport_flags;
@@ -105,19 +115,22 @@ typedef struct {
 } cdns_query_response_signature_t;
 
 // Block
-typedef struct {
+typedef struct
+{
     unsigned int bailiwick_index;
     unsigned int processing_flags;
 } cdns_response_processing_data_t;
 
-typedef struct {
+typedef struct
+{
     unsigned int question_index;
     unsigned int answer_index;
     unsigned int authority_index;
     unsigned int additional_index;
 } cdns_query_response_extended_t;
 
-typedef struct {
+typedef struct
+{
     uint64_t time_offset;
     struct sockaddr_storage *client_address_p; //ORIGIN 'unsigned int client_address_index;'
     uint16_t client_port;
@@ -133,7 +146,8 @@ typedef struct {
     cdns_query_response_extended_t *response_extended_p; //TODO
 } cdns_query_response_t;
 
-typedef struct {
+typedef struct
+{
     uint8_t ae_type;
     uint8_t ae_code;
     uint8_t ae_transport_flags;
@@ -141,39 +155,36 @@ typedef struct {
     unsigned int ae_count;
 } cdns_address_event_count_t;
 
-typedef struct {
+typedef struct
+{
     uint64_t time_offset;
     unsigned int client_address_index;
     uint16_t client_port;
     unsigned int message_data_index;
 } cdns_malformed_message_t;
 
-typedef struct {
-    unsigned int block_size;
-    uint32_t query_response_hints;
-    uint32_t query_response_signature_hints;
-    uint8_t rr_hints;
-    uint8_t other_data_hints;
-} cdns_block_parameters_t;
-
-typedef struct {
-    unsigned int block_parameters_size;
-    cdns_block_parameters_t *block_parameters;
+typedef struct
+{
+    cdns_block_parameters_t *block_parameters_array;
+    size_t block_parameters_array_size;
 } cdns_options_t;
 
-typedef struct {
+typedef struct
+{
     cdns_block_statistics_t stats;
     cdns_query_response_t *queries_responses; //Array
 } cdns_storage_t;
 
-typedef struct {
+typedef struct
+{
     cdns_options_t options;
     cdns_storage_t storage;
 } cdns_ctx_t;
 
 /* Other */
 
-typedef enum {
+typedef enum
+{
     E_SUCCESS = 0,
     E_ERROR   = -1
 } cdns_ret_t;
@@ -181,11 +192,11 @@ typedef enum {
 /* Functions */
 
 int cdns_init(cdns_ctx_t *ctx,
-        const unsigned int block_size,
-        const uint32_t query_response_hints,
-        const uint32_t query_response_signature_hints,
-        const uint8_t rr_hints,
-        const uint8_t other_data_hints);
+        cdns_block_parameters_t *block_parameters_array,
+		size_t block_parameters_array_size
+    );
+
+int cdns_deinit(cdns_ctx_t *ctx);
 
 int cdns_deinit(cdns_ctx_t *ctx);
 
