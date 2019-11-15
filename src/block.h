@@ -62,7 +62,7 @@ namespace CDNS {
 
     struct ResponseProcessingData {
         index_t bailiwick_index;
-        ResponseProcessingFlagsMaks processing_flags;
+        ResponseProcessingFlagsMask processing_flags;
     };
 
     struct QueryResponseExtended {

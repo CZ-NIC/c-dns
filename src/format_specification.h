@@ -334,7 +334,7 @@ namespace CDNS {
         response_aa = 1 << 14
     };
 
-    enum ResponseProcessingFlagsMaks : uint8_t {
+    enum ResponseProcessingFlagsMask : uint8_t {
         from_cache = 1 << 0
     };
 
