@@ -1,218 +1,362 @@
 #pragma once
 
-typedef enum {
-    FILE_TYPE_ID = 0,
-    FILE_PREAMBLE = 1,
-    FILE_BLOCKS = 2,
+#include <cstdint>
+#include <type_traits>
 
-    FILE_SIZE
-} cdns_file_key_t;
+namespace CDNS {
 
-typedef enum {
-    MAJOR_FORMAT_VERSION    = 0,
-    MINOR_FORMAT_VERSION    = 1,
-    PRIVATE_VERSION         = 2,
-    BLOCK_PARAMETERS        = 3,
+    using index_t = uint32_t;
 
-    FILE_PREAMBLE_SIZE
-} cnds_filepreamble_key_t;
+    template<typename T>
+    constexpr auto get_map_index(T t) -> typename std::underlying_type<T>::type {
+        return static_cast<typename std::underlying_type<T>::type>(t);
+    }
 
-typedef enum {
-    STORAGE_PARAMETERS = 0,
-    COLLECTION_PARAMETERS = 1,
+    /**
+     * Indexes (keys) of standard fields in C-DNS maps
+     */
 
-    BLOCK_PARAMETERS_SIZE
-} cdns_blockparameters_key_t;
+    // File structure isn't a map?!
+    enum class FileMapIndex : uint8_t {
+        file_type_id = 0,
+        file_preamble = 1,
+        file_block = 2,
 
-typedef enum {
-    TICKS_PER_SECOND            = 0,
-    MAX_BLOCK_ITEMS             = 1,
-    STORAGE_HINTS               = 2,
-    OPCODES                     = 3,
-    RR_TYPES                    = 4,
-    STORAGE_FLAGS               = 5,
-    CLIENT_ADDRESS_PREFIX_IPV4  = 6,
-    CLIENT_ADDRESS_PREFIX_IPV6  = 7,
-    SERVER_ADDRESS_PREFIX_IPV4  = 8,
-    SERVER_ADDRESS_PREFIX_IPV6  = 9,
-    SAMPLING_METHOD             = 10,
-    ANONYMIZATION_METHOD        = 11,
+        file_size
+    };
 
-    STORAGE_PARAMETERS_SIZE
-} cdns_storageparameters_key_t;
+    enum class FilePreambleMapIndex : uint8_t {
+        major_format_version = 0,
+        minor_format_version = 1,
+        private_version = 2,
+        block_parameters = 3,
 
-typedef enum {
-    QUERY_RESPONSE_HINTS            = 0,
-    QUERY_RESPONSE_SIGNATURE_HINTS  = 1,
-    RR_HINTS                        = 2,
-    OTHER_DATA_HINTS                = 3,
+        file_preamble_size
+    };
 
-    STORAGE_HINTS_SIZE
-} cdns_storagehints_key_t;
+    enum class BlockParametersMapIndex : uint8_t {
+        storage_parameters = 0,
+        collection_parameters = 1,
 
-typedef enum {
-    QUERY_TIMEOUT       = 0,
-    SKEW_TIMEOUT        = 1,
-    SNAPLEN             = 2,
-    PROMISC             = 3,
-    INTERFACES          = 4,
-    SERVER_ADDRESSES    = 5,
-    VLAN_IDS            = 6,
-    FILTER              = 7,
-    GENERATOR_ID        = 8,
-    HOST_ID             = 9,
+        block_parameters_size
+    };
 
-    COLLECTION_PARAMETERS_SIZE
-} cdns_collectionparameters_key_t;
+    enum class StorageParametersMapIndex : uint8_t {
+        ticks_per_second = 0,
+        max_block_items = 1,
+        storage_hints = 2,
+        opcodes = 3,
+        rr_types = 4,
+        storage_flags = 5,
+        client_address_prefix_ipv4 = 6,
+        client_address_prefix_ipv6 = 7,
+        server_address_prefix_ipv4 = 8,
+        server_address_prefix_ipv6 = 9,
+        sampling_method = 10,
+        anonymization_method = 11,
 
-typedef enum {
-    BLOCK_PREAMBLE          = 0,
-    BLOCK_STATISTICS        = 1,
-    BLOCK_TABLES            = 2,
-    QUERY_RESPONSES         = 3,
-    ADDRESS_EVENT_COUNTS    = 4,
-    MALFORMED_MESSAGES      = 5,
+        storage_parameters_size
+    };
 
-    BLOCK_SIZE
-} cdns_block_key_t;
+    enum class CollectionParametersMapIndex : uint8_t {
+        query_timeout = 0,
+        skew_timeout = 1,
+        snaplen = 2,
+        promisc = 3,
+        interfaces = 4,
+        server_address = 5,
+        vland_ids = 6,
+        filter = 7,
+        generator_id = 8,
+        host_id = 9,
 
+        collection_parameters_size
+    };
 
-typedef enum {
-    EARLIEST_TIME           = 0,
-    BLOCK_PARAMETERS_INDEX  = 1,
+    enum class StorageHintsMapIndex : uint8_t {
+        query_response_hints = 0,
+        query_response_signature_hints = 1,
+        rr_hints = 2,
+        other_data_hints = 3,
 
-    BLOCK_PREAMBLE_SIZE
-} cdns_blockpreamble_key_t;
+        storage_hints_size
+    };
 
-typedef enum {
-    EPOCH_TIME  = 0,
-    TICKS       = 1,
+    enum class BlockMapIndex : uint8_t {
+        block_preamble = 0,
+        block_statistics = 1,
+        block_tables = 2,
+        query_responses = 3,
+        address_event_counts = 4,
+        malformed_messages = 5,
 
-    EARLIEST_TIME_SIZE
-} cdns_earliesttime_key_t;
+        block_size
+    };
 
-typedef enum {
-    PROCESSED_MESSAGES  = 0,
-    QR_DATA_ITEMS       = 1,
-    UNMATCHED_QUERIES   = 2,
-    UNMATCHED_RESPONSES = 3,
-    DISCARDED_OPCODE    = 4,
-    MALFORMED_ITEMS     = 5,
+    enum class BlockPreambleMapIndex : uint8_t {
+        earliest_time = 0,
+        block_parameters_index = 1,
 
-    BLOCK_STATISTICS_SIZE
-} cdns_blockstatistics_key_t;
+        block_preamble_size
+    };
 
-typedef enum {
-    IP_ADDRESS              = 0,
-    CLASSTYPE               = 1,
-    NAME_RDATA              = 2,
-    QR_SIG                  = 3,
-    QLIST                   = 4,
-    QRR                     = 5,
-    RRLIST                  = 6,
-    RR                      = 7,
-    MALFORMED_MESSAGE_DATA  = 8,
+    enum class BlockStatisticsMapIndex : uint8_t {
+        processed_messages = 0,
+        qr_data_items = 1,
+        unmatched_queries = 2,
+        unmatched_responses = 3,
+        discarded_opcode = 4,
+        malformed_items = 5,
 
-    BLOCK_TABLES_SIZE
-} cdns_blocktables_key_t;
+        block_statistics_size
+    };
 
-typedef enum {
-    TYPE    = 0,
-    CLASS   = 1,
+    enum class BlockTablesMapIndex : uint8_t {
+        ip_address = 0,
+        classtype = 1,
+        name_rdata = 2,
+        qr_sig = 3,
+        qlist = 4,
+        qrr = 5,
+        rrlist = 6,
+        rr = 7,
+        malformed_message_data = 8,
 
-    CLASS_TYPE_SIZE
-} cdns_classtype_key_t;
+        block_tables_size
+    };
 
-typedef enum {
-    SERVER_ADDRESS_INDEX    = 0,
-    SERVER_PORT             = 1,
-    QR_TRANSPORT_FLAGS      = 2,
-    QR_TYPE                 = 3,
-    QR_SIG_FLAGS            = 4,
-    QUERY_OPCODE            = 5,
-    QR_DNS_FLAGS            = 6,
-    QUERY_RCODE             = 7,
-    QUERY_CLASSTYPE_INDEX   = 8,
-    QUERY_QDCOUNT           = 9,
-    QUERY_ANCOUNT           = 10,
-    QUERY_NSCOUNT           = 11,
-    QUERY_ARCOUNT           = 12,
-    QUERY_EDNS_VERSION      = 13,
-    QUERY_UDP_SIZE          = 14,
-    QUERY_OPT_RDATA_INDEX   = 15,
-    RESPONSE_RCODE          = 16,
+    enum class ClassTypeMapIndex : uint8_t {
+        type = 0,
+        class_ = 1,
 
-    QUERY_RESPONSE_SIGNATURE_SIZE
-} cdns_queryresponsesignature_key_t;
+        class_type_size
+    };
 
-typedef enum {
-    NAME_INDEX      = 0,
-    CLASSTYPE_INDEX = 1
-} cdns_question_key_t;
+    enum class QueryResponseSignatureMapIndex : uint8_t {
+        server_address_index = 0,
+        server_port = 1,
+        qr_transport_flags = 2,
+        qr_type = 3,
+        qr_sig_flags = 4,
+        query_opcode = 5,
+        qr_dns_flags = 6,
+        query_rcode = 7,
+        query_classtype_index = 8,
+        query_qdcount = 9,
+        query_ancount = 10,
+        query_nscount = 11,
+        query_arcount = 12,
+        query_edns_version = 13,
+        query_udp_size = 14,
+        query_opt_rdata_index = 15,
+        response_rcode = 16,
 
-typedef enum {
-    //cdns_question_key_t
-    TTL         = 2,
-    RDATA_INDEX = 3,
+        query_response_signature_size
+    };
 
-    RR_SIZE
-} cdns_rr_key_t;
+    enum class QuestionMapIndex : uint8_t {
+        name_index = 0,
+        classtype_index = 1,
 
-typedef enum {
-    //cdns_question_key_t
-    MM_TRANSPORT_FLAGS  = 2,
-    MM_PAYLOAD          = 3,
+        question_size
+    };
 
-    MALFORMED_MESSAGE_DATA_SIZE
-} cdns_malformedmessagedata_key_t;
+    enum class RrMapIndex : uint8_t {
+        name_index = 0,
+        classtype_index = 1,
+        ttl = 2,
+        rdata_index = 3,
 
-typedef enum {
-    TIME_OFFSET                 = 0,
-    CLIENT_ADDRESS_INDEX        = 1,
-    CLIENT_PORT                 = 2,
-    TRANSACTION_ID              = 3,
-    QR_SIGNATURE_INDEX          = 4,
-    CLIENT_HOPLIMIT             = 5,
-    RESPONSE_DELAY              = 6,
-    QUERY_NAME_INDEX            = 7,
-    QUERY_SIZE                  = 8,
-    RESPONSE_SIZE               = 9,
-    RESPONSE_PROCESSING_DATA    = 10,
-    QUERY_EXTENDED              = 11,
-    RESPONSE_EXTENDED           = 12,
+        rr_size
+    };
 
-    QUERY_RESPONSE_SIZE
-} cdns_queryresponse_key_t;
+    enum class MalformedMessageDataMapIndex : uint8_t {
+        server_address_index = 0,
+        server_port = 1,
+        mm_transport_flags = 2,
+        mm_payload = 3,
 
-typedef enum {
-    BAILIWICK_INDEX     = 0,
-    PROCESSING_FLAGS    = 1,
+        malformed_message_data_size
+    };
 
-    RESPONSE_PROCESSING_DATA_SIZE
-} cdns_responseprocessingdata_key_t;
+    enum class QueryResponseMapIndex : uint8_t {
+        time_offset = 0,
+        client_address_index = 1,
+        client_port = 2,
+        transaction_id = 3,
+        qr_signature_index = 4,
+        client_hoplimit = 5,
+        response_delay = 6,
+        query_name_index = 7,
+        query_size = 8,
+        response_size = 9,
+        response_processing_data = 10,
+        query_extended = 11,
+        response_extended = 12,
 
-typedef enum {
-    QUESTION_INDEX      = 0,
-    ANSWER_INDEX        = 1,
-    AUTHORITY_INDEX     = 2,
-    ADDITIONAL_INDEX    = 3,
+        query_response_size
+    };
 
-    QUESTION_RESPONSE_EXTENDED_SIZE
-} cdns_questionresponseextended_key_t;
+    enum class ResponseProcessingDataMapIndex : uint8_t {
+        bailiwick_index = 0,
+        processing_flags = 1,
 
-typedef enum {
-    AE_TYPE             = 0,
-    AE_CODE             = 1,
-    AE_ADDRESS_INDEX    = 2,
-    AE_TRANSPORT_FLAGS  = 3,
-    AE_COUNT            = 4,
+        response_processing_data_size
+    };
 
-   ADDRESS_EVENT_COUNT_SIZE
-} cdns_addresseventcount_key_t;
+    enum class QueryResponseExtendedMapIndex : uint8_t {
+        question_index = 0,
+        answer_index = 1,
+        authority_index = 2,
+        additional_index = 3,
 
-typedef enum {
-    //cdns_question_key_t
-    MESSAGE_DATA_INDEX  = 3,
+        query_response_extended_size
+    };
 
-    MALFORMED_MESSAGE_SIZE
-} cdns_malformedmessage_key_t;
+    enum class AddressEventCountMapIndex : uint8_t {
+        ae_type = 0,
+        ae_code = 1,
+        ae_transport_flags = 2,
+        ae_address_index = 3,
+        ae_count = 4,
+
+        address_event_count_size
+    };
+
+    enum class MalformedMessageMapIndex : uint8_t {
+        time_offset = 0,
+        client_address_index = 1,
+        client_port = 2,
+        message_data_index = 3,
+
+        malformed_message_size
+    };
+
+    /**
+     * Bit fields enumarations
+     */
+
+    enum QueryResponseHintsMask : uint32_t {
+        time_offset                     = 1 << 0,
+        client_address_index            = 1 << 1,
+        client_port                     = 1 << 2,
+        transaction_id                  = 1 << 3,
+        qr_signature_index              = 1 << 4,
+        client_hoplimit                 = 1 << 5,
+        response_delay                  = 1 << 6,
+        query_name_index                = 1 << 7,
+        query_size                      = 1 << 8,
+        response_size                   = 1 << 9,
+        response_processing_data        = 1 << 10,
+        query_question_sections         = 1 << 11,
+        query_answer_sections           = 1 << 12,
+        query_authority_sections        = 1 << 13,
+        query_additional_sections       = 1 << 14,
+        response_answer_sections        = 1 << 15,
+        response_authority_sections     = 1 << 16,
+        response_additional_sections    = 1 << 17
+    };
+
+    enum QueryResponseSignatureHintsMask : uint32_t {
+        server_address_index    = 1 << 0,
+        server_port             = 1 << 1,
+        qr_transport_flags      = 1 << 2,
+        qr_type                 = 1 << 3,
+        qr_sig_flags            = 1 << 4,
+        query_opcode            = 1 << 5,
+        qr_dns_flags            = 1 << 6,
+        query_rcode             = 1 << 7,
+        query_classtype_index   = 1 << 8,
+        query_qdcount           = 1 << 9,
+        query_ancount           = 1 << 10,
+        query_nscount           = 1 << 11,
+        query_arcount           = 1 << 12,
+        query_edns_version      = 1 << 13,
+        query_udp_size          = 1 << 14,
+        query_opt_rdata_index   = 1 << 15,
+        response_rcode          = 1 << 16
+    };
+
+    enum RrHintsMask : uint8_t {
+        ttl         = 1 << 0,
+        rdata_index = 1 << 1
+    };
+
+    enum OtherDataHintsMask : uint8_t {
+        malformed_messages   = 1 << 0,
+        address_event_counts = 1 << 1
+    };
+
+    enum StorageFlagsMask : uint8_t {
+        anonymized_data  = 1 << 0,
+        sampled_data     = 1 << 1,
+        normalized_data  = 1 << 2
+    };
+
+    enum QueryResponseTransportFlagsMask : uint8_t {
+        ip_address = 1 << 0,
+
+        transport_flags = 15 << 1,
+        udp             = 0 << 1,
+        tcp             = 1 << 1,
+        tls             = 2 << 1,
+        dtls            = 3 << 1,
+        https           = 4 << 1,
+        non_standard    = 15 << 1,
+
+        query_trailingdata = 1 << 5
+    };
+
+    enum QueryResponseFlagsMask : uint8_t {
+        has_query                 = 1 << 0,
+        has_response              = 1 << 1,
+        query_has_opt             = 1 << 2,
+        response_has_opt          = 1 << 3,
+        query_has_no_question     = 1 << 4,
+        response_has_no_question  = 1 << 5
+    };
+
+    enum DNSFlagsMask : uint16_t {
+        query_cd    = 1 << 0,
+        query_ad    = 1 << 1,
+        query_z     = 1 << 2,
+        query_ra    = 1 << 3,
+        query_rd    = 1 << 4,
+        query_tc    = 1 << 5,
+        query_aa    = 1 << 6,
+        query_do    = 1 << 7,
+        response_cd = 1 << 8,
+        response_ad = 1 << 9,
+        response_z  = 1 << 10,
+        response_ra = 1 << 11,
+        response_rd = 1 << 12,
+        response_tc = 1 << 13,
+        response_aa = 1 << 14
+    };
+
+    enum ResponseProcessingFlagsMaks : uint8_t {
+        from_cache = 1 << 0
+    };
+
+    /**
+     * Field values enumerations
+     */
+
+    enum class QueryResponseTypeValues : uint8_t {
+        stub = 0,
+        client = 1,
+        resolver = 2,
+        auth = 3,
+        forwarder = 4,
+        tool = 5
+    };
+
+    enum class AddressEventTypeValues : uint8_t {
+        tcp_reset = 0,
+        icmp_time_exceeded = 1,
+        icmp_dest_unreachable = 2,
+        icmpv6_time_exceeded = 3,
+        icmpv6_dest_unreachable = 4,
+        icmpv6_packet_too_big = 5
+    };
+}
