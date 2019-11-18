@@ -10,8 +10,6 @@
 #include <sys/socket.h>
 
 #include "format_specification.h"
-#include "block_table.h"
-#include "block_parameters.h"
 #include "dns.h"
 #include "file_preamble.h"
 #include "block.h"
