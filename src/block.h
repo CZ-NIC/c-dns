@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "format_specification.h"
+#include "block_table.h"
 #include "hash.h"
 
 namespace CDNS {
@@ -23,6 +24,15 @@ namespace CDNS {
      * @brief Block table's ClassType structure
      */
     struct ClassType {
+        ClassType() : type(0), class_(0) {}
+
+        /**
+         * @brief Returns reference to itself as key for unordered_map
+         */
+        const ClassType& key() const {
+            return *this;
+        }
+
         uint16_t type;
         uint16_t class_;
     };
@@ -31,6 +41,19 @@ namespace CDNS {
      * @brief Block table's Query Response Signature structure
      */
     struct QueryResponseSignature {
+        QueryResponseSignature() : server_address_index(0), server_port(0), qr_transport_flags(),
+            qr_type(), qr_sig_flags(), query_opcode(0), qr_dns_flags(), query_rcode(0),
+            query_classtype_index(0), query_qdcount(0), query_ancount(0), query_nscount(0),
+            query_arcount(0), query_edns_version(0), query_udp_size(0), query_opt_rdata_index(0),
+            response_rcode(0) {}
+
+        /**
+         * @brief Returns reference to itself as key for unordered_map
+         */
+        const QueryResponseSignature& key() const {
+            return *this;
+        }
+
         index_t server_address_index;
         uint16_t server_port;
         QueryResponseTransportFlagsMask qr_transport_flags;
@@ -54,6 +77,15 @@ namespace CDNS {
      * @brief Block table's Question structure
      */
     struct Question {
+        Question() : name_index(0), classtype_index(0) {}
+
+        /**
+         * @brief Returns reference to itself as key for unordered_map
+         */
+        const Question& key() const {
+            return *this;
+        }
+
         index_t name_index;
         index_t classtype_index;
     };
@@ -62,8 +94,17 @@ namespace CDNS {
      * @brief Block table's RR structure
      */
     struct RR {
+        RR() : name_index(0), classtype_index(0), ttl(0), rdata_index(0) {}
+
+        /**
+         * @brief Returns reference to itself as key for unordered_map
+         */
+        const RR& key() const {
+            return *this;
+        }
+
         index_t name_index;
-        index_t clastype_index;
+        index_t classtype_index;
         uint8_t ttl;
         index_t rdata_index;
     };
@@ -72,6 +113,16 @@ namespace CDNS {
      * @brief Block table's Malformed Message Data structure
      */
     struct MalformedMessageData {
+        MalformedMessageData() : server_address_index(0), server_port(0), mm_transport_flags(),
+            mm_payload() {}
+
+        /**
+         * @brief Returns reference to itself as key for unordered_map
+         */
+        const MalformedMessageData& key() const {
+            return *this;
+        }
+
         index_t server_address_index;
         uint16_t server_port;
         QueryResponseTransportFlagsMask mm_transport_flags;
@@ -87,7 +138,7 @@ namespace CDNS {
     };
 
     /**
-     * @brief Block tables's Query Response Extended structure
+     * @brief Block table's Query Response Extended structure
      */
     struct QueryResponseExtended {
         index_t question_index;
@@ -139,6 +190,15 @@ namespace CDNS {
      * @brief Address Event Count item structure
      */
     struct AddressEventCount {
+        AddressEventCount() : ae_type(), ae_code(0), ae_transport_flags(), ae_address_index(0) {}
+
+        /**
+         * @brief Return reference to itself as key for unordered_map
+         */
+        const AddressEventCount& key() const {
+            return *this;
+        }
+
         AddressEventTypeValues ae_type;
         uint8_t ae_code;
         QueryResponseTransportFlagsMask ae_transport_flags;
@@ -157,15 +217,35 @@ namespace CDNS {
     };
 
     /**
-     * @brief Representation of one block table's table
+     * @brief Structure representing byte string item
      */
-    template<typename T>
-    class BlockTable {
-        public:
+    struct StringItem {
+        StringItem() : data() {}
 
-        private:
-        std::deque<T> m_items;
-        std::unordered_map<T, index_t, CDNS::hash<T>> m_indexes;
+        /**
+         * @brief Return reference to the byte string data as key for unordered_map
+         */
+        const std::string& key() const {
+            return data;
+        }
+
+        std::string data;
+    };
+
+    /**
+     * @brief Structure representing list of indexes to question or resource records
+     */
+    struct IndexListItem {
+        IndexListItem() : list() {}
+
+        /**
+         * @brief Return reference to the list as key for unordered_map
+         */
+        const std::vector<index_t>& key() const {
+            return list;
+        }
+
+        std::vector<index_t> list;
     };
 
     /**
@@ -183,13 +263,13 @@ namespace CDNS {
         BlockStatistics m_block_statistics;
 
         // Block Tables
-        BlockTable<std::string> m_ip_address;
+        BlockTable<StringItem, std::string> m_ip_address;
         BlockTable<ClassType> m_classtype;
-        BlockTable<std::string> m_name_rdata;
+        BlockTable<StringItem, std::string> m_name_rdata;
         BlockTable<QueryResponseSignature> m_qr_sig;
-        BlockTable<std::vector<index_t>> m_qlist;
+        BlockTable<IndexListItem, std::vector<index_t>> m_qlist;
         BlockTable<Question> m_qrr;
-        BlockTable<std::vector<index_t>> m_rrlist;
+        BlockTable<IndexListItem, std::vector<index_t>> m_rrlist;
         BlockTable<RR> m_rr;
         BlockTable<MalformedMessageData> m_malformed_message_data;
 
