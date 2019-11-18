@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "format_specification.h"
+#include "block_table.h"
 #include "hash.h"
 
 namespace CDNS {
@@ -154,18 +155,6 @@ namespace CDNS {
         index_t client_address_index;
         uint16_t client_port;
         index_t message_data_index;
-    };
-
-    /**
-     * @brief Representation of one block table's table
-     */
-    template<typename T>
-    class BlockTable {
-        public:
-
-        private:
-        std::deque<T> m_items;
-        std::unordered_map<T, index_t, CDNS::hash<T>> m_indexes;
     };
 
     /**
