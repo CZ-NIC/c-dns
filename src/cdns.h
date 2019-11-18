@@ -11,6 +11,7 @@
 
 #include "format_specification.h"
 #include "dns.h"
+#include "block_table.h"
 #include "file_preamble.h"
 #include "block.h"
 #include "hash.h"
