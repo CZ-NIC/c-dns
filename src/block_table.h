@@ -169,6 +169,7 @@ namespace CDNS{
          * @brief Get the indexed item.
          * 
          * @param pos the index.
+         * @throw std::runtime_error if given index is out of range
          */
         const T& operator[](index_t pos) const
         {
