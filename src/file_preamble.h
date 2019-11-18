@@ -13,6 +13,9 @@ namespace CDNS {
     static constexpr uint8_t VERSION_MINOR = 0;
     static constexpr uint8_t VERSION_PRIVATE = 0;
 
+    /**
+     * @brief Storage Hints structure
+     */
     struct StorageHints {
         /*QueryResponseHintsMask*/ uint32_t query_response_hints;
         /*QueryResponseSignatureHintsMask*/ uint32_t query_response_signature_hints;
@@ -20,6 +23,9 @@ namespace CDNS {
         /*OtherDataHintsMask*/ uint8_t other_data_hints;
     };
 
+    /**
+     * @brief Storage Parameters structure
+     */
     struct StorageParameters {
         uint64_t ticks_per_second;
         uint64_t max_block_items;
@@ -35,6 +41,9 @@ namespace CDNS {
         std::string anonymization_method;
     };
 
+    /**
+     * @brief Collection Parameters structure
+     */
     struct CollectionParameters {
         uint64_t query_timeout;
         uint64_t skew_timeout;
@@ -48,11 +57,17 @@ namespace CDNS {
         std::string host_id;
     };
 
+    /**
+     * @brief Block Parameters structure
+     */
     struct BlockParameters {
         StorageParameters storage_parameters;
         CollectionParameters collection_parameters;
     };
 
+    /**
+     * @brief Class representing C-DNS file preamble
+     */
     class FilePreamble {
         public:
 

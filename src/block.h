@@ -11,16 +11,25 @@
 
 namespace CDNS {
 
+    /**
+     * @brief Simple timestamp representation
+     */
     struct Timestamp {
         uint64_t timestamp_secs;
         uint64_t timestamp_ticks;
     };
 
+    /**
+     * @brief Block table's ClassType structure
+     */
     struct ClassType {
         uint16_t type;
         uint16_t class_;
     };
 
+    /**
+     * @brief Block table's Query Response Signature structure
+     */
     struct QueryResponseSignature {
         index_t server_address_index;
         uint16_t server_port;
@@ -41,11 +50,17 @@ namespace CDNS {
         uint16_t response_rcode;
     };
 
+    /**
+     * @brief Block table's Question structure
+     */
     struct Question {
         index_t name_index;
         index_t classtype_index;
     };
 
+    /**
+     * @brief Block table's RR structure
+     */
     struct RR {
         index_t name_index;
         index_t clastype_index;
@@ -53,6 +68,9 @@ namespace CDNS {
         index_t rdata_index;
     };
 
+    /**
+     * @brief Block table's Malformed Message Data structure
+     */
     struct MalformedMessageData {
         index_t server_address_index;
         uint16_t server_port;
@@ -60,11 +78,17 @@ namespace CDNS {
         std::string mm_payload;
     };
 
+    /**
+     * @brief Block table's Response Processing Data structure
+     */
     struct ResponseProcessingData {
         index_t bailiwick_index;
         ResponseProcessingFlagsMask processing_flags;
     };
 
+    /**
+     * @brief Block tables's Query Response Extended structure
+     */
     struct QueryResponseExtended {
         index_t question_index;
         index_t answer_index;
@@ -72,11 +96,17 @@ namespace CDNS {
         index_t additional_index;
     };
 
+    /**
+     * @brief Block preamble structure
+     */
     struct BlockPreamble {
         uint64_t earliest_time; //TODO create timestamp class
         index_t block_parameters_index;
     };
 
+    /**
+     * @brief Block statistics structure
+     */
     struct BlockStatistics {
         unsigned processed_messages;
         unsigned qr_data_items;
@@ -86,6 +116,9 @@ namespace CDNS {
         unsigned malformed_items;
     };
 
+    /**
+     * @brief QueryResponse item structure
+     */
     struct QueryResponse {
         uint64_t time_offset;
         index_t client_address_index;
@@ -102,6 +135,9 @@ namespace CDNS {
         QueryResponseExtended response_extended;
     };
 
+    /**
+     * @brief Address Event Count item structure
+     */
     struct AddressEventCount {
         AddressEventTypeValues ae_type;
         uint8_t ae_code;
@@ -110,6 +146,9 @@ namespace CDNS {
         //uint64_t ae_count;
     };
 
+    /**
+     * @brief Malformed Message item structure
+     */
     struct MalformedMessage {
         uint64_t time_offset;
         index_t client_address_index;
@@ -117,6 +156,9 @@ namespace CDNS {
         index_t message_data_index;
     };
 
+    /**
+     * @brief Representation of one block table's table
+     */
     template<typename T>
     class BlockTable {
         public:
@@ -126,6 +168,9 @@ namespace CDNS {
         std::unordered_map<T, index_t, CDNS::hash<T>> m_indexes;
     };
 
+    /**
+     * @brief Class representing C-DNS block
+     */
     class CdnsBlock {
         public:
 

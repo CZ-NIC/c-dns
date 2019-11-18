@@ -3,6 +3,11 @@
 #include <cstdint>
 
 namespace CDNS {
+
+    /**
+     * @enum OpCodes
+     * @brief All supported DNS OpCodes
+     */
     enum class OpCodes : uint8_t
     {
         OP_QUERY = 0,
@@ -13,6 +18,10 @@ namespace CDNS {
         OP_DSO
     };
 
+    /**
+     * @enum RrTypes
+     * @brief All supported Resource records types
+     */
     enum class RrTypes : uint16_t
     {
         A = 1,

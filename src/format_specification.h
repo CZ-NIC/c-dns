@@ -7,6 +7,11 @@ namespace CDNS {
 
     using index_t = uint32_t;
 
+    /**
+     * @brief Get C-DNS field's map index from its enum class
+     * @param t C-DNS field enumerator
+     * @return C-DNS field enumerator cast to its underlying type
+     */
     template<typename T>
     constexpr auto get_map_index(T t) -> typename std::underlying_type<T>::type {
         return static_cast<typename std::underlying_type<T>::type>(t);
@@ -16,7 +21,10 @@ namespace CDNS {
      * Indexes (keys) of standard fields in C-DNS maps
      */
 
-    // File structure isn't a map?!
+    /**
+     * @enum FileMapIndex
+     * @brief File map indexex ( File structure isn't a map?! )
+     */
     enum class FileMapIndex : uint8_t {
         file_type_id = 0,
         file_preamble = 1,
@@ -25,6 +33,10 @@ namespace CDNS {
         file_size
     };
 
+    /**
+     * @enum FilePreambleMapIndex
+     * @brief File Preamble map indexes
+     */
     enum class FilePreambleMapIndex : uint8_t {
         major_format_version = 0,
         minor_format_version = 1,
@@ -34,6 +46,10 @@ namespace CDNS {
         file_preamble_size
     };
 
+     /**
+      * @enum BlockParametersMapIndex
+      * @brief Block Parameters map indexes
+      */
     enum class BlockParametersMapIndex : uint8_t {
         storage_parameters = 0,
         collection_parameters = 1,
@@ -41,6 +57,10 @@ namespace CDNS {
         block_parameters_size
     };
 
+    /**
+     * @enum StorageParametersMapIndex
+     * @brief Storage Parameters map indexes
+     */
     enum class StorageParametersMapIndex : uint8_t {
         ticks_per_second = 0,
         max_block_items = 1,
@@ -58,6 +78,10 @@ namespace CDNS {
         storage_parameters_size
     };
 
+    /**
+     * @enum CollectionParametersMapIndex
+     * @brief Collection Parameters map indexes
+     */
     enum class CollectionParametersMapIndex : uint8_t {
         query_timeout = 0,
         skew_timeout = 1,
@@ -73,6 +97,10 @@ namespace CDNS {
         collection_parameters_size
     };
 
+    /**
+     * @enum StorageHintsMapIndex
+     * @brief Storage Hints map indexes
+     */
     enum class StorageHintsMapIndex : uint8_t {
         query_response_hints = 0,
         query_response_signature_hints = 1,
@@ -82,6 +110,10 @@ namespace CDNS {
         storage_hints_size
     };
 
+    /**
+     * @enum BlockMapIndex
+     * @brief Block map indexes
+     */
     enum class BlockMapIndex : uint8_t {
         block_preamble = 0,
         block_statistics = 1,
@@ -93,6 +125,10 @@ namespace CDNS {
         block_size
     };
 
+    /**
+     * @enum BlockPreambleMapIndex
+     * @brief Block Preamble map indexes
+     */
     enum class BlockPreambleMapIndex : uint8_t {
         earliest_time = 0,
         block_parameters_index = 1,
@@ -100,6 +136,10 @@ namespace CDNS {
         block_preamble_size
     };
 
+    /**
+     * @enum BlockStatisticsMapIndex
+     * @brief Block Statistics map indexes
+     */
     enum class BlockStatisticsMapIndex : uint8_t {
         processed_messages = 0,
         qr_data_items = 1,
@@ -111,6 +151,10 @@ namespace CDNS {
         block_statistics_size
     };
 
+    /**
+     * @enum BlockTablesMapIndex
+     * @brief Block Tables map indexes
+     */
     enum class BlockTablesMapIndex : uint8_t {
         ip_address = 0,
         classtype = 1,
@@ -125,6 +169,10 @@ namespace CDNS {
         block_tables_size
     };
 
+    /**
+     * @enum ClassTypeMapIndex
+     * @brief ClassType map indexes
+     */
     enum class ClassTypeMapIndex : uint8_t {
         type = 0,
         class_ = 1,
@@ -132,6 +180,10 @@ namespace CDNS {
         class_type_size
     };
 
+    /**
+     * @enum QueryResponseSignatureMapIndex
+     * @brief Query Response Signature map indexes
+     */
     enum class QueryResponseSignatureMapIndex : uint8_t {
         server_address_index = 0,
         server_port = 1,
@@ -154,6 +206,10 @@ namespace CDNS {
         query_response_signature_size
     };
 
+    /**
+     * @enum QuestionMapIndex
+     * @brief Question map indexes
+     */
     enum class QuestionMapIndex : uint8_t {
         name_index = 0,
         classtype_index = 1,
@@ -161,6 +217,10 @@ namespace CDNS {
         question_size
     };
 
+    /**
+     * @enum RrMapIndex
+     * @brief Rr map indexes
+     */
     enum class RrMapIndex : uint8_t {
         name_index = 0,
         classtype_index = 1,
@@ -170,6 +230,10 @@ namespace CDNS {
         rr_size
     };
 
+    /**
+     * @enum MalformedMessageDataMapIndex
+     * @brief Malformed Message Data map indexes
+     */
     enum class MalformedMessageDataMapIndex : uint8_t {
         server_address_index = 0,
         server_port = 1,
@@ -179,6 +243,10 @@ namespace CDNS {
         malformed_message_data_size
     };
 
+    /**
+     * @enum QueryResponseMapIndex
+     * @brief Query Response map indexes
+     */
     enum class QueryResponseMapIndex : uint8_t {
         time_offset = 0,
         client_address_index = 1,
@@ -197,6 +265,10 @@ namespace CDNS {
         query_response_size
     };
 
+    /**
+     * @enum ResponseProcessingDataMapIndex
+     * @brief Response Processing Data map indexes
+     */
     enum class ResponseProcessingDataMapIndex : uint8_t {
         bailiwick_index = 0,
         processing_flags = 1,
@@ -204,6 +276,10 @@ namespace CDNS {
         response_processing_data_size
     };
 
+    /**
+     * @enum QueryResponseExtendedMapIndex
+     * @brief Query Response Extended map indexes
+     */
     enum class QueryResponseExtendedMapIndex : uint8_t {
         question_index = 0,
         answer_index = 1,
@@ -213,6 +289,10 @@ namespace CDNS {
         query_response_extended_size
     };
 
+    /**
+     * @enum AddressEventCountMapIndex
+     * @brief Address Event Count map indexes
+     */
     enum class AddressEventCountMapIndex : uint8_t {
         ae_type = 0,
         ae_code = 1,
@@ -223,6 +303,10 @@ namespace CDNS {
         address_event_count_size
     };
 
+    /**
+     * @enum MalformedMessageMapIndex
+     * @brief Malformed Message map indexes
+     */
     enum class MalformedMessageMapIndex : uint8_t {
         time_offset = 0,
         client_address_index = 1,
@@ -236,6 +320,10 @@ namespace CDNS {
      * Bit fields enumarations
      */
 
+    /**
+     * @enum QueryResponseHintsMask
+     * @brief Query Response Hints bitmask
+     */
     enum QueryResponseHintsMask : uint32_t {
         time_offset                     = 1 << 0,
         client_address_index            = 1 << 1,
@@ -257,6 +345,10 @@ namespace CDNS {
         response_additional_sections    = 1 << 17
     };
 
+    /**
+     * @enum QueryResponseSignatureHintsMask
+     * @brief Query Response Signature Hints bitmask
+     */
     enum QueryResponseSignatureHintsMask : uint32_t {
         server_address_index    = 1 << 0,
         server_port             = 1 << 1,
@@ -277,22 +369,38 @@ namespace CDNS {
         response_rcode          = 1 << 16
     };
 
+    /**
+     * @enum RrHintsMask
+     * @brief Rr Hints bitmask
+     */
     enum RrHintsMask : uint8_t {
         ttl         = 1 << 0,
         rdata_index = 1 << 1
     };
 
+    /**
+     * @enum OtherDataHintsMask
+     * @brief Other Data Hints bitmask
+     */
     enum OtherDataHintsMask : uint8_t {
         malformed_messages   = 1 << 0,
         address_event_counts = 1 << 1
     };
 
+    /**
+     * @enum StorageFlagsMask
+     * @brief Storage Flags bitmask
+     */
     enum StorageFlagsMask : uint8_t {
         anonymized_data  = 1 << 0,
         sampled_data     = 1 << 1,
         normalized_data  = 1 << 2
     };
 
+    /**
+     * @enum QueryResponseTransportFlagsMask
+     * @brief Query Response Transport Flags bitmask
+     */
     enum QueryResponseTransportFlagsMask : uint8_t {
         ip_address = 1 << 0,
 
@@ -307,6 +415,10 @@ namespace CDNS {
         query_trailingdata = 1 << 5
     };
 
+    /**
+     * @enum QueryResponseFlagsMask
+     * @brief Query Response Flags bitmask
+     */
     enum QueryResponseFlagsMask : uint8_t {
         has_query                 = 1 << 0,
         has_response              = 1 << 1,
@@ -316,6 +428,10 @@ namespace CDNS {
         response_has_no_question  = 1 << 5
     };
 
+    /**
+     * @enum DNSFlagsMask
+     * @brief DNS Flags bitmask
+     */
     enum DNSFlagsMask : uint16_t {
         query_cd    = 1 << 0,
         query_ad    = 1 << 1,
@@ -334,6 +450,10 @@ namespace CDNS {
         response_aa = 1 << 14
     };
 
+    /**
+     * @enum ResponseProcessingFlagsMask
+     * @brief Response Processing Flags bitmask
+     */
     enum ResponseProcessingFlagsMask : uint8_t {
         from_cache = 1 << 0
     };
@@ -342,6 +462,10 @@ namespace CDNS {
      * Field values enumerations
      */
 
+    /**
+     * @enum QueryResponseTypeValues
+     * @brief Query Response Type field possible values
+     */
     enum class QueryResponseTypeValues : uint8_t {
         stub = 0,
         client = 1,
@@ -351,6 +475,10 @@ namespace CDNS {
         tool = 5
     };
 
+    /**
+     * @enum AddressEventTypeValues
+     * @brief Address Event Type field possible values
+     */
     enum class AddressEventTypeValues : uint8_t {
         tcp_reset = 0,
         icmp_time_exceeded = 1,

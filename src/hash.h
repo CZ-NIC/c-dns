@@ -7,12 +7,14 @@
 namespace CDNS {
 
     /**
-     * CRC32 calculation for hashes on std::unordered_map non-primitive keys
+     * @brief CRC32 calculation for hashes on std::unordered_map non-primitive keys
+     * @param data Data to calculate hash on
+     * @return Hash value for "data"
      */
     template <class T> struct hash {
-        std::size_t operator()(T const& val) const {
-            const char *start = reinterpret_cast<const char*>(&val);
-            const char *end = start + sizeof(val);
+        std::size_t operator()(T const& data) const {
+            const char *start = reinterpret_cast<const char*>(&data);
+            const char *end = start + sizeof(data);
             uint32_t ret = ~0U;
 
             for ( ; start < end; ) {
