@@ -3,8 +3,9 @@ project(cdns VERSION 0.0.1 DESCRIPTION "C-DNS format exporter")
 
 include(GNUInstallDirs)
 
+set(CMAKE_CXX_STANDARD 17)
 
-file(GLOB sources "src/*.c")
+file(GLOB sources "src/*.cpp")
 add_library(cdns SHARED
     ${sources}
 )
