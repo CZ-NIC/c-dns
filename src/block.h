@@ -421,6 +421,119 @@ namespace CDNS {
         //TODO
         //void write_cbor(CborEncoder &enc);
 
+        /**
+         * @brief Add IP address to IP address Block table
+         * @param address IP address to add to the Block table
+         * @return Index of the IP address in Block table
+         */
+        index_t add_ip_address(const std::string& address) {
+            index_t ret;
+
+            if (!m_ip_address.find(address, ret)) {
+                StringItem tmp;
+                tmp.data = address;
+                ret = m_ip_address.add_value(std::move(tmp));
+            }
+
+            return ret;
+        }
+
+        /**
+         * @brief Add Classtype structure to Classtype Block table
+         * @param classtype Classtype structure to add to the Block table
+         * @return Index of the Classtype in Block table
+         */
+        index_t add_classtype(const ClassType& classtype) {
+            return m_classtype.add(classtype);
+        }
+
+        /**
+         * @brief Add NAME or RDATA to name_rdata Block table
+         * @param nrd NAME or RDATA to add to the Block table
+         * @return Index of the NAME or RDATA in Block table
+         */
+        index_t add_name_rdata(const std::string& nrd) {
+            index_t ret;
+
+            if (!m_name_rdata.find(nrd, ret)) {
+                StringItem tmp;
+                tmp.data = nrd;
+                ret = m_name_rdata.add_value(std::move(tmp));
+            }
+
+            return ret;
+        }
+
+        /**
+         * @brief Add Query Response Signature to QR Signature Block table
+         * @param qr_sig Query Response Signature to add to Block table
+         * @return Index of the Query Response Signature in Block table
+         */
+        index_t add_qr_signature(const QueryResponseSignature& qr_sig) {
+            return m_qr_sig.add(qr_sig);
+        }
+
+        /**
+         * @brief Add Question list to Question list Block table
+         * @param qlist Question list to add to Block table
+         * @return Index of the Question list in Block table
+         */
+        index_t add_question_list(const std::vector<index_t>& qlist) {
+            index_t ret;
+
+            if (!m_qlist.find(qlist, ret)) {
+                IndexListItem tmp;
+                tmp.list = qlist;
+                ret = m_qlist.add_value(std::move(tmp));
+            }
+
+            return ret;
+        }
+
+        /**
+         * @brief Add Question record to Question record Block table
+         * @param qrr Question record to add to Block table
+         * @return Index of the Question record in Block table
+         */
+        index_t add_question(const Question& qrr) {
+            return m_qrr.add(qrr);
+        }
+
+        /**
+         * @brief Add Resource record list to Resource record list Block table
+         * @param rrlist Resource record list to add to Block table
+         * @return Index of the Resource record list in Block table
+         */
+        index_t add_rr_list(const std::vector<index_t>& rrlist) {
+            index_t ret;
+
+            if (!m_rrlist.find(rrlist, ret)) {
+                IndexListItem tmp;
+                tmp.list = rrlist;
+                ret = m_rrlist.add_value(std::move(tmp));
+            }
+
+            return ret;
+        }
+
+        /**
+         * @brief Add Resource record to Resource record Block table
+         * @param rr Resource record to add to Block table
+         * @return Index of the Resource record in Block table
+         */
+        index_t add_rr(const RR& rr) {
+            return m_rr.add(rr);
+        }
+
+        /**
+         * @brief Add Malformed message data to Malformed message data Block table
+         * @param mmd Malformed message data to add to Block table
+         * @return Index of the Malformed message data in Block table
+         */
+        index_t add_malformed_message_data(const MalformedMessageData& mmd) {
+            return m_malformed_message_data.add(mmd);
+        }
+
         BlockPreamble m_block_preamble;
         BlockStatistics m_block_statistics;
 
