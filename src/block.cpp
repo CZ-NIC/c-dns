@@ -40,80 +40,81 @@ bool CDNS::CdnsBlock::add_question_response_record(const generic_qr& gr, const B
     if ((qr_hints & QueryResponseHintsMask::transaction_id) && gr.transaction_id)
         qr.transaction_id = *gr.transaction_id;
 
-    // Fill Query Response Signature --------------------------------------------------------------
-    QueryResponseSignature qrs;
+    // Fill Query Response Signature
+    if (qr_hints & QueryResponseHintsMask::qr_signature_index) {
+        QueryResponseSignature qrs;
 
-    // Server IP address
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_address_index) && gr.server_ip)
-        qrs.server_address_index = add_ip_address(*gr.server_ip);
+        // Server IP address
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_address_index) && gr.server_ip)
+            qrs.server_address_index = add_ip_address(*gr.server_ip);
 
-    // Server port
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_port) && gr.server_port)
-        qrs.server_port = *gr.server_port;
+        // Server port
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_port) && gr.server_port)
+            qrs.server_port = *gr.server_port;
 
-    // Transport flags (IP version, transport protocol, trailing data)
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_transport_flags) && gr.qr_transport_flags)
-        qrs.qr_transport_flags = *gr.qr_transport_flags;
+        // Transport flags (IP version, transport protocol, trailing data)
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_transport_flags) && gr.qr_transport_flags)
+            qrs.qr_transport_flags = *gr.qr_transport_flags;
 
-    // Query type (stub, resolver, etc.)
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_type) && gr.qr_type)
-        qrs.qr_type = *gr.qr_type;
+        // Query type (stub, resolver, etc.)
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_type) && gr.qr_type)
+            qrs.qr_type = *gr.qr_type;
 
-    // QR Signature flags (is query, is response, etc.)
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_sig_flags) && gr.qr_sig_flags)
-        qrs.qr_sig_flags = *gr.qr_sig_flags;
+        // QR Signature flags (is query, is response, etc.)
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_sig_flags) && gr.qr_sig_flags)
+            qrs.qr_sig_flags = *gr.qr_sig_flags;
 
-    // Query OpCode
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opcode) && gr.query_opcode)
-        qrs.query_opcode = *gr.query_opcode;
+        // Query OpCode
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opcode) && gr.query_opcode)
+            qrs.query_opcode = *gr.query_opcode;
 
-    // DNS header flags
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_dns_flags) && gr.qr_dns_flags)
-        qrs.qr_dns_flags = *gr.qr_dns_flags;
+        // DNS header flags
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_dns_flags) && gr.qr_dns_flags)
+            qrs.qr_dns_flags = *gr.qr_dns_flags;
 
-    // Query RCode
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_rcode) && gr.query_rcode)
-        qrs.query_rcode = *gr.query_rcode;
+        // Query RCode
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_rcode) && gr.query_rcode)
+            qrs.query_rcode = *gr.query_rcode;
 
-    // Query question type and class
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_classtype_index) && gr.query_classtype)
-        qrs.query_classtype_index = add_classtype(*gr.query_classtype);
+        // Query question type and class
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_classtype_index) && gr.query_classtype)
+            qrs.query_classtype_index = add_classtype(*gr.query_classtype);
 
-    // Query question count
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_qdcount) && gr.query_qdcount)
-        qrs.query_qdcount = *gr.query_qdcount;
+        // Query question count
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_qdcount) && gr.query_qdcount)
+            qrs.query_qdcount = *gr.query_qdcount;
 
-    // Query answer count
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_ancount) && gr.query_ancount)
-        qrs.query_ancount = *gr.query_ancount;
+        // Query answer count
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_ancount) && gr.query_ancount)
+            qrs.query_ancount = *gr.query_ancount;
 
-    // Query authority records count
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_nscount) && gr.query_nscount)
-        qrs.query_nscount = *gr.query_nscount;
+        // Query authority records count
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_nscount) && gr.query_nscount)
+            qrs.query_nscount = *gr.query_nscount;
 
-    // Query additional records count
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_arcount) && gr.query_arcount)
-        qrs.query_arcount = *gr.query_arcount;
+        // Query additional records count
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_arcount) && gr.query_arcount)
+            qrs.query_arcount = *gr.query_arcount;
 
-    // EDNS version
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_edns_version) && gr.query_edns_version)
-        qrs.query_edns_version = *gr.query_edns_version;
+        // EDNS version
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_edns_version) && gr.query_edns_version)
+            qrs.query_edns_version = *gr.query_edns_version;
 
-    // EDNS UDP size
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_udp_size) && gr.query_udp_size)
-        qrs.query_udp_size = *gr.query_udp_size;
+        // EDNS UDP size
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_udp_size) && gr.query_udp_size)
+            qrs.query_udp_size = *gr.query_udp_size;
 
-    // EDNS record's rdata
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opt_rdata_index) && gr.opt_rdata)
-        qrs.query_opt_rdata_index = add_name_rdata(*gr.opt_rdata);
+        // EDNS record's rdata
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opt_rdata_index) && gr.opt_rdata)
+            qrs.query_opt_rdata_index = add_name_rdata(*gr.opt_rdata);
 
-    // Response RCode
-    if ((qr_sig_hints & QueryResponseSignatureHintsMask::response_rcode) && gr.response_rcode)
-        qrs.response_rcode = *gr.response_rcode;
+        // Response RCode
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::response_rcode) && gr.response_rcode)
+            qrs.response_rcode = *gr.response_rcode;
 
-    // Add Query Response Signature to Block table ------------------------------------------------
-    if ((qr_hints & QueryResponseHintsMask::qr_signature_index))
+        // Add Query Response Signature to Block table
         qr.qr_signature_index = add_qr_signature(qrs);
+    }
 
     // Client hoplimit (TTL)
     if ((qr_hints & QueryResponseHintsMask::client_hoplimit) && gr.client_hoplimit)
