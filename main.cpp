@@ -195,7 +195,10 @@ int main(int argc, char **argv)
     CDNS_TEST_PRINT(buff, buff_len);
 
     CDNS::QueryResponse query = {
-        0,
+        {
+            0,
+            0
+        },
         0,
         53,
         1,

@@ -304,7 +304,7 @@ namespace CDNS {
      * @brief Block preamble structure
      */
     struct BlockPreamble {
-        uint64_t earliest_time; //TODO create timestamp class
+        Timestamp earliest_time;
         index_t block_parameters_index;
     };
 
@@ -324,7 +324,7 @@ namespace CDNS {
      * @brief QueryResponse item structure
      */
     struct QueryResponse {
-        uint64_t time_offset;
+        Timestamp time_offset;
         index_t client_address_index;
         uint16_t client_port;
         uint16_t transaction_id;
@@ -618,8 +618,9 @@ namespace CDNS {
 
         CdnsBlock() {}
 
-        //TODO
-        //void write_cbor(CborEncoder &enc);
+        /**
+         * @todo void write_cbor(CborEncoder &enc);
+         */
 
         /**
          * @brief Add IP address to IP address Block table
@@ -733,6 +734,25 @@ namespace CDNS {
         index_t add_malformed_message_data(const MalformedMessageData& mmd) {
             return m_malformed_message_data.add(mmd);
         }
+
+        /**
+         * @brief Add new DNS record to C-DNS block. Uses generic structure to hold all DNS record data and
+         * adds it to the Block
+         * @param qr Generic structure holding data of new DNS record
+         * @param bp Block parameters with hints for the current Block
+         * @return `true` when the DNS record is inserted into the Block
+         */
+        bool add_question_response_record(const generic_qr& qr, const BlockParameters& bp);
+
+        /**
+         * @todo Add new Address Event Count to C-DNS block.
+         */
+        //bool add_address_event_count(const generic_aec& aec, const BlockParameters& bp);
+
+        /**
+         * @todo Add new Malformed Message to C-DNS block.
+         */
+        //bool add_malformed_message(const generic_mm& mm, const BlockParameters& bp);
 
         BlockPreamble m_block_preamble;
         BlockStatistics m_block_statistics;
