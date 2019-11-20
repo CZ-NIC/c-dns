@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <deque>
 #include <vector>
+#include <optional>
 
 #include "format_specification.h"
 #include "block_table.h"
@@ -106,11 +107,6 @@ namespace CDNS {
      * @brief Block table's Query Response Signature structure
      */
     struct QueryResponseSignature {
-        QueryResponseSignature() : server_address_index(0), server_port(0), qr_transport_flags(),
-            qr_type(), qr_sig_flags(), query_opcode(0), qr_dns_flags(), query_rcode(0),
-            query_classtype_index(0), query_qdcount(0), query_ancount(0), query_nscount(0),
-            query_arcount(0), query_edns_version(0), query_udp_size(0), query_opt_rdata_index(0),
-            response_rcode(0) {}
 
         /**
          * @brief Equality operator (needed for KeyRef class)
@@ -149,23 +145,23 @@ namespace CDNS {
             return *this;
         }
 
-        index_t server_address_index;
-        uint16_t server_port;
-        QueryResponseTransportFlagsMask qr_transport_flags;
-        QueryResponseTypeValues qr_type;
-        QueryResponseFlagsMask qr_sig_flags;
-        uint8_t query_opcode;
-        DNSFlagsMask qr_dns_flags;
-        uint16_t query_rcode;
-        index_t query_classtype_index;
-        uint16_t query_qdcount;
-        uint32_t query_ancount;
-        uint16_t query_nscount;
-        uint16_t query_arcount;
-        uint8_t query_edns_version;
-        uint16_t query_udp_size;
-        index_t query_opt_rdata_index;
-        uint16_t response_rcode;
+        std::optional<index_t> server_address_index;
+        std::optional<uint16_t> server_port;
+        std::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
+        std::optional<QueryResponseTypeValues> qr_type;
+        std::optional<QueryResponseFlagsMask> qr_sig_flags;
+        std::optional<uint8_t> query_opcode;
+        std::optional<DNSFlagsMask> qr_dns_flags;
+        std::optional<uint16_t> query_rcode;
+        std::optional<index_t> query_classtype_index;
+        std::optional<uint16_t> query_qdcount;
+        std::optional<uint32_t> query_ancount;
+        std::optional<uint16_t> query_nscount;
+        std::optional<uint16_t> query_arcount;
+        std::optional<uint8_t> query_edns_version;
+        std::optional<uint16_t> query_udp_size;
+        std::optional<index_t> query_opt_rdata_index;
+        std::optional<uint16_t> response_rcode;
     };
 
     /**
@@ -207,7 +203,7 @@ namespace CDNS {
      * @brief Block table's RR structure
      */
     struct RR {
-        RR() : name_index(0), classtype_index(0), ttl(0), rdata_index(0) {}
+        RR() : name_index(0), classtype_index(0) {}
 
         /**
          * @brief Equality operator (needed for KeyRef class)
@@ -237,16 +233,14 @@ namespace CDNS {
 
         index_t name_index;
         index_t classtype_index;
-        uint8_t ttl;
-        index_t rdata_index;
+        std::optional<uint8_t> ttl;
+        std::optional<index_t> rdata_index;
     };
 
     /**
      * @brief Block table's Malformed Message Data structure
      */
     struct MalformedMessageData {
-        MalformedMessageData() : server_address_index(0), server_port(0), mm_transport_flags(),
-            mm_payload() {}
 
         /**
          * @brief Equality operator (needed for KeyRef class)
@@ -276,74 +270,74 @@ namespace CDNS {
             return *this;
         }
 
-        index_t server_address_index;
-        uint16_t server_port;
-        QueryResponseTransportFlagsMask mm_transport_flags;
-        std::string mm_payload;
+        std::optional<index_t> server_address_index;
+        std::optional<uint16_t> server_port;
+        std::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
+        std::optional<std::string> mm_payload;
     };
 
     /**
      * @brief Block table's Response Processing Data structure
      */
     struct ResponseProcessingData {
-        index_t bailiwick_index;
-        ResponseProcessingFlagsMask processing_flags;
+        std::optional<index_t> bailiwick_index;
+        std::optional<ResponseProcessingFlagsMask> processing_flags;
     };
 
     /**
      * @brief Block table's Query Response Extended structure
      */
     struct QueryResponseExtended {
-        index_t question_index;
-        index_t answer_index;
-        index_t authority_index;
-        index_t additional_index;
+        std::optional<index_t> question_index;
+        std::optional<index_t> answer_index;
+        std::optional<index_t> authority_index;
+        std::optional<index_t> additional_index;
     };
 
     /**
      * @brief Block preamble structure
      */
     struct BlockPreamble {
-        Timestamp earliest_time;
-        index_t block_parameters_index;
+        std::optional<Timestamp> earliest_time;
+        std::optional<index_t> block_parameters_index;
     };
 
     /**
      * @brief Block statistics structure
      */
     struct BlockStatistics {
-        unsigned processed_messages;
-        unsigned qr_data_items;
-        unsigned unmatched_queries;
-        unsigned unmatched_responses;
-        unsigned discarded_opcode;
-        unsigned malformed_items;
+        std::optional<unsigned> processed_messages;
+        std::optional<unsigned> qr_data_items;
+        std::optional<unsigned> unmatched_queries;
+        std::optional<unsigned> unmatched_responses;
+        std::optional<unsigned> discarded_opcode;
+        std::optional<unsigned> malformed_items;
     };
 
     /**
      * @brief QueryResponse item structure
      */
     struct QueryResponse {
-        Timestamp time_offset;
-        index_t client_address_index;
-        uint16_t client_port;
-        uint16_t transaction_id;
-        index_t qr_signature_index;
-        uint8_t client_hoplimit;
-        int64_t response_delay;
-        index_t query_name_index;
-        std::size_t query_size;
-        std::size_t response_size;
-        ResponseProcessingData response_processing_data;
-        QueryResponseExtended query_extended;
-        QueryResponseExtended response_extended;
+        std::optional<Timestamp> time_offset;
+        std::optional<index_t> client_address_index;
+        std::optional<uint16_t> client_port;
+        std::optional<uint16_t> transaction_id;
+        std::optional<index_t> qr_signature_index;
+        std::optional<uint8_t> client_hoplimit;
+        std::optional<int64_t> response_delay;
+        std::optional<index_t> query_name_index;
+        std::optional<std::size_t> query_size;
+        std::optional<std::size_t> response_size;
+        std::optional<ResponseProcessingData> response_processing_data;
+        std::optional<QueryResponseExtended> query_extended;
+        std::optional<QueryResponseExtended> response_extended;
     };
 
     /**
      * @brief Address Event Count item structure
      */
     struct AddressEventCount {
-        AddressEventCount() : ae_type(), ae_code(0), ae_transport_flags(), ae_address_index(0) {}
+        AddressEventCount() : ae_type(), ae_address_index(0) {}
 
         /**
          * @brief Equality operator (needed for KeyRef class)
@@ -373,8 +367,8 @@ namespace CDNS {
         }
 
         AddressEventTypeValues ae_type;
-        uint8_t ae_code;
-        QueryResponseTransportFlagsMask ae_transport_flags;
+        std::optional<uint8_t> ae_code;
+        std::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         index_t ae_address_index;
         //uint64_t ae_count;
     };
@@ -383,10 +377,10 @@ namespace CDNS {
      * @brief Malformed Message item structure
      */
     struct MalformedMessage {
-        uint64_t time_offset;
-        index_t client_address_index;
-        uint16_t client_port;
-        index_t message_data_index;
+        std::optional<uint64_t> time_offset;
+        std::optional<index_t> client_address_index;
+        std::optional<uint16_t> client_port;
+        std::optional<index_t> message_data_index;
     };
 
     /**
@@ -755,7 +749,7 @@ namespace CDNS {
         //bool add_malformed_message(const generic_mm& mm, const BlockParameters& bp);
 
         BlockPreamble m_block_preamble;
-        BlockStatistics m_block_statistics;
+        std::optional<BlockStatistics> m_block_statistics;
 
         // Block Tables
         BlockTable<StringItem, std::string> m_ip_address;

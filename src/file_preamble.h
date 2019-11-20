@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "format_specification.h"
 #include "dns.h"
@@ -32,29 +33,29 @@ namespace CDNS {
         StorageHints storage_hints;
         std::vector<OpCodes> opcodes;
         std::vector<RrTypes> rr_types;
-        StorageFlagsMask storage_flags;
-        uint8_t client_address_prefix_ipv4;
-        uint8_t client_address_prefix_ipv6;
-        uint8_t server_address_prefix_ipv4;
-        uint8_t server_address_prefix_ipv6;
-        std::string sampling_method;
-        std::string anonymization_method;
+        std::optional<StorageFlagsMask> storage_flags;
+        std::optional<uint8_t> client_address_prefix_ipv4;
+        std::optional<uint8_t> client_address_prefix_ipv6;
+        std::optional<uint8_t> server_address_prefix_ipv4;
+        std::optional<uint8_t> server_address_prefix_ipv6;
+        std::optional<std::string> sampling_method;
+        std::optional<std::string> anonymization_method;
     };
 
     /**
      * @brief Collection Parameters structure
      */
     struct CollectionParameters {
-        uint64_t query_timeout;
-        uint64_t skew_timeout;
-        uint64_t snaplen;
-        bool promisc;
+        std::optional<uint64_t> query_timeout;
+        std::optional<uint64_t> skew_timeout;
+        std::optional<uint64_t> snaplen;
+        std::optional<bool> promisc;
         std::vector<std::string> interfaces;
         std::vector<std::string> server_address;
         std::vector<uint16_t> vlan_ids;
-        std::string filter;
-        std::string generator_id;
-        std::string host_id;
+        std::optional<std::string> filter;
+        std::optional<std::string> generator_id;
+        std::optional<std::string> host_id;
     };
 
     /**
@@ -62,7 +63,7 @@ namespace CDNS {
      */
     struct BlockParameters {
         StorageParameters storage_parameters;
-        CollectionParameters collection_parameters;
+        std::optional<CollectionParameters> collection_parameters;
     };
 
     /**
@@ -73,21 +74,27 @@ namespace CDNS {
 
         FilePreamble(){}
 
-        FilePreamble(std::vector<BlockParameters> bps, uint8_t private_version = VERSION_PRIVATE)
-            : m_private_version(private_version), m_block_parameters(bps) {}
+        FilePreamble(std::vector<BlockParameters> &bps) : m_block_parameters(bps) {}
 
         index_t add_block_parameters(BlockParameters &bp) {
             m_block_parameters.push_back(bp);
             return m_block_parameters.size() - 1;
         }
 
-        std::size_t block_parameters_size() {
+        std::size_t block_parameters_size() const {
             return m_block_parameters.size();
+        }
+
+        BlockParameters& get_block_parameters(index_t index) {
+            if (index < m_block_parameters.size())
+                return m_block_parameters[index];
+
+            throw std::runtime_error("Block parameters index out of range.");
         }
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;
-        uint8_t m_private_version;
+        std::optional<uint8_t> m_private_version;
         std::vector<BlockParameters> m_block_parameters;
     };
 }

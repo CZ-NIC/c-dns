@@ -139,7 +139,8 @@ static int _cdns_init_fp_block_parameters(const CDNS::FilePreamble &ctx, cbor_it
 
         //TODO
         //if (ctx.m_block_parameters[idx].collection_parameters != nullptr) {
-        if (ctx.m_block_parameters[idx].collection_parameters.query_timeout != 0) {
+        //if (ctx.m_block_parameters[idx].collection_parameters.value().query_timeout.value() != 0) {
+        if (ctx.m_block_parameters[idx].collection_parameters) {
 
             cbor_item_t *collection_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::CollectionParametersMapIndex::collection_parameters_size));
             _cdns_init_fp_bp_collection_parameters(ctx, idx, collection_parameters_map);
@@ -271,42 +272,45 @@ static int _cdns_init_block_statistics(const CDNS::CdnsBlock &ctx, cbor_item_t *
 {
     assert(root);
 
-    struct cbor_pair processed_messages = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::processed_messages) )),
-        .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.processed_messages ))
-    };
+    if (ctx.m_block_statistics) {
 
-    struct cbor_pair qr_data_items = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::qr_data_items) )),
-        .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.qr_data_items ))
-    };
+        struct cbor_pair processed_messages = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::processed_messages) )),
+            .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.value().processed_messages.value() ))
+        };
 
-    struct cbor_pair unmatched_queries = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::unmatched_queries) )),
-        .value	= cbor_move(cbor_build_uint32( htobe32(ctx.m_block_statistics.unmatched_queries) ))
-    };
+        struct cbor_pair qr_data_items = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::qr_data_items) )),
+            .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.value().qr_data_items.value() ))
+        };
 
-    struct cbor_pair unmatched_responses = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::unmatched_responses) )),
-        .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.unmatched_responses ))
-    };
+        struct cbor_pair unmatched_queries = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::unmatched_queries) )),
+            .value	= cbor_move(cbor_build_uint32( htobe32(ctx.m_block_statistics.value().unmatched_queries.value()) ))
+        };
 
-    struct cbor_pair discarded_opcode = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::discarded_opcode) )),
-        .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.discarded_opcode ))
-    };
+        struct cbor_pair unmatched_responses = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::unmatched_responses) )),
+            .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.value().unmatched_responses.value() ))
+        };
 
-    struct cbor_pair malformed_items = {
-        .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::malformed_items) )),
-        .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.malformed_items ))
-    };
+        struct cbor_pair discarded_opcode = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::discarded_opcode) )),
+            .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.value().discarded_opcode.value() ))
+        };
 
-    cbor_map_add(root, processed_messages);
-    cbor_map_add(root, qr_data_items);
-    cbor_map_add(root, unmatched_queries);
-    cbor_map_add(root, unmatched_responses);
-    cbor_map_add(root, discarded_opcode);
-    cbor_map_add(root, malformed_items);
+        struct cbor_pair malformed_items = {
+            .key	= cbor_move(cbor_build_uint8( CDNS::get_map_index(CDNS::BlockStatisticsMapIndex::malformed_items) )),
+            .value	= cbor_move(cbor_build_uint32( ctx.m_block_statistics.value().malformed_items.value() ))
+        };
+
+        cbor_map_add(root, processed_messages);
+        cbor_map_add(root, qr_data_items);
+        cbor_map_add(root, unmatched_queries);
+        cbor_map_add(root, unmatched_responses);
+        cbor_map_add(root, discarded_opcode);
+        cbor_map_add(root, malformed_items);
+    }
 
     return CDNS::E_SUCCESS;
 }
