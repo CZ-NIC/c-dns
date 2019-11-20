@@ -9,15 +9,62 @@
 #include "format_specification.h"
 #include "block_table.h"
 #include "hash.h"
+#include "file_preamble.h"
 
 namespace CDNS {
+
+    static constexpr uint64_t MILIS_PER_SEC = 1000UL;
+    static constexpr uint64_t MICROS_PER_SEC = 1000000UL;
+    static constexpr uint64_t NANOS_PER_SEC = 1000000000UL;
 
     /**
      * @brief Simple timestamp representation
      */
     struct Timestamp {
-        uint64_t timestamp_secs;
-        uint64_t timestamp_ticks;
+        /**
+         * @brief Default constructor
+         */
+        Timestamp() : m_secs(0), m_ticks(0) {}
+
+        /**
+         * @brief Construct a new Timestamp object
+         * @param secs Seconds since the start of UNIX epoch
+         * @param ticks Subsecond number of ticks in any resolution
+         */
+        Timestamp(uint64_t secs, uint64_t ticks) : m_secs(secs), m_ticks(ticks) {}
+
+        /**
+         * @brief Operator `smaller than`
+         * @param rhs Timestamp to compare with
+         * @return `true` if the Timestamp denotes earlier time than the `rhs` one
+         */
+        bool operator<(const Timestamp& rhs) const {
+            if (m_secs < rhs.m_secs)
+                return true;
+
+            if ((m_secs == rhs.m_secs) && (m_ticks < rhs.m_ticks))
+                return true;
+
+            return false;
+        }
+
+        /**
+         * @brief Operator `smaller or equal than`
+         * @param rhs Timestamp to compare with
+         * @return `true` if the Timestamp denotes earlier or identical time as the `rhs` one
+         */
+        bool operator<=(const Timestamp& rhs) const {
+            if (m_secs < rhs.m_secs)
+                return true;
+
+            if ((m_secs == rhs.m_secs) && (m_ticks <= rhs.m_ticks))
+                return true;
+
+            return false;
+        }
+
+        uint64_t m_secs;
+        uint64_t m_ticks;
     };
 
     /**
