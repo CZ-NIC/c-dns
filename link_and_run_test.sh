@@ -9,7 +9,7 @@ if [ ! `echo $LD_LIBRARY_PATH | grep $PWD` ]; then
     export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH
 fi
 
-g++ -L$PWD/build -Isrc/ -std=c++17 -Wall main.cpp -lcdns \
+g++ -L$PWD/build -Isrc/ -std=c++17 -Wall main.cpp -lz -lcdns \
     && valgrind --leak-check=full ./a.out
     
 

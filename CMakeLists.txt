@@ -5,12 +5,16 @@ include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(ZLIB REQUIRED)
+
+find_package(LibLZMA REQUIRED)
+
 file(GLOB sources "src/*.cpp")
 add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns -lcbor)
+target_link_libraries(cdns -lcbor ZLIB::ZLIB LibLZMA::LibLZMA)
 
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-msse4 SSE4_FLAG)

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
 
 #include "cdns.h"
 
@@ -231,6 +232,13 @@ int main(int argc, char **argv)
     fflush(stdout);
 
     free(buff);
+
+    // Try Writer
+    CDNS::BaseCborOutputWriter* writer = new CDNS::XzCborOutputWriter("test");
+    writer->open();
+    writer->write("Hello", std::strlen("Hello"));
+    writer->close();
+    delete writer;
 
     return EXIT_SUCCESS;
 }

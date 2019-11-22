@@ -15,6 +15,7 @@
 #include "file_preamble.h"
 #include "block.h"
 #include "hash.h"
+#include "writer.h"
 
 namespace CDNS {
 
