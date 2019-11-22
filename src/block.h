@@ -476,18 +476,18 @@ namespace CDNS {
         /**
          * @brief Construct a new generic qr object
          */
-        generic_qr(Timestamp *time, std::string *c_ip, uint16_t *c_port, uint16_t *id, std::string *s_ip,
-                   uint16_t *s_port, QueryResponseTransportFlagsMask *tr_flags, QueryResponseTypeValues *type,
-                   QueryResponseFlagsMask *sig_flags, uint8_t *opcode, DNSFlagsMask *dns_flags,
-                   uint16_t *q_rcode, ClassType *q_classtype, uint16_t *q_qdcount, uint16_t *q_ancount,
-                   uint16_t *q_nscount, uint16_t *q_arcount, uint8_t *q_edns_v, uint16_t *q_udp_size,
-                   std::string *opt, uint16_t *r_rcode, uint8_t *hoplimit, int64_t *r_delay,
-                   std::string *q_name, std::size_t *q_size, std::size_t *r_size, std::string *bwick,
-                   ResponseProcessingFlagsMask *proc_flags, std::vector<std::string*> *q_questions,
-                   std::vector<std::string*> *q_answers, std::vector<std::string*> *q_authority,
-                   std::vector<std::string*> *q_additional, std::vector<std::string*> *r_questions,
-                   std::vector<std::string*> *r_answers, std::vector<std::string*> *r_authority,
-                   std::vector<std::string*> *r_additional)
+        generic_qr(Timestamp* time, std::string* c_ip, uint16_t* c_port, uint16_t* id, std::string* s_ip,
+                   uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, QueryResponseTypeValues* type,
+                   QueryResponseFlagsMask* sig_flags, uint8_t* opcode, DNSFlagsMask* dns_flags,
+                   uint16_t* q_rcode, ClassType* q_classtype, uint16_t* q_qdcount, uint16_t* q_ancount,
+                   uint16_t* q_nscount, uint16_t* q_arcount, uint8_t* q_edns_v, uint16_t* q_udp_size,
+                   std::string* opt, uint16_t* r_rcode, uint8_t* hoplimit, int64_t* r_delay,
+                   std::string* q_name, std::size_t* q_size, std::size_t* r_size, std::string* bwick,
+                   ResponseProcessingFlagsMask* proc_flags, std::vector<std::string*>* q_questions,
+                   std::vector<std::string*>* q_answers, std::vector<std::string*>* q_authority,
+                   std::vector<std::string*>* q_additional, std::vector<std::string*>* r_questions,
+                   std::vector<std::string*>* r_answers, std::vector<std::string*>* r_authority,
+                   std::vector<std::string*>* r_additional)
                    : ts(time), client_ip(c_ip), client_port(c_port), transaction_id(id), server_ip(s_ip),
                      server_port(s_port), qr_transport_flags(tr_flags), qr_type(type), qr_sig_flags(sig_flags),
                      query_opcode(opcode), qr_dns_flags(dns_flags), query_rcode(q_rcode),
@@ -501,51 +501,51 @@ namespace CDNS {
                      response_answers(r_answers), response_authority(r_authority),
                      response_additional(r_additional) {}
 
-        Timestamp *ts;
-        std::string *client_ip;
-        uint16_t *client_port;
-        uint16_t *transaction_id;
+        Timestamp* ts;
+        std::string* client_ip;
+        uint16_t* client_port;
+        uint16_t* transaction_id;
 
         // Query Response Signature
-        std::string *server_ip;
-        uint16_t *server_port;
-        QueryResponseTransportFlagsMask *qr_transport_flags;
-        QueryResponseTypeValues *qr_type;
-        QueryResponseFlagsMask *qr_sig_flags;
-        uint8_t *query_opcode;
-        DNSFlagsMask *qr_dns_flags;
-        uint16_t *query_rcode;
-        ClassType *query_classtype;
-        uint16_t *query_qdcount;
-        uint16_t *query_ancount;
-        uint16_t *query_nscount;
-        uint16_t *query_arcount;
-        uint8_t *query_edns_version;
-        uint16_t *query_udp_size;
-        std::string *opt_rdata;
-        uint16_t *response_rcode;
+        std::string* server_ip;
+        uint16_t* server_port;
+        QueryResponseTransportFlagsMask* qr_transport_flags;
+        QueryResponseTypeValues* qr_type;
+        QueryResponseFlagsMask* qr_sig_flags;
+        uint8_t* query_opcode;
+        DNSFlagsMask* qr_dns_flags;
+        uint16_t* query_rcode;
+        ClassType* query_classtype;
+        uint16_t* query_qdcount;
+        uint16_t* query_ancount;
+        uint16_t* query_nscount;
+        uint16_t* query_arcount;
+        uint8_t* query_edns_version;
+        uint16_t* query_udp_size;
+        std::string* opt_rdata;
+        uint16_t* response_rcode;
 
-        uint8_t *client_hoplimit;
-        int64_t *response_delay;
-        std::string *query_name;
-        std::size_t *query_size;
-        std::size_t *response_size;
+        uint8_t* client_hoplimit;
+        int64_t* response_delay;
+        std::string* query_name;
+        std::size_t* query_size;
+        std::size_t* response_size;
 
         //Response Processing Data
-        std::string *bailiwick;
-        ResponseProcessingFlagsMask *processing_flags;
+        std::string* bailiwick;
+        ResponseProcessingFlagsMask* processing_flags;
 
         /**
          * @todo Can't be just string but the whole Question or RR structure
          */
-        std::vector<std::string*> *query_questions;
-        std::vector<std::string*> *query_answers;
-        std::vector<std::string*> *query_authority;
-        std::vector<std::string*> *query_additional;
-        std::vector<std::string*> *response_questions;
-        std::vector<std::string*> *response_answers;
-        std::vector<std::string*> *response_authority;
-        std::vector<std::string*> *response_additional;
+        std::vector<std::string*>* query_questions;
+        std::vector<std::string*>* query_answers;
+        std::vector<std::string*>* query_authority;
+        std::vector<std::string*>* query_additional;
+        std::vector<std::string*>* response_questions;
+        std::vector<std::string*>* response_answers;
+        std::vector<std::string*>* response_authority;
+        std::vector<std::string*>* response_additional;
     };
 
     /**
@@ -563,14 +563,14 @@ namespace CDNS {
         /**
          * @brief Construct a new generic aec object
          */
-        generic_aec(AddressEventTypeValues *type, uint8_t *code, QueryResponseTransportFlagsMask *tr_flags,
-                    std::string *ip)
+        generic_aec(AddressEventTypeValues* type, uint8_t* code, QueryResponseTransportFlagsMask* tr_flags,
+                    std::string* ip)
                     : ae_type(type), ae_code(code), ae_transport_flags(tr_flags), ip_address(ip) {}
 
-        AddressEventTypeValues *ae_type;
-        uint8_t *ae_code;
-        QueryResponseTransportFlagsMask *ae_transport_flags;
-        std::string *ip_address;
+        AddressEventTypeValues* ae_type;
+        uint8_t* ae_code;
+        QueryResponseTransportFlagsMask* ae_transport_flags;
+        std::string* ip_address;
     };
 
     /**
@@ -588,20 +588,20 @@ namespace CDNS {
         /**
          * @brief Construct a new generic mm object
          */
-        generic_mm(Timestamp *time, std::string *c_ip, uint16_t *c_port, std::string *s_ip,
-                   uint16_t *s_port, QueryResponseTransportFlagsMask *tr_flags, std::string *payload)
+        generic_mm(Timestamp* time, std::string* c_ip, uint16_t* c_port, std::string* s_ip,
+                   uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, std::string* payload)
                    : ts(time), client_ip(c_ip), client_port(c_port), server_ip(s_ip), server_port(s_port),
                      mm_transport_flags(tr_flags), mm_payload(payload) {}
 
-        Timestamp *ts;
-        std::string *client_ip;
-        uint16_t *client_port;
+        Timestamp* ts;
+        std::string* client_ip;
+        uint16_t* client_port;
 
         // Malformed Message Data
-        std::string *server_ip;
-        uint16_t *server_port;
-        QueryResponseTransportFlagsMask *mm_transport_flags;
-        std::string *mm_payload;
+        std::string* server_ip;
+        uint16_t* server_port;
+        QueryResponseTransportFlagsMask* mm_transport_flags;
+        std::string* mm_payload;
     };
 
     /**
@@ -750,6 +750,8 @@ namespace CDNS {
 
         BlockPreamble m_block_preamble;
         std::optional<BlockStatistics> m_block_statistics;
+
+        private: // @todo make all member variables private
 
         // Block Tables
         BlockTable<StringItem, std::string> m_ip_address;

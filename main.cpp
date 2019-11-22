@@ -5,13 +5,13 @@
 
 #include "cdns.h"
 
-void CDNS_TEST_PRINT(unsigned char *buff, std::size_t buff_len) {
+void CDNS_TEST_PRINT(unsigned char* buff, std::size_t buff_len) {
     for (unsigned i = 0; i < buff_len; ++i) {
         fprintf(stdout, "0x%02X ", buff[i]);
     }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
     const uint32_t qr_hints =
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
     //unsigned char *buff = NULL;
     //size_t buff_len = 0UL;
     // #2
-    unsigned char *buff = static_cast<unsigned char *>(calloc(1024UL, 1UL));
+    unsigned char* buff = static_cast<unsigned char *>(calloc(1024UL, 1UL));
     std::size_t buff_len = 1024UL;
 
     cdns_serialize_file_preamble(cdns_h, &buff, &buff_len);

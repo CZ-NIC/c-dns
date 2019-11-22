@@ -74,9 +74,9 @@ namespace CDNS {
 
         FilePreamble(){}
 
-        FilePreamble(std::vector<BlockParameters> &bps) : m_block_parameters(bps) {}
+        FilePreamble(std::vector<BlockParameters>& bps) : m_block_parameters(bps) {}
 
-        index_t add_block_parameters(BlockParameters &bp) {
+        index_t add_block_parameters(BlockParameters& bp) {
             m_block_parameters.push_back(bp);
             return m_block_parameters.size() - 1;
         }

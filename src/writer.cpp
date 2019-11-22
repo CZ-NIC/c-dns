@@ -109,7 +109,7 @@ void CDNS::XzCborOutputWriter::close()
     }
 }
 
-void CDNS::XzCborOutputWriter::write(const char *p, std::size_t size)
+void CDNS::XzCborOutputWriter::write(const char* p, std::size_t size)
 {
     // Check if output file and LZMA stream are opened
     if (!m_out.is_open() || !m_lzma.internal)

@@ -29,11 +29,11 @@ namespace CDNS {
 
     /* Functions */
 
-    int cdns_push(CdnsBlock &ctx, const QueryResponse &qr);
+    int cdns_push(CdnsBlock& ctx, const QueryResponse& qr);
 
-    int cdns_serialize_file_preamble(const FilePreamble &ctx, unsigned char **buff, size_t *buff_size);
+    int cdns_serialize_file_preamble(const FilePreamble& ctx, unsigned char** buff, size_t* buff_size);
 
-    int cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buff_size);
+    int cdns_serialize_block(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size);
 
-    int cdns_serialize_end(CdnsBlock &ctx, unsigned char **buff, size_t *buff_size);
+    int cdns_serialize_end(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size);
 }

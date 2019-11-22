@@ -1,6 +1,6 @@
 #include "cdns.h"
 
-int CDNS::cdns_push(CdnsBlock &ctx, const QueryResponse &qr)
+int CDNS::cdns_push(CdnsBlock& ctx, const QueryResponse& qr)
 {
 
     //TODO - most important part => add Q/R to block
@@ -10,7 +10,7 @@ int CDNS::cdns_push(CdnsBlock &ctx, const QueryResponse &qr)
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.1.1 **/
-static int _cdns_init_fp_bp_sp_storage_hints(const CDNS::FilePreamble &ctx, const int idx, cbor_item_t *root)
+static int _cdns_init_fp_bp_sp_storage_hints(const CDNS::FilePreamble& ctx, const int idx, cbor_item_t* root)
 {
     assert(root);
 
@@ -43,7 +43,7 @@ static int _cdns_init_fp_bp_sp_storage_hints(const CDNS::FilePreamble &ctx, cons
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.1 **/
-static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble &ctx, const int idx, cbor_item_t *root)
+static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble& ctx, const int idx, cbor_item_t* root)
 {
     assert(root);
 
@@ -57,7 +57,7 @@ static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble &ctx, co
         .value	= cbor_move(cbor_build_uint32( ctx.m_block_parameters[idx].storage_parameters.max_block_items ))
     };
 
-    cbor_item_t *storage_hints_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::StorageHintsMapIndex::storage_hints_size));
+    cbor_item_t* storage_hints_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::StorageHintsMapIndex::storage_hints_size));
     _cdns_init_fp_bp_sp_storage_hints(ctx, idx, storage_hints_map);
 
     struct cbor_pair storage_hints = {
@@ -66,7 +66,7 @@ static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble &ctx, co
     };
 
     const size_t opcodes_size = ctx.m_block_parameters[idx].storage_parameters.opcodes.size();
-    cbor_item_t *opcodes_array = cbor_new_definite_array( opcodes_size );
+    cbor_item_t* opcodes_array = cbor_new_definite_array( opcodes_size );
     for(size_t op_idx = 0; op_idx < opcodes_size; ++op_idx) {
         cbor_array_push(opcodes_array, cbor_move(cbor_build_uint8( static_cast<uint8_t>(ctx.m_block_parameters[idx].storage_parameters.opcodes[op_idx]) )));
     }
@@ -77,7 +77,7 @@ static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble &ctx, co
     };
 
     const size_t rr_types_size = ctx.m_block_parameters[idx].storage_parameters.rr_types.size();
-    cbor_item_t *rr_types_array = cbor_new_definite_array( rr_types_size );
+    cbor_item_t* rr_types_array = cbor_new_definite_array( rr_types_size );
     for(size_t rr_idx = 0; rr_idx < rr_types_size; ++rr_idx) {
         cbor_array_push(rr_types_array, cbor_move(cbor_build_uint16( static_cast<uint16_t>(ctx.m_block_parameters[idx].storage_parameters.rr_types[rr_idx]) )));
     }
@@ -99,7 +99,7 @@ static int _cdns_init_fp_bp_storage_parameters(const CDNS::FilePreamble &ctx, co
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1.2 **/
-static int _cdns_init_fp_bp_collection_parameters(const CDNS::FilePreamble &ctx, const int idx, cbor_item_t *root)
+static int _cdns_init_fp_bp_collection_parameters(const CDNS::FilePreamble& ctx, const int idx, cbor_item_t* root)
 {
     assert(root);
 
@@ -120,14 +120,14 @@ static int _cdns_init_fp_bp_collection_parameters(const CDNS::FilePreamble &ctx,
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1.1 **/
-static int _cdns_init_fp_block_parameters(const CDNS::FilePreamble &ctx, cbor_item_t *root)
+static int _cdns_init_fp_block_parameters(const CDNS::FilePreamble& ctx, cbor_item_t* root)
 {
     assert(root);
 
     for(size_t idx = 0; idx < ctx.m_block_parameters.size(); ++idx) {
-        cbor_item_t *block_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::BlockParametersMapIndex::block_parameters_size));
+        cbor_item_t* block_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::BlockParametersMapIndex::block_parameters_size));
 
-        cbor_item_t *storage_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::StorageParametersMapIndex::storage_parameters_size));
+        cbor_item_t* storage_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::StorageParametersMapIndex::storage_parameters_size));
         _cdns_init_fp_bp_storage_parameters(ctx, idx, storage_parameters_map);
 
         struct cbor_pair storage_parameters = {
@@ -137,12 +137,9 @@ static int _cdns_init_fp_block_parameters(const CDNS::FilePreamble &ctx, cbor_it
 
         cbor_map_add(block_parameters_map, storage_parameters);
 
-        //TODO
-        //if (ctx.m_block_parameters[idx].collection_parameters != nullptr) {
-        //if (ctx.m_block_parameters[idx].collection_parameters.value().query_timeout.value() != 0) {
         if (ctx.m_block_parameters[idx].collection_parameters) {
 
-            cbor_item_t *collection_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::CollectionParametersMapIndex::collection_parameters_size));
+            cbor_item_t* collection_parameters_map = cbor_new_definite_map(CDNS::get_map_index(CDNS::CollectionParametersMapIndex::collection_parameters_size));
             _cdns_init_fp_bp_collection_parameters(ctx, idx, collection_parameters_map);
 
             struct cbor_pair collection_parameters = {
@@ -160,7 +157,7 @@ static int _cdns_init_fp_block_parameters(const CDNS::FilePreamble &ctx, cbor_it
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.1 **/
-static int _cdns_init_file_preamble(const CDNS::FilePreamble &ctx, cbor_item_t *root)
+static int _cdns_init_file_preamble(const CDNS::FilePreamble& ctx, cbor_item_t* root)
 {
     assert(root);
 
@@ -196,24 +193,24 @@ static int _cdns_init_file_preamble(const CDNS::FilePreamble &ctx, cbor_item_t *
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3 **/
-int CDNS::cdns_serialize_file_preamble(const FilePreamble &ctx, unsigned char **buff, size_t *buff_size)
+int CDNS::cdns_serialize_file_preamble(const FilePreamble& ctx, unsigned char** buff, size_t* buff_size)
 {
     if(buff_size == nullptr) {
         return E_ERROR;
     }
 
-    cbor_item_t *root = cbor_new_definite_array(get_map_index(FileMapIndex::file_size));
+    cbor_item_t* root = cbor_new_definite_array(get_map_index(FileMapIndex::file_size));
     if(!root) {
         return E_ERROR;
     }
     
     cbor_array_set(root, get_map_index(FileMapIndex::file_type_id), cbor_move(cbor_build_string("C-DNS")));
 
-    cbor_item_t *file_preamble = cbor_new_definite_map( get_map_index(FilePreambleMapIndex::file_preamble_size) );
+    cbor_item_t* file_preamble = cbor_new_definite_map( get_map_index(FilePreambleMapIndex::file_preamble_size) );
     _cdns_init_file_preamble(ctx, file_preamble);
     cbor_array_set(root, get_map_index(FileMapIndex::file_preamble), cbor_move(file_preamble));
 
-    cbor_item_t *block_array = cbor_new_indefinite_array(); //TODO better would be definite array
+    cbor_item_t* block_array = cbor_new_indefinite_array(); //TODO better would be definite array
     // Thanks to definite array we will not need function `cdns_serialize_end()`
     // Current solution is here because of `libcbor` feature that counting number of elements in array to keep file format valid even when API is not used correctly
     cbor_array_set(root, get_map_index(FileMapIndex::file_block), cbor_move(block_array));
@@ -233,7 +230,7 @@ int CDNS::cdns_serialize_file_preamble(const FilePreamble &ctx, unsigned char **
     return E_SUCCESS;
 }
 
-static int _cdns_init_bp_earliest_time(const CDNS::CdnsBlock &ctx, cbor_item_t *root)
+static int _cdns_init_bp_earliest_time(const CDNS::CdnsBlock& ctx, cbor_item_t* root)
 {
     assert(root);
 
@@ -244,11 +241,11 @@ static int _cdns_init_bp_earliest_time(const CDNS::CdnsBlock &ctx, cbor_item_t *
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2.1 **/
-static int _cdns_init_block_preamble(const CDNS::CdnsBlock &ctx, cbor_item_t *root)
+static int _cdns_init_block_preamble(const CDNS::CdnsBlock& ctx, cbor_item_t* root)
 {
     assert(root);
 
-    cbor_item_t *earliest_time_array = cbor_new_definite_array(2);
+    cbor_item_t* earliest_time_array = cbor_new_definite_array(2);
     _cdns_init_bp_earliest_time(ctx, earliest_time_array);
 
     struct cbor_pair earliest_time = {
@@ -268,7 +265,7 @@ static int _cdns_init_block_preamble(const CDNS::CdnsBlock &ctx, cbor_item_t *ro
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2.2 **/
-static int _cdns_init_block_statistics(const CDNS::CdnsBlock &ctx, cbor_item_t *root)
+static int _cdns_init_block_statistics(const CDNS::CdnsBlock& ctx, cbor_item_t* root)
 {
     assert(root);
 
@@ -315,7 +312,7 @@ static int _cdns_init_block_statistics(const CDNS::CdnsBlock &ctx, cbor_item_t *
     return CDNS::E_SUCCESS;
 }
 
-static int _cdns_init_bt_ip_address(const CDNS::CdnsBlock &ctx, cbor_item_t *root)
+static int _cdns_init_bt_ip_address(const CDNS::CdnsBlock& ctx, cbor_item_t* root)
 {
     assert(root);
 
@@ -323,11 +320,11 @@ static int _cdns_init_bt_ip_address(const CDNS::CdnsBlock &ctx, cbor_item_t *roo
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2.3 **/
-static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root)
+static int _cdns_init_block_tables(const CDNS::CdnsBlock& ctx, cbor_item_t* root)
 {
     assert(root);
 
-    cbor_item_t *ip_address_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* ip_address_array = cbor_new_definite_array( 1UL /* TODO */);
     _cdns_init_bt_ip_address(ctx, ip_address_array);
 
     struct cbor_pair ip_address = {
@@ -335,7 +332,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( ip_address_array )
     };
 
-    cbor_item_t *classtype_array = cbor_new_definite_array( 1UL /* TODO*/);
+    cbor_item_t* classtype_array = cbor_new_definite_array( 1UL /* TODO*/);
     //TODO init
 
     struct cbor_pair classtype = {
@@ -343,7 +340,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( classtype_array )
     };
 
-    cbor_item_t *name_rdata_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* name_rdata_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair name_rdata = {
@@ -351,7 +348,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( name_rdata_array )
     };
 
-    cbor_item_t *qr_siq_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* qr_siq_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair qr_sig = {
@@ -359,7 +356,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( qr_siq_array )
     };
 
-    cbor_item_t *qlist_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* qlist_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair qlist = {
@@ -367,7 +364,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( qlist_array )
     };
 
-    cbor_item_t *qrr_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* qrr_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair qrr = {
@@ -375,7 +372,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( qrr_array )
     };
 
-    cbor_item_t *rrlist_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* rrlist_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair rrlist = {
@@ -383,7 +380,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( rrlist_array )
     };
 
-    cbor_item_t *rr_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* rr_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair rr = {
@@ -391,7 +388,7 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
         .value	= cbor_move( rr_array )
     };
 
-    cbor_item_t *malformed_message_data_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* malformed_message_data_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair malformed_message_data = {
@@ -413,16 +410,16 @@ static int _cdns_init_block_tables(const CDNS::CdnsBlock &ctx, cbor_item_t *root
 }
 
 /**	https://tools.ietf.org/html/rfc8618#section-7.3.2 **/
-int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buff_size)
+int CDNS::cdns_serialize_block(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size)
 {
     if (buff_size == nullptr) {
         return E_ERROR;
     }
 
 
-    cbor_item_t *root = cbor_new_definite_map( get_map_index(BlockMapIndex::block_size) );
+    cbor_item_t* root = cbor_new_definite_map( get_map_index(BlockMapIndex::block_size) );
 
-    cbor_item_t *block_preamble_map = cbor_new_definite_map(get_map_index(BlockPreambleMapIndex::block_preamble_size));
+    cbor_item_t* block_preamble_map = cbor_new_definite_map(get_map_index(BlockPreambleMapIndex::block_preamble_size));
     _cdns_init_block_preamble(ctx, block_preamble_map);
 
     struct cbor_pair block_preamble = {
@@ -430,7 +427,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
         .value	= cbor_move( block_preamble_map )
     };
 
-    cbor_item_t *block_statistics_map = cbor_new_definite_map(get_map_index(BlockStatisticsMapIndex::block_statistics_size));
+    cbor_item_t* block_statistics_map = cbor_new_definite_map(get_map_index(BlockStatisticsMapIndex::block_statistics_size));
     _cdns_init_block_statistics(ctx, block_statistics_map);
 
     struct cbor_pair block_statistics = {
@@ -438,7 +435,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
         .value	= cbor_move( block_statistics_map )
     };
 
-    cbor_item_t *block_tables_map = cbor_new_definite_map(get_map_index(BlockTablesMapIndex::block_tables_size));
+    cbor_item_t* block_tables_map = cbor_new_definite_map(get_map_index(BlockTablesMapIndex::block_tables_size));
     _cdns_init_block_tables(ctx, block_tables_map);
 
     struct cbor_pair block_tables = {
@@ -446,7 +443,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
         .value	= cbor_move( block_tables_map )
     };
 
-    cbor_item_t *query_responses_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* query_responses_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair query_responses = {
@@ -454,7 +451,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
         .value	= cbor_move( query_responses_array )
     };
 
-    cbor_item_t *address_event_counts_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* address_event_counts_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair address_event_counts = {
@@ -462,7 +459,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
         .value	= cbor_move( address_event_counts_array )
     };
 
-    cbor_item_t *malformed_messages_array = cbor_new_definite_array( 1UL /* TODO */);
+    cbor_item_t* malformed_messages_array = cbor_new_definite_array( 1UL /* TODO */);
     //TODO init
 
     struct cbor_pair malformed_messages = {
@@ -493,7 +490,7 @@ int CDNS::cdns_serialize_block(CdnsBlock &ctx, unsigned char **buff, size_t *buf
     return E_SUCCESS;
 }
 
-int CDNS::cdns_serialize_end(CdnsBlock &ctx, unsigned char **buff, size_t *buff_size)
+int CDNS::cdns_serialize_end(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size)
 {
     if (buff_size == nullptr) {
         return E_ERROR;

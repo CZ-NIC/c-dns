@@ -13,8 +13,8 @@ namespace CDNS {
      */
     template <class T> struct hash {
         std::size_t operator()(T const& data) const {
-            const char *start = reinterpret_cast<const char*>(&data);
-            const char *end = start + sizeof(data);
+            const char* start = reinterpret_cast<const char*>(&data);
+            const char* end = start + sizeof(data);
             uint32_t ret = ~0U;
 
             for ( ; start < end; ) {
