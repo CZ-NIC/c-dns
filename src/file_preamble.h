@@ -74,7 +74,8 @@ namespace CDNS {
 
         FilePreamble(){}
 
-        FilePreamble(std::vector<BlockParameters>& bps) : m_block_parameters(bps) {}
+        FilePreamble(std::vector<BlockParameters>& bps, std::optional<uint8_t> private_version = std::nullopt)
+            : m_block_parameters(bps) {}
 
         index_t add_block_parameters(BlockParameters& bp) {
             m_block_parameters.push_back(bp);

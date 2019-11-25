@@ -456,50 +456,50 @@ namespace CDNS {
      *
      * Servers as "interface" between the C-DNS library and its user
      */
-    struct generic_qr {
+    struct GenericQueryResponse {
         /**
          * @brief Default constructor
          */
-        generic_qr() : ts(nullptr), client_ip(nullptr), client_port(nullptr), transaction_id(nullptr),
-                       server_ip(nullptr), server_port(nullptr), qr_transport_flags(nullptr),
-                       qr_type(nullptr), qr_sig_flags(nullptr), query_opcode(nullptr),
-                       qr_dns_flags(nullptr), query_rcode(nullptr), query_classtype(nullptr),
-                       query_qdcount(nullptr), query_ancount(nullptr), query_nscount(nullptr),
-                       query_arcount(nullptr), query_edns_version(nullptr), query_udp_size(nullptr),
-                       opt_rdata(nullptr), response_rcode(nullptr), client_hoplimit(nullptr),
-                       response_delay(nullptr), query_name(nullptr), query_size(nullptr),
-                       response_size(nullptr), bailiwick(nullptr), processing_flags(nullptr),
-                       query_questions(nullptr), query_answers(nullptr), query_authority(nullptr),
-                       query_additional(nullptr), response_questions(nullptr), response_answers(nullptr),
-                       response_authority(nullptr), response_additional(nullptr) {}
+        GenericQueryResponse() : ts(nullptr), client_ip(nullptr), client_port(nullptr), transaction_id(nullptr),
+                                 server_ip(nullptr), server_port(nullptr), qr_transport_flags(nullptr),
+                                 qr_type(nullptr), qr_sig_flags(nullptr), query_opcode(nullptr),
+                                 qr_dns_flags(nullptr), query_rcode(nullptr), query_classtype(nullptr),
+                                 query_qdcount(nullptr), query_ancount(nullptr), query_nscount(nullptr),
+                                 query_arcount(nullptr), query_edns_version(nullptr), query_udp_size(nullptr),
+                                 opt_rdata(nullptr), response_rcode(nullptr), client_hoplimit(nullptr),
+                                 response_delay(nullptr), query_name(nullptr), query_size(nullptr),
+                                 response_size(nullptr), bailiwick(nullptr), processing_flags(nullptr),
+                                 query_questions(nullptr), query_answers(nullptr), query_authority(nullptr),
+                                 query_additional(nullptr), response_questions(nullptr), response_answers(nullptr),
+                                 response_authority(nullptr), response_additional(nullptr) {}
 
         /**
          * @brief Construct a new generic qr object
          */
-        generic_qr(Timestamp* time, std::string* c_ip, uint16_t* c_port, uint16_t* id, std::string* s_ip,
-                   uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, QueryResponseTypeValues* type,
-                   QueryResponseFlagsMask* sig_flags, uint8_t* opcode, DNSFlagsMask* dns_flags,
-                   uint16_t* q_rcode, ClassType* q_classtype, uint16_t* q_qdcount, uint16_t* q_ancount,
-                   uint16_t* q_nscount, uint16_t* q_arcount, uint8_t* q_edns_v, uint16_t* q_udp_size,
-                   std::string* opt, uint16_t* r_rcode, uint8_t* hoplimit, int64_t* r_delay,
-                   std::string* q_name, std::size_t* q_size, std::size_t* r_size, std::string* bwick,
-                   ResponseProcessingFlagsMask* proc_flags, std::vector<std::string*>* q_questions,
-                   std::vector<std::string*>* q_answers, std::vector<std::string*>* q_authority,
-                   std::vector<std::string*>* q_additional, std::vector<std::string*>* r_questions,
-                   std::vector<std::string*>* r_answers, std::vector<std::string*>* r_authority,
-                   std::vector<std::string*>* r_additional)
-                   : ts(time), client_ip(c_ip), client_port(c_port), transaction_id(id), server_ip(s_ip),
-                     server_port(s_port), qr_transport_flags(tr_flags), qr_type(type), qr_sig_flags(sig_flags),
-                     query_opcode(opcode), qr_dns_flags(dns_flags), query_rcode(q_rcode),
-                     query_classtype(q_classtype), query_qdcount(q_qdcount), query_ancount(q_ancount),
-                     query_nscount(q_nscount), query_arcount(q_arcount), query_edns_version(q_edns_v),
-                     query_udp_size(q_udp_size), opt_rdata(opt), response_rcode(r_rcode),
-                     client_hoplimit(hoplimit), response_delay(r_delay), query_name(q_name),
-                     query_size(q_size), response_size(r_size), bailiwick(bwick), processing_flags(proc_flags),
-                     query_questions(q_questions), query_answers(q_answers), query_authority(q_authority),
-                     query_additional(q_additional), response_questions(r_questions),
-                     response_answers(r_answers), response_authority(r_authority),
-                     response_additional(r_additional) {}
+        GenericQueryResponse(Timestamp* time, std::string* c_ip, uint16_t* c_port, uint16_t* id,
+                             std::string* s_ip, uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags,
+                             QueryResponseTypeValues* type, QueryResponseFlagsMask* sig_flags, uint8_t* opcode,
+                             DNSFlagsMask* dns_flags, uint16_t* q_rcode, ClassType* q_classtype,
+                             uint16_t* q_qdcount, uint16_t* q_ancount, uint16_t* q_nscount, uint16_t* q_arcount,
+                             uint8_t* q_edns_v, uint16_t* q_udp_size, std::string* opt, uint16_t* r_rcode,
+                             uint8_t* hoplimit, int64_t* r_delay, std::string* q_name, std::size_t* q_size,
+                             std::size_t* r_size, std::string* bwick, ResponseProcessingFlagsMask* proc_flags,
+                             std::vector<std::string*>* q_questions, std::vector<std::string*>* q_answers,
+                             std::vector<std::string*>* q_authority, std::vector<std::string*>* q_additional,
+                             std::vector<std::string*>* r_questions, std::vector<std::string*>* r_answers,
+                             std::vector<std::string*>* r_authority, std::vector<std::string*>* r_additional)
+            : ts(time), client_ip(c_ip), client_port(c_port), transaction_id(id), server_ip(s_ip),
+              server_port(s_port), qr_transport_flags(tr_flags), qr_type(type), qr_sig_flags(sig_flags),
+              query_opcode(opcode), qr_dns_flags(dns_flags), query_rcode(q_rcode),
+              query_classtype(q_classtype), query_qdcount(q_qdcount), query_ancount(q_ancount),
+              query_nscount(q_nscount), query_arcount(q_arcount), query_edns_version(q_edns_v),
+              query_udp_size(q_udp_size), opt_rdata(opt), response_rcode(r_rcode),
+              client_hoplimit(hoplimit), response_delay(r_delay), query_name(q_name),
+              query_size(q_size), response_size(r_size), bailiwick(bwick), processing_flags(proc_flags),
+              query_questions(q_questions), query_answers(q_answers), query_authority(q_authority),
+              query_additional(q_additional), response_questions(r_questions),
+              response_answers(r_answers), response_authority(r_authority),
+              response_additional(r_additional) {}
 
         Timestamp* ts;
         std::string* client_ip;
@@ -553,19 +553,19 @@ namespace CDNS {
      *
      * Servers as "interface" between the C-DNS library and its user
      */
-    struct generic_aec {
+    struct GenericAddressEventCount {
         /**
          * @brief Default constructor
          */
-        generic_aec() : ae_type(nullptr), ae_code(nullptr), ae_transport_flags(nullptr),
-                        ip_address(nullptr) {}
+        GenericAddressEventCount() : ae_type(nullptr), ae_code(nullptr), ae_transport_flags(nullptr),
+                                     ip_address(nullptr) {}
 
         /**
          * @brief Construct a new generic aec object
          */
-        generic_aec(AddressEventTypeValues* type, uint8_t* code, QueryResponseTransportFlagsMask* tr_flags,
-                    std::string* ip)
-                    : ae_type(type), ae_code(code), ae_transport_flags(tr_flags), ip_address(ip) {}
+        GenericAddressEventCount(AddressEventTypeValues* type, uint8_t* code,
+                                 QueryResponseTransportFlagsMask* tr_flags, std::string* ip)
+            : ae_type(type), ae_code(code), ae_transport_flags(tr_flags), ip_address(ip) {}
 
         AddressEventTypeValues* ae_type;
         uint8_t* ae_code;
@@ -578,20 +578,20 @@ namespace CDNS {
      *
      * Servers as "interface" between the C-DNS library and its user
      */
-    struct generic_mm {
+    struct GenericMalformedMessage {
         /**
          * @brief Default constructor
          */
-        generic_mm() : ts(nullptr), client_ip(nullptr), client_port(nullptr), server_ip(nullptr),
-                       server_port(nullptr), mm_transport_flags(nullptr), mm_payload(nullptr) {}
+        GenericMalformedMessage() : ts(nullptr), client_ip(nullptr), client_port(nullptr), server_ip(nullptr),
+                                    server_port(nullptr), mm_transport_flags(nullptr), mm_payload(nullptr) {}
 
         /**
          * @brief Construct a new generic mm object
          */
-        generic_mm(Timestamp* time, std::string* c_ip, uint16_t* c_port, std::string* s_ip,
-                   uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, std::string* payload)
-                   : ts(time), client_ip(c_ip), client_port(c_port), server_ip(s_ip), server_port(s_port),
-                     mm_transport_flags(tr_flags), mm_payload(payload) {}
+        GenericMalformedMessage(Timestamp* time, std::string* c_ip, uint16_t* c_port, std::string* s_ip,
+                                uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, std::string* payload)
+            : ts(time), client_ip(c_ip), client_port(c_port), server_ip(s_ip), server_port(s_port),
+              mm_transport_flags(tr_flags), mm_payload(payload) {}
 
         Timestamp* ts;
         std::string* client_ip;
@@ -610,11 +610,22 @@ namespace CDNS {
     class CdnsBlock {
         public:
 
-        CdnsBlock() {}
+        CdnsBlock() { m_block_preamble.block_parameters_index = 0; }
 
         /**
          * @todo void write_cbor(CborEncoder &enc);
          */
+
+        /**
+         * @brief Get index for Block parameters of this block
+         * @return Index of this block's Block parameters
+         */
+        const index_t get_block_parameters_index() const {
+            if (m_block_preamble.block_parameters_index)
+                return m_block_preamble.block_parameters_index.value();
+            else
+                return 0;
+        }
 
         /**
          * @brief Add IP address to IP address Block table
@@ -736,7 +747,7 @@ namespace CDNS {
          * @param bp Block parameters with hints for the current Block
          * @return `true` when the DNS record is inserted into the Block
          */
-        bool add_question_response_record(const generic_qr& qr, const BlockParameters& bp);
+        bool add_question_response_record(const GenericQueryResponse& qr, const BlockParameters& bp);
 
         /**
          * @todo Add new Address Event Count to C-DNS block.

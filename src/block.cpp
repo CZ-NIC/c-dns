@@ -1,6 +1,6 @@
 #include "block.h"
 
-bool CDNS::CdnsBlock::add_question_response_record(const generic_qr& gr, const BlockParameters& bp)
+bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr, const BlockParameters& bp)
 {
     uint32_t qr_hints = bp.storage_parameters.storage_hints.query_response_hints;
     uint32_t qr_sig_hints = bp.storage_parameters.storage_hints.query_response_signature_hints;
