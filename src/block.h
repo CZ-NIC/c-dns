@@ -13,6 +13,7 @@
 #include "file_preamble.h"
 
 namespace CDNS {
+    class CdnsEncoder;
 
     static constexpr uint64_t MILIS_PER_SEC = 1000UL;
     static constexpr uint64_t MICROS_PER_SEC = 1000000UL;
@@ -64,6 +65,12 @@ namespace CDNS {
             return false;
         }
 
+        /**
+         * @brief Serialize the Timestamp to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         uint64_t m_secs;
         uint64_t m_ticks;
     };
@@ -98,6 +105,12 @@ namespace CDNS {
         const ClassType& key() const {
             return *this;
         }
+
+        /**
+         * @brief Serialize the ClassType to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
 
         uint16_t type;
         uint16_t class_;
@@ -144,6 +157,12 @@ namespace CDNS {
         const QueryResponseSignature& key() const {
             return *this;
         }
+
+        /**
+         * @brief Serialize the QueryResponseSignature to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
 
         std::optional<index_t> server_address_index;
         std::optional<uint16_t> server_port;
@@ -195,6 +214,12 @@ namespace CDNS {
             return *this;
         }
 
+        /**
+         * @brief Serialize the Question to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         index_t name_index;
         index_t classtype_index;
     };
@@ -230,6 +255,12 @@ namespace CDNS {
         const RR& key() const {
             return *this;
         }
+
+        /**
+         * @brief Serialize the RR to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
 
         index_t name_index;
         index_t classtype_index;
@@ -270,6 +301,12 @@ namespace CDNS {
             return *this;
         }
 
+        /**
+         * @brief Serialize the MalformedMessageData to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<index_t> server_address_index;
         std::optional<uint16_t> server_port;
         std::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
@@ -280,6 +317,12 @@ namespace CDNS {
      * @brief Block table's Response Processing Data structure
      */
     struct ResponseProcessingData {
+        /**
+         * @brief Serialize the ResponseProcessingData to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<index_t> bailiwick_index;
         std::optional<ResponseProcessingFlagsMask> processing_flags;
     };
@@ -288,6 +331,12 @@ namespace CDNS {
      * @brief Block table's Query Response Extended structure
      */
     struct QueryResponseExtended {
+        /**
+         * @brief Serialize the QueryResponseExtended to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<index_t> question_index;
         std::optional<index_t> answer_index;
         std::optional<index_t> authority_index;
@@ -298,6 +347,12 @@ namespace CDNS {
      * @brief Block preamble structure
      */
     struct BlockPreamble {
+        /**
+         * @brief Serialize the BlockPreamble to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<Timestamp> earliest_time;
         std::optional<index_t> block_parameters_index;
     };
@@ -306,6 +361,12 @@ namespace CDNS {
      * @brief Block statistics structure
      */
     struct BlockStatistics {
+        /**
+         * @brief Serialize the BlockStatistics to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<unsigned> processed_messages;
         std::optional<unsigned> qr_data_items;
         std::optional<unsigned> unmatched_queries;
@@ -318,6 +379,12 @@ namespace CDNS {
      * @brief QueryResponse item structure
      */
     struct QueryResponse {
+        /**
+         * @brief Serialize the QueryResponse to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
         std::optional<uint16_t> client_port;
@@ -337,7 +404,7 @@ namespace CDNS {
      * @brief Address Event Count item structure
      */
     struct AddressEventCount {
-        AddressEventCount() : ae_type(), ae_address_index(0) {}
+        AddressEventCount() : ae_type(), ae_address_index(0), ae_count(0) {}
 
         /**
          * @brief Equality operator (needed for KeyRef class)
@@ -347,7 +414,8 @@ namespace CDNS {
         bool operator==(const AddressEventCount& rhs) const {
             return (ae_type == rhs.ae_type) && (ae_code == rhs.ae_code) &&
                    (ae_transport_flags == rhs.ae_transport_flags) &&
-                   (ae_address_index == rhs.ae_address_index);
+                   (ae_address_index == rhs.ae_address_index) &&
+                   (ae_count == rhs.ae_count);
         }
 
         /**
@@ -366,18 +434,30 @@ namespace CDNS {
             return *this;
         }
 
+        /**
+         * @brief Serialize the AddressEventCount to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         AddressEventTypeValues ae_type;
         std::optional<uint8_t> ae_code;
         std::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         index_t ae_address_index;
-        //uint64_t ae_count;
+        uint64_t ae_count;
     };
 
     /**
      * @brief Malformed Message item structure
      */
     struct MalformedMessage {
-        std::optional<uint64_t> time_offset;
+        /**
+         * @brief Serialize the MalformedMessage to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
+        std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
         std::optional<uint16_t> client_port;
         std::optional<index_t> message_data_index;
@@ -414,6 +494,12 @@ namespace CDNS {
             return data;
         }
 
+        /**
+         * @brief Serialize the StringItem to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::string data;
     };
 
@@ -447,6 +533,12 @@ namespace CDNS {
         const std::vector<index_t>& key() const {
             return list;
         }
+
+        /**
+         * @brief Serialize the IndexListItem to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
 
         std::vector<index_t> list;
     };
@@ -613,8 +705,10 @@ namespace CDNS {
         CdnsBlock() { m_block_preamble.block_parameters_index = 0; }
 
         /**
-         * @todo void write_cbor(CborEncoder &enc);
+         * @brief Serialize Block to C-DNS CBOR representation
+         * @param enc C-DNS encoder
          */
+        void write(CdnsEncoder& enc);
 
         /**
          * @brief Get index for Block parameters of this block
@@ -771,6 +865,12 @@ namespace CDNS {
         std::optional<BlockStatistics> m_block_statistics;
 
         private: // @todo make all member variables private
+
+        /**
+         * @brief Serialize Block tables to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write_blocktables(CdnsEncoder& enc);
 
         // Block Tables
         BlockTable<StringItem, std::string> m_ip_address;
