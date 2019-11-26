@@ -16,9 +16,9 @@
 #include "block.h"
 #include "hash.h"
 #include "writer.h"
+#include "cdns_encoder.h"
 
 namespace CDNS {
-
     /* Other */
 
     typedef enum
