@@ -750,6 +750,14 @@ namespace CDNS {
         bool add_question_response_record(const GenericQueryResponse& qr, const BlockParameters& bp);
 
         /**
+         * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
+         * @return Current number of items in the Block
+         */
+        std::size_t get_item_count() const {
+            return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
+        }
+
+        /**
          * @todo Add new Address Event Count to C-DNS block.
          */
         //bool add_address_event_count(const generic_aec& aec, const BlockParameters& bp);

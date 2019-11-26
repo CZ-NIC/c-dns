@@ -9,6 +9,7 @@
 #include "dns.h"
 
 namespace CDNS {
+    class CdnsEncoder;
 
     static constexpr uint8_t VERSION_MAJOR = 1;
     static constexpr uint8_t VERSION_MINOR = 0;
@@ -18,6 +19,12 @@ namespace CDNS {
      * @brief Storage Hints structure
      */
     struct StorageHints {
+        /**
+         * @brief Serialize the Storage hints to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         /*QueryResponseHintsMask*/ uint32_t query_response_hints;
         /*QueryResponseSignatureHintsMask*/ uint32_t query_response_signature_hints;
         /*RrHintsMask*/ uint8_t rr_hints;
@@ -28,6 +35,12 @@ namespace CDNS {
      * @brief Storage Parameters structure
      */
     struct StorageParameters {
+        /**
+         * @brief Serialize the Storage parameters to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         uint64_t ticks_per_second;
         uint64_t max_block_items;
         StorageHints storage_hints;
@@ -46,6 +59,12 @@ namespace CDNS {
      * @brief Collection Parameters structure
      */
     struct CollectionParameters {
+        /**
+         * @brief Serialize the Collection parameters to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         std::optional<uint64_t> query_timeout;
         std::optional<uint64_t> skew_timeout;
         std::optional<uint64_t> snaplen;
@@ -62,6 +81,12 @@ namespace CDNS {
      * @brief Block Parameters structure
      */
     struct BlockParameters {
+        /**
+         * @brief Serialize the Block parameters to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
+
         StorageParameters storage_parameters;
         std::optional<CollectionParameters> collection_parameters;
     };
@@ -72,26 +97,55 @@ namespace CDNS {
     class FilePreamble {
         public:
 
+        /**
+         * @brief Default constructor
+         */
         FilePreamble(){}
 
+        /**
+         * @brief Construct a new FilePreamble object with already filled Block parameters
+         * @param bps Vector of Block parameters to be used in the C-DNS file
+         * @param private_version Optional private version of C-DNS file standard
+         */
         FilePreamble(std::vector<BlockParameters>& bps, std::optional<uint8_t> private_version = std::nullopt)
             : m_block_parameters(bps) {}
 
+        /**
+         * @brief Add new filled Block parameters to File preamble
+         * @param bp New Block parameters to add
+         * @return Index of the newly inserted Block parameters in the Block parameters vector in File preamble
+         */
         index_t add_block_parameters(BlockParameters& bp) {
             m_block_parameters.push_back(bp);
             return m_block_parameters.size() - 1;
         }
 
+        /**
+         * @brief Get the number of items in Block parameters vector in File preamble
+         * @return Number of items in Block parameters vector
+         */
         std::size_t block_parameters_size() const {
             return m_block_parameters.size();
         }
 
+        /**
+         * @brief Get Block parameters from File preamble based on the index to Block parameters vector
+         * @param index Index of the Block parameters to find
+         * @throw std::runtime_error if given index is out of bounds of the Block parameter vector
+         * @return Block parameters under the given index
+         */
         BlockParameters& get_block_parameters(index_t index) {
             if (index < m_block_parameters.size())
                 return m_block_parameters[index];
 
             throw std::runtime_error("Block parameters index out of range.");
         }
+
+        /**
+         * @brief Serialize the File preamble to C-DNS CBOR representation
+         * @param enc C-DNS encoder
+         */
+        void write(CdnsEncoder& enc);
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;
