@@ -66,6 +66,44 @@ namespace CDNS {
         }
 
         /**
+         * @brief Calculate time difference againt given Timestamp
+         * @param reference Timestamp to calculate the difference against
+         * @param ticks_per_second Subsecond resolution
+         * @throw std::runtime_error if ticks_per_second is 0 (prevents division by 0)
+         * @return Difference between the two timestamps in ticks per second
+         */
+        int64_t get_time_offset(const Timestamp& reference, uint64_t ticks_per_second) {
+            if (ticks_per_second == 0)
+                throw std::runtime_error("Ticks per second resolution is zero!");
+
+            int64_t secs, ticks;
+
+            // Substract seconds part of timestamp
+            if (reference.m_secs <= m_secs) {
+                secs = m_secs - reference.m_secs;
+            }
+            else {
+                secs = -1 * (reference.m_secs - m_secs);
+            }
+
+            // Substract subseconds part of timestamp
+            if (reference.m_ticks <= m_ticks) {
+                ticks = m_ticks - reference.m_ticks;
+            }
+            else {
+                ticks = -1 * (reference.m_ticks - m_ticks);
+            }
+
+            // Calculate timestamp offset
+            int64_t diff_secs = (secs + (ticks / ticks_per_second)) * ticks_per_second;
+            int64_t diff_ticks = std::abs(ticks) % ticks_per_second;
+            if (ticks < 0)
+                diff_ticks *= -1;
+
+            return diff_secs + diff_ticks;
+        }
+
+        /**
          * @brief Serialize the Timestamp to C-DNS CBOR representation
          * @param enc C-DNS encoder
          */
@@ -353,7 +391,7 @@ namespace CDNS {
          */
         void write(CdnsEncoder& enc);
 
-        std::optional<Timestamp> earliest_time;
+        Timestamp earliest_time;
         std::optional<index_t> block_parameters_index;
     };
 
@@ -382,8 +420,10 @@ namespace CDNS {
         /**
          * @brief Serialize the QueryResponse to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @param earliest Earliest timestamp in the Block
+         * @param ticks_per_second Subsecond resolution of timestamps
          */
-        void write(CdnsEncoder& enc);
+        void write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
         std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
@@ -454,8 +494,10 @@ namespace CDNS {
         /**
          * @brief Serialize the MalformedMessage to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @param earliest Earliest timestamp in the Block
+         * @param ticks_per_second Subsecond resolution of timestamps
          */
-        void write(CdnsEncoder& enc);
+        void write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
         std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
@@ -703,9 +745,12 @@ namespace CDNS {
         public:
 
         /**
-         * @brief Default constructor
+         * @brief Construct a new CdnsBlock object
+         * @param bp Block parameters for this block
          */
-        CdnsBlock() { m_block_preamble.block_parameters_index = 0; }
+        CdnsBlock(BlockParameters& bp) : m_block_parameters(bp) {
+            m_block_preamble.block_parameters_index = 0;
+        }
 
         /**
          * @brief Serialize Block to C-DNS CBOR representation
@@ -890,5 +935,7 @@ namespace CDNS {
         std::vector<QueryResponse> m_query_responses;
         std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts;
         std::vector<MalformedMessage> m_malformed_messages;
+
+        BlockParameters& m_block_parameters;
     };
 }

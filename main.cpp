@@ -211,7 +211,7 @@ int main(int argc, char** argv)
         {}
     };
 
-    CDNS::CdnsBlock cdns_block;
+    CDNS::CdnsBlock cdns_block(block_parameters[0]);
     cdns_push(cdns_block, query);
 
     buff_len = 1024UL;

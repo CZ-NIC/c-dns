@@ -281,19 +281,14 @@ void CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
 
 void CDNS::BlockPreamble::write(CdnsEncoder& enc)
 {
-    std::size_t fields = !!earliest_time + !!block_parameters_index;
-
-    if (fields == 0)
-        return;
+    std::size_t fields = 1 + !!block_parameters_index;
 
     // Start Block preamble map
     enc.write_map_start(fields);
 
     // Write Earliest time
-    if (earliest_time) {
-        enc.write(get_map_index(CDNS::BlockPreambleMapIndex::earliest_time));
-        earliest_time.value().write(enc);
-    }
+    enc.write(get_map_index(CDNS::BlockPreambleMapIndex::earliest_time));
+    earliest_time.write(enc);
 
     // Write Block parameters index
     if (block_parameters_index) {
@@ -350,7 +345,7 @@ void CDNS::BlockStatistics::write(CdnsEncoder& enc)
     }
 }
 
-void CDNS::QueryResponse::write(CdnsEncoder& enc)
+void CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
 {
     std::size_t fields = !!time_offset + !!client_address_index + !!client_port + !!transaction_id
                          + !!qr_signature_index + !!client_hoplimit + !!response_delay + !! query_name_index
@@ -366,8 +361,7 @@ void CDNS::QueryResponse::write(CdnsEncoder& enc)
     // Write Time offset
     if (time_offset) {
         enc.write(get_map_index(CDNS::QueryResponseMapIndex::time_offset));
-        uint64_t offset = 0; /** @todo calculate time offset */
-        enc.write(offset);
+        enc.write(static_cast<uint64_t>(time_offset->get_time_offset(earliest, ticks_per_second)));
     }
 
     // Write Client address index
@@ -475,7 +469,7 @@ void CDNS::AddressEventCount::write(CdnsEncoder& enc)
     enc.write(ae_count);
 }
 
-void CDNS::MalformedMessage::write(CdnsEncoder& enc)
+void CDNS::MalformedMessage::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
 {
     std::size_t fields = !!time_offset + !!client_address_index + !!client_port + !!message_data_index;
 
@@ -488,8 +482,7 @@ void CDNS::MalformedMessage::write(CdnsEncoder& enc)
     // Write Time offset
     if (time_offset) {
         enc.write(get_map_index(CDNS::MalformedMessageMapIndex::time_offset));
-        uint64_t offset = 0; /** @todo Calculate time offset */
-        enc.write(offset);
+        enc.write(static_cast<uint64_t>(time_offset->get_time_offset(earliest, ticks_per_second)));
     }
 
     // Write Client address index
@@ -650,7 +643,7 @@ void CDNS::CdnsBlock::write(CdnsEncoder& enc)
         enc.write(get_map_index(CDNS::BlockMapIndex::query_responses));
         enc.write_array_start(m_query_responses.size());
         for (auto& qr : m_query_responses) {
-            qr.write(enc);
+            qr.write(enc, m_block_preamble.earliest_time, m_block_parameters.storage_parameters.ticks_per_second);
         }
     }
 
@@ -670,7 +663,7 @@ void CDNS::CdnsBlock::write(CdnsEncoder& enc)
         enc.write(get_map_index(CDNS::BlockMapIndex::malformed_messages));
         enc.write_array_start(m_malformed_messages.size());
         for (auto& mm : m_malformed_messages) {
-            mm.write(enc);
+            mm.write(enc, m_block_preamble.earliest_time, m_block_parameters.storage_parameters.ticks_per_second);
         }
     }
 }

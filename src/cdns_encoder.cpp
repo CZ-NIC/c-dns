@@ -5,7 +5,8 @@
 
 CDNS::CdnsEncoder::CdnsEncoder(FilePreamble& file_preamble, std::string& output_name,
                                CborOutputCompression compression)
-    : m_file_preamble(file_preamble), m_block(), m_p(m_buffer), m_avail(BUFFER_SIZE), m_bytes_written(0)
+    : m_file_preamble(file_preamble), m_block(file_preamble.get_block_parameters(0)), m_p(m_buffer),
+      m_avail(BUFFER_SIZE), m_bytes_written(0)
 {
     switch (compression) {
         case CborOutputCompression::NO_COMPRESSION:
