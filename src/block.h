@@ -702,6 +702,9 @@ namespace CDNS {
     class CdnsBlock {
         public:
 
+        /**
+         * @brief Default constructor
+         */
         CdnsBlock() { m_block_preamble.block_parameters_index = 0; }
 
         /**
@@ -844,14 +847,6 @@ namespace CDNS {
         bool add_question_response_record(const GenericQueryResponse& qr, const BlockParameters& bp);
 
         /**
-         * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
-         * @return Current number of items in the Block
-         */
-        std::size_t get_item_count() const {
-            return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
-        }
-
-        /**
          * @todo Add new Address Event Count to C-DNS block.
          */
         //bool add_address_event_count(const generic_aec& aec, const BlockParameters& bp);
@@ -861,6 +856,14 @@ namespace CDNS {
          */
         //bool add_malformed_message(const generic_mm& mm, const BlockParameters& bp);
 
+        /**
+         * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
+         * @return Current number of items in the Block
+         */
+        std::size_t get_item_count() const {
+            return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
+        }
+
         BlockPreamble m_block_preamble;
         std::optional<BlockStatistics> m_block_statistics;
 
@@ -869,8 +872,9 @@ namespace CDNS {
         /**
          * @brief Serialize Block tables to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @param fields Number of non-empty fields in Block tables map
          */
-        void write_blocktables(CdnsEncoder& enc);
+        void write_blocktables(CdnsEncoder& enc, std::size_t& fields);
 
         // Block Tables
         BlockTable<StringItem, std::string> m_ip_address;

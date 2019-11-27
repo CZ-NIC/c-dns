@@ -527,12 +527,8 @@ void CDNS::IndexListItem::write(CdnsEncoder& enc)
     }
 }
 
-void CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc)
+void CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fields)
 {
-    std::size_t fields = !!m_ip_address.size() + !!m_classtype.size() + !!m_name_rdata.size()
-                         + !!m_qr_sig.size() + !!m_qlist.size() + !!m_qrr.size() + !!m_rrlist.size()
-                         + !!m_rr.size() + !!m_malformed_messages.size();
-
     if (fields == 0)
         return;
 
@@ -623,7 +619,60 @@ void CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc)
 
 void CDNS::CdnsBlock::write(CdnsEncoder& enc)
 {
+    std::size_t blocktable_fields = !!m_ip_address.size() + !!m_classtype.size() + !!m_name_rdata.size()
+                         + !!m_qr_sig.size() + !!m_qlist.size() + !!m_qrr.size() + !!m_rrlist.size()
+                         + !!m_rr.size() + !!m_malformed_messages.size();
 
+    std::size_t fields = 1 + !!m_block_statistics + !!blocktable_fields + !!m_query_responses.size()
+                         + !!m_address_event_counts.size() + !!m_malformed_messages.size();
+
+    // Start C-DNS Block
+    enc.write_map_start(fields);
+
+    // Write Block preamble
+    enc.write(get_map_index(CDNS::BlockMapIndex::block_preamble));
+    m_block_preamble.write(enc);
+
+    // Write Block statistics
+    if (m_block_statistics) {
+        enc.write(get_map_index(CDNS::BlockMapIndex::block_statistics));
+        m_block_statistics->write(enc);
+    }
+
+    // Write Block tables
+    if (blocktable_fields > 0) {
+        enc.write(get_map_index(CDNS::BlockMapIndex::block_tables));
+        write_blocktables(enc, blocktable_fields);
+    }
+
+    // Write Query Responses
+    if (!!m_query_responses.size()) {
+        enc.write(get_map_index(CDNS::BlockMapIndex::query_responses));
+        enc.write_array_start(m_query_responses.size());
+        for (auto& qr : m_query_responses) {
+            qr.write(enc);
+        }
+    }
+
+    // Write Address event counts
+    if (!!m_address_event_counts.size()) {
+        enc.write(get_map_index(CDNS::BlockMapIndex::address_event_counts));
+        enc.write_array_start(m_address_event_counts.size());
+        for (auto& aec : m_address_event_counts) {
+            auto tmp = aec.first;
+            tmp.ae_count = aec.second;
+            tmp.write(enc);
+        }
+    }
+
+    // Write Malformed messages
+    if (!!m_malformed_messages.size()) {
+        enc.write(get_map_index(CDNS::BlockMapIndex::malformed_messages));
+        enc.write_array_start(m_malformed_messages.size());
+        for (auto& mm : m_malformed_messages) {
+            mm.write(enc);
+        }
+    }
 }
 
 bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr, const BlockParameters& bp)
