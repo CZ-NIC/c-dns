@@ -1,10 +1,10 @@
 #pragma once
 
+#include <string>
+#include <cstdint>
+#include <stdexcept>
 #include <cbor.h>
 
-#include "format_specification.h"
-#include "block.h"
-#include "file_preamble.h"
 #include "writer.h"
 
 namespace CDNS {
@@ -28,32 +28,16 @@ namespace CDNS {
         static constexpr std::size_t BUFFER_SIZE = UINT16_MAX;
         /**
          * @brief Construct a new CdnsEncoder object
-         * @param file_preamble Filled out C-DNS file preamble
          * @param output_name Name of the output C-DNS file
          * @param compression Type of compression for the output C-DNS file
          * @throw CborEncoderException when constructor fails
          */
-        CdnsEncoder(FilePreamble& file_preamble, std::string& output_name, CborOutputCompression compression);
+        CdnsEncoder(std::string& output_name, CborOutputCompression compression);
 
         /**
          * @brief Destroy the CdnsEncoder object and properly close the output C-DNS file
          */
         ~CdnsEncoder() { if(m_cos) delete m_cos; }
-
-        /**
-         * @brief Buffer new DNS record to C-DNS block
-         * @param qr New DNS record to buffer
-         * @return `true` if DNS record was successfully buffered, `false` otherwise
-         */
-        bool buffer_qr(const GenericQueryResponse& qr) {
-            return m_block.add_question_response_record(qr, m_file_preamble.m_block_parameters[m_block.get_block_parameters_index()]);
-        }
-
-        /**
-         * @todo
-         * bool buffer_aec(generic_aec& aec);
-         * bool buffer_mm(generic_mm& mm);
-         */
 
         /**
          * @brief Write start of CBOR array
@@ -166,16 +150,6 @@ namespace CDNS {
          */
         void write(int64_t value);
 
-        /**
-         * @todo
-         * void write_file_start();
-         * void write_file_preamble();
-         * void write_block();
-         * void open_file();
-         * void close_file();
-         * void rotate_file(const std::string& new_output_name);
-         */
-
         private:
         /**
          * @brief Write contents of internal buffer to ouptut C-DNS file
@@ -192,13 +166,10 @@ namespace CDNS {
             m_bytes_written += bytes;
         }
 
-        FilePreamble m_file_preamble;
-        CdnsBlock m_block;
         BaseCborOutputWriter* m_cos;
         unsigned char m_buffer[BUFFER_SIZE];
         unsigned char *m_p;
         std::size_t m_avail;
         std::size_t m_bytes_written;
-        //Timestamp m_start_time;
     };
 }

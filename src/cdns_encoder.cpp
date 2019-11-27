@@ -3,10 +3,8 @@
 
 #include "cdns_encoder.h"
 
-CDNS::CdnsEncoder::CdnsEncoder(FilePreamble& file_preamble, std::string& output_name,
-                               CborOutputCompression compression)
-    : m_file_preamble(file_preamble), m_block(file_preamble.get_block_parameters(0)), m_p(m_buffer),
-      m_avail(BUFFER_SIZE), m_bytes_written(0)
+CDNS::CdnsEncoder::CdnsEncoder(std::string& output_name, CborOutputCompression compression)
+    : m_p(m_buffer), m_avail(BUFFER_SIZE), m_bytes_written(0)
 {
     switch (compression) {
         case CborOutputCompression::NO_COMPRESSION:
@@ -176,7 +174,7 @@ void CDNS::CdnsEncoder::flush_buffer()
             m_avail = BUFFER_SIZE;
         }
         catch (CborOutputException& e) {
-            std::cerr << e.what();
+            std::cerr << e.what() << std::endl;
         }
     }
 }

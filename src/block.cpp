@@ -1,17 +1,6 @@
 #include "block.h"
 #include "cdns_encoder.h"
-
-void CDNS::Timestamp::write(CdnsEncoder& enc)
-{
-    // Start Timestamp array
-    enc.write_array_start(2);
-
-    // Write Seconds
-    enc.write(m_secs);
-
-    // Write Ticks
-    enc.write(m_ticks);
-}
+#include "interface.h"
 
 void CDNS::ClassType::write(CdnsEncoder& enc)
 {
@@ -668,12 +657,12 @@ void CDNS::CdnsBlock::write(CdnsEncoder& enc)
     }
 }
 
-bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr, const BlockParameters& bp)
+bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr)
 {
-    uint32_t qr_hints = bp.storage_parameters.storage_hints.query_response_hints;
-    uint32_t qr_sig_hints = bp.storage_parameters.storage_hints.query_response_signature_hints;
-    uint8_t rr_hints = bp.storage_parameters.storage_hints.rr_hints;
-    uint8_t other_data_hints = bp.storage_parameters.storage_hints.other_data_hints;
+    uint32_t qr_hints = m_block_parameters.storage_parameters.storage_hints.query_response_hints;
+    uint32_t qr_sig_hints = m_block_parameters.storage_parameters.storage_hints.query_response_signature_hints;
+    uint8_t rr_hints = m_block_parameters.storage_parameters.storage_hints.rr_hints;
+    uint8_t other_data_hints = m_block_parameters.storage_parameters.storage_hints.other_data_hints;
 
     /**
      * Check if it'll be the first record in the block and set earliest time and stats if yes

@@ -11,107 +11,13 @@
 #include "block_table.h"
 #include "hash.h"
 #include "file_preamble.h"
+#include "timestamp.h"
+#include "cdns_encoder.h"
 
 namespace CDNS {
-    class CdnsEncoder;
-
-    static constexpr uint64_t MILIS_PER_SEC = 1000UL;
-    static constexpr uint64_t MICROS_PER_SEC = 1000000UL;
-    static constexpr uint64_t NANOS_PER_SEC = 1000000000UL;
-
-    /**
-     * @brief Simple timestamp representation
-     */
-    struct Timestamp {
-        /**
-         * @brief Default constructor
-         */
-        Timestamp() : m_secs(0), m_ticks(0) {}
-
-        /**
-         * @brief Construct a new Timestamp object
-         * @param secs Seconds since the start of UNIX epoch
-         * @param ticks Subsecond number of ticks in any resolution
-         */
-        Timestamp(uint64_t secs, uint64_t ticks) : m_secs(secs), m_ticks(ticks) {}
-
-        /**
-         * @brief Operator `smaller than`
-         * @param rhs Timestamp to compare with
-         * @return `true` if the Timestamp denotes earlier time than the `rhs` one
-         */
-        bool operator<(const Timestamp& rhs) const {
-            if (m_secs < rhs.m_secs)
-                return true;
-
-            if ((m_secs == rhs.m_secs) && (m_ticks < rhs.m_ticks))
-                return true;
-
-            return false;
-        }
-
-        /**
-         * @brief Operator `smaller or equal than`
-         * @param rhs Timestamp to compare with
-         * @return `true` if the Timestamp denotes earlier or identical time as the `rhs` one
-         */
-        bool operator<=(const Timestamp& rhs) const {
-            if (m_secs < rhs.m_secs)
-                return true;
-
-            if ((m_secs == rhs.m_secs) && (m_ticks <= rhs.m_ticks))
-                return true;
-
-            return false;
-        }
-
-        /**
-         * @brief Calculate time difference againt given Timestamp
-         * @param reference Timestamp to calculate the difference against
-         * @param ticks_per_second Subsecond resolution
-         * @throw std::runtime_error if ticks_per_second is 0 (prevents division by 0)
-         * @return Difference between the two timestamps in ticks per second
-         */
-        int64_t get_time_offset(const Timestamp& reference, uint64_t ticks_per_second) {
-            if (ticks_per_second == 0)
-                throw std::runtime_error("Ticks per second resolution is zero!");
-
-            int64_t secs, ticks;
-
-            // Substract seconds part of timestamp
-            if (reference.m_secs <= m_secs) {
-                secs = m_secs - reference.m_secs;
-            }
-            else {
-                secs = -1 * (reference.m_secs - m_secs);
-            }
-
-            // Substract subseconds part of timestamp
-            if (reference.m_ticks <= m_ticks) {
-                ticks = m_ticks - reference.m_ticks;
-            }
-            else {
-                ticks = -1 * (reference.m_ticks - m_ticks);
-            }
-
-            // Calculate timestamp offset
-            int64_t diff_secs = (secs + (ticks / ticks_per_second)) * ticks_per_second;
-            int64_t diff_ticks = std::abs(ticks) % ticks_per_second;
-            if (ticks < 0)
-                diff_ticks *= -1;
-
-            return diff_secs + diff_ticks;
-        }
-
-        /**
-         * @brief Serialize the Timestamp to C-DNS CBOR representation
-         * @param enc C-DNS encoder
-         */
-        void write(CdnsEncoder& enc);
-
-        uint64_t m_secs;
-        uint64_t m_ticks;
-    };
+    struct GenericQueryResponse;
+    struct GenericAddressEventCount;
+    struct GenericMalformedMessage;
 
     /**
      * @brief Block table's ClassType structure
@@ -585,159 +491,6 @@ namespace CDNS {
         std::vector<index_t> list;
     };
 
-     /**
-     * @brief Generic structure for holding 1 DNS record before storing it into Block
-     *
-     * Servers as "interface" between the C-DNS library and its user
-     */
-    struct GenericQueryResponse {
-        /**
-         * @brief Default constructor
-         */
-        GenericQueryResponse() : ts(nullptr), client_ip(nullptr), client_port(nullptr), transaction_id(nullptr),
-                                 server_ip(nullptr), server_port(nullptr), qr_transport_flags(nullptr),
-                                 qr_type(nullptr), qr_sig_flags(nullptr), query_opcode(nullptr),
-                                 qr_dns_flags(nullptr), query_rcode(nullptr), query_classtype(nullptr),
-                                 query_qdcount(nullptr), query_ancount(nullptr), query_nscount(nullptr),
-                                 query_arcount(nullptr), query_edns_version(nullptr), query_udp_size(nullptr),
-                                 opt_rdata(nullptr), response_rcode(nullptr), client_hoplimit(nullptr),
-                                 response_delay(nullptr), query_name(nullptr), query_size(nullptr),
-                                 response_size(nullptr), bailiwick(nullptr), processing_flags(nullptr),
-                                 query_questions(nullptr), query_answers(nullptr), query_authority(nullptr),
-                                 query_additional(nullptr), response_questions(nullptr), response_answers(nullptr),
-                                 response_authority(nullptr), response_additional(nullptr) {}
-
-        /**
-         * @brief Construct a new generic qr object
-         */
-        GenericQueryResponse(Timestamp* time, std::string* c_ip, uint16_t* c_port, uint16_t* id,
-                             std::string* s_ip, uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags,
-                             QueryResponseTypeValues* type, QueryResponseFlagsMask* sig_flags, uint8_t* opcode,
-                             DNSFlagsMask* dns_flags, uint16_t* q_rcode, ClassType* q_classtype,
-                             uint16_t* q_qdcount, uint16_t* q_ancount, uint16_t* q_nscount, uint16_t* q_arcount,
-                             uint8_t* q_edns_v, uint16_t* q_udp_size, std::string* opt, uint16_t* r_rcode,
-                             uint8_t* hoplimit, int64_t* r_delay, std::string* q_name, std::size_t* q_size,
-                             std::size_t* r_size, std::string* bwick, ResponseProcessingFlagsMask* proc_flags,
-                             std::vector<std::string*>* q_questions, std::vector<std::string*>* q_answers,
-                             std::vector<std::string*>* q_authority, std::vector<std::string*>* q_additional,
-                             std::vector<std::string*>* r_questions, std::vector<std::string*>* r_answers,
-                             std::vector<std::string*>* r_authority, std::vector<std::string*>* r_additional)
-            : ts(time), client_ip(c_ip), client_port(c_port), transaction_id(id), server_ip(s_ip),
-              server_port(s_port), qr_transport_flags(tr_flags), qr_type(type), qr_sig_flags(sig_flags),
-              query_opcode(opcode), qr_dns_flags(dns_flags), query_rcode(q_rcode),
-              query_classtype(q_classtype), query_qdcount(q_qdcount), query_ancount(q_ancount),
-              query_nscount(q_nscount), query_arcount(q_arcount), query_edns_version(q_edns_v),
-              query_udp_size(q_udp_size), opt_rdata(opt), response_rcode(r_rcode),
-              client_hoplimit(hoplimit), response_delay(r_delay), query_name(q_name),
-              query_size(q_size), response_size(r_size), bailiwick(bwick), processing_flags(proc_flags),
-              query_questions(q_questions), query_answers(q_answers), query_authority(q_authority),
-              query_additional(q_additional), response_questions(r_questions),
-              response_answers(r_answers), response_authority(r_authority),
-              response_additional(r_additional) {}
-
-        Timestamp* ts;
-        std::string* client_ip;
-        uint16_t* client_port;
-        uint16_t* transaction_id;
-
-        // Query Response Signature
-        std::string* server_ip;
-        uint16_t* server_port;
-        QueryResponseTransportFlagsMask* qr_transport_flags;
-        QueryResponseTypeValues* qr_type;
-        QueryResponseFlagsMask* qr_sig_flags;
-        uint8_t* query_opcode;
-        DNSFlagsMask* qr_dns_flags;
-        uint16_t* query_rcode;
-        ClassType* query_classtype;
-        uint16_t* query_qdcount;
-        uint16_t* query_ancount;
-        uint16_t* query_nscount;
-        uint16_t* query_arcount;
-        uint8_t* query_edns_version;
-        uint16_t* query_udp_size;
-        std::string* opt_rdata;
-        uint16_t* response_rcode;
-
-        uint8_t* client_hoplimit;
-        int64_t* response_delay;
-        std::string* query_name;
-        std::size_t* query_size;
-        std::size_t* response_size;
-
-        //Response Processing Data
-        std::string* bailiwick;
-        ResponseProcessingFlagsMask* processing_flags;
-
-        /**
-         * @todo Can't be just string but the whole Question or RR structure
-         */
-        std::vector<std::string*>* query_questions;
-        std::vector<std::string*>* query_answers;
-        std::vector<std::string*>* query_authority;
-        std::vector<std::string*>* query_additional;
-        std::vector<std::string*>* response_questions;
-        std::vector<std::string*>* response_answers;
-        std::vector<std::string*>* response_authority;
-        std::vector<std::string*>* response_additional;
-    };
-
-    /**
-     * @brief Generic structure for holding 1 Address Event Count before storing it into Block
-     *
-     * Servers as "interface" between the C-DNS library and its user
-     */
-    struct GenericAddressEventCount {
-        /**
-         * @brief Default constructor
-         */
-        GenericAddressEventCount() : ae_type(nullptr), ae_code(nullptr), ae_transport_flags(nullptr),
-                                     ip_address(nullptr) {}
-
-        /**
-         * @brief Construct a new generic aec object
-         */
-        GenericAddressEventCount(AddressEventTypeValues* type, uint8_t* code,
-                                 QueryResponseTransportFlagsMask* tr_flags, std::string* ip)
-            : ae_type(type), ae_code(code), ae_transport_flags(tr_flags), ip_address(ip) {}
-
-        AddressEventTypeValues* ae_type;
-        uint8_t* ae_code;
-        QueryResponseTransportFlagsMask* ae_transport_flags;
-        std::string* ip_address;
-    };
-
-    /**
-     * @brief Generic structure for holding 1 Malformed Message before storing it into Block
-     *
-     * Servers as "interface" between the C-DNS library and its user
-     */
-    struct GenericMalformedMessage {
-        /**
-         * @brief Default constructor
-         */
-        GenericMalformedMessage() : ts(nullptr), client_ip(nullptr), client_port(nullptr), server_ip(nullptr),
-                                    server_port(nullptr), mm_transport_flags(nullptr), mm_payload(nullptr) {}
-
-        /**
-         * @brief Construct a new generic mm object
-         */
-        GenericMalformedMessage(Timestamp* time, std::string* c_ip, uint16_t* c_port, std::string* s_ip,
-                                uint16_t* s_port, QueryResponseTransportFlagsMask* tr_flags, std::string* payload)
-            : ts(time), client_ip(c_ip), client_port(c_port), server_ip(s_ip), server_port(s_port),
-              mm_transport_flags(tr_flags), mm_payload(payload) {}
-
-        Timestamp* ts;
-        std::string* client_ip;
-        uint16_t* client_port;
-
-        // Malformed Message Data
-        std::string* server_ip;
-        uint16_t* server_port;
-        QueryResponseTransportFlagsMask* mm_transport_flags;
-        std::string* mm_payload;
-    };
-
     /**
      * @brief Class representing C-DNS block
      */
@@ -886,10 +639,9 @@ namespace CDNS {
          * @brief Add new DNS record to C-DNS block. Uses generic structure to hold all DNS record data and
          * adds it to the Block
          * @param qr Generic structure holding data of new DNS record
-         * @param bp Block parameters with hints for the current Block
          * @return `true` when the DNS record is inserted into the Block
          */
-        bool add_question_response_record(const GenericQueryResponse& qr, const BlockParameters& bp);
+        bool add_question_response_record(const GenericQueryResponse& qr);
 
         /**
          * @todo Add new Address Event Count to C-DNS block.
