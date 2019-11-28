@@ -61,123 +61,15 @@ int main(int argc, char** argv)
         CDNS::OtherDataHintsMask::malformed_messages |
         CDNS::OtherDataHintsMask::address_event_counts;
 
-    const std::vector<CDNS::OpCodes> opcodes {
-        CDNS::OpCodes::OP_QUERY,
-        CDNS::OpCodes::OP_IQUERY,
-        CDNS::OpCodes::OP_STATUS,
-        CDNS::OpCodes::OP_NOTIFY,
-        CDNS::OpCodes::OP_UPDATE,
-        CDNS::OpCodes::OP_DSO
-    };
+    CDNS::StorageParameters storage_parameter;
+    storage_parameter.storage_hints.query_response_hints = qr_hints;
+    storage_parameter.storage_hints.query_response_signature_hints = qr_signature_hints;
+    storage_parameter.storage_hints.rr_hints = rr_hints;
+    storage_parameter.storage_hints.other_data_hints = other_data_hints;
 
-    const std::vector<CDNS::RrTypes> rr_types {
-        CDNS::RrTypes::A,
-        CDNS::RrTypes::NS,
-        CDNS::RrTypes::MD,
-        CDNS::RrTypes::MF,
-        CDNS::RrTypes::CNAME,
-        CDNS::RrTypes::SOA,
-        CDNS::RrTypes::MB,
-        CDNS::RrTypes::MG,
-        CDNS::RrTypes::MR,
-        CDNS::RrTypes::NULL_R,
-        CDNS::RrTypes::WKS,
-        CDNS::RrTypes::PTR,
-        CDNS::RrTypes::HINFO,
-        CDNS::RrTypes::MINFO,
-        CDNS::RrTypes::MX,
-        CDNS::RrTypes::TXT,
-        CDNS::RrTypes::RP,
-        CDNS::RrTypes::AFSDB,
-        CDNS::RrTypes::X25,
-        CDNS::RrTypes::ISDN,
-        CDNS::RrTypes::RT,
-        CDNS::RrTypes::NSAP,
-        CDNS::RrTypes::NSAP_PTR,
-        CDNS::RrTypes::SIG,
-        CDNS::RrTypes::KEY,
-        CDNS::RrTypes::PX,
-        CDNS::RrTypes::GPOS,
-        CDNS::RrTypes::AAAA,
-        CDNS::RrTypes::LOC,
-        CDNS::RrTypes::NXT,
-        CDNS::RrTypes::EID,
-        CDNS::RrTypes::NIMLOC,
-        CDNS::RrTypes::SRV,
-        CDNS::RrTypes::ATMA,
-        CDNS::RrTypes::NAPTR,
-        CDNS::RrTypes::KX,
-        CDNS::RrTypes::CERTIFICATE,
-        CDNS::RrTypes::A6,
-        CDNS::RrTypes::DNAM,
-        CDNS::RrTypes::SINK,
-        CDNS::RrTypes::OPT,
-        CDNS::RrTypes::APL,
-        CDNS::RrTypes::DS,
-        CDNS::RrTypes::SSHFP,
-        CDNS::RrTypes::IPSECKEY,
-        CDNS::RrTypes::RRSIG,
-        CDNS::RrTypes::NSEC,
-        CDNS::RrTypes::DNSKEY,
-        CDNS::RrTypes::DHCID,
-        CDNS::RrTypes::NSEC3,
-        CDNS::RrTypes::NSEC3PARAM,
-        CDNS::RrTypes::TLSA,
-        CDNS::RrTypes::HIP,
-        CDNS::RrTypes::NINFO,
-        CDNS::RrTypes::RKEY,
-        CDNS::RrTypes::TALINK,
-        CDNS::RrTypes::CDS,
-        CDNS::RrTypes::SPF,
-        CDNS::RrTypes::UINFO,
-        CDNS::RrTypes::UID,
-        CDNS::RrTypes::GID,
-        CDNS::RrTypes::UNSPEC,
-        CDNS::RrTypes::NID,
-        CDNS::RrTypes::L32,
-        CDNS::RrTypes::L64,
-        CDNS::RrTypes::LP,
-        CDNS::RrTypes::EU148,
-        CDNS::RrTypes::EUI64,
-        CDNS::RrTypes::TKEY,
-        CDNS::RrTypes::TSIG,
-        CDNS::RrTypes::IXFR,
-        CDNS::RrTypes::AXFR,
-        CDNS::RrTypes::MAILB,
-        CDNS::RrTypes::MAILA,
-        CDNS::RrTypes::TYPE_ANY,
-        CDNS::RrTypes::URI,
-        CDNS::RrTypes::CAA,
-        CDNS::RrTypes::TA,
-        CDNS::RrTypes::DLV
-    };
-
-    CDNS::StorageParameters storage_parameter = {
-        1000000,
-        10000,
-        {
-            qr_hints,
-            qr_signature_hints,
-            rr_hints,
-            other_data_hints
-        },
-        opcodes,
-        rr_types,
-        {},
-        0,
-        0,
-        0,
-        0,
-        "",
-        ""
-    };
-
-    std::vector<CDNS::BlockParameters> block_parameters = {
-        {
-            storage_parameter,
-            {}
-        }
-    };
+    CDNS::BlockParameters block_parameter;
+    block_parameter.storage_parameters = storage_parameter;
+    std::vector<CDNS::BlockParameters> block_parameters = {block_parameter};
 
     CDNS::FilePreamble cdns_h(block_parameters);
 

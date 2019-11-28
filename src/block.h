@@ -291,6 +291,7 @@ namespace CDNS {
      * @brief Block preamble structure
      */
     struct BlockPreamble {
+        BlockPreamble() : earliest_time() {}
         /**
          * @brief Serialize the BlockPreamble to C-DNS CBOR representation
          * @param enc C-DNS encoder

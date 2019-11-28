@@ -3,27 +3,6 @@
 
 #include "cdns_encoder.h"
 
-CDNS::CdnsEncoder::CdnsEncoder(std::string& output_name, CborOutputCompression compression)
-    : m_p(m_buffer), m_avail(BUFFER_SIZE), m_bytes_written(0)
-{
-    switch (compression) {
-        case CborOutputCompression::NO_COMPRESSION:
-            m_cos = new CborOutputWriter(output_name);
-            break;
-        case CborOutputCompression::GZIP:
-            m_cos = new GzipCborOutputWriter(output_name);
-            break;
-        case CborOutputCompression::XZ:
-            m_cos = new XzCborOutputWriter(output_name);
-            break;
-        default:
-            throw CdnsEncoderException("Unknown type of compression");
-            break;
-    }
-
-    std::memset(m_buffer, 0, sizeof(m_buffer));
-}
-
 void CDNS::CdnsEncoder::write_array_start(std::size_t size)
 {
     if (m_avail < 9)

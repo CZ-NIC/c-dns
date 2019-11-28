@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstring>
 #include <cstdint>
 #include <stdexcept>
 #include <cbor.h>
@@ -26,16 +27,38 @@ namespace CDNS {
         public:
 
         static constexpr std::size_t BUFFER_SIZE = UINT16_MAX;
-        /**
-         * @brief Construct a new CdnsEncoder object
-         * @param output_name Name of the output C-DNS file
-         * @param compression Type of compression for the output C-DNS file
-         * @throw CborEncoderException when constructor fails
-         */
-        CdnsEncoder(std::string& output_name, CborOutputCompression compression);
 
         /**
-         * @brief Destroy the CdnsEncoder object and properly close the output C-DNS file
+         * @brief Construct a new CdnsEncoder object
+         * @param output File name or valid file descriptor to output C-DNS data
+         * @param compression Type of compression for the output C-DNS data
+         * @throw CborEncoderException if constructor fails
+         * @throw CborOutputException if output initialization fails
+         */
+        template<typename T>
+        CdnsEncoder(const T& output, CborOutputCompression compression) : m_p(m_buffer),
+                                                                       m_avail(BUFFER_SIZE),
+                                                                       m_bytes_written(0) {
+            switch (compression) {
+                case CborOutputCompression::NO_COMPRESSION:
+                    m_cos = new CborOutputWriter(output);
+                    break;
+                case CborOutputCompression::GZIP:
+                    m_cos = new GzipCborOutputWriter(output);
+                    break;
+                case CborOutputCompression::XZ:
+                    m_cos = new XzCborOutputWriter(output);
+                    break;
+                default:
+                    throw CdnsEncoderException("Unknown type of compression");
+                    break;
+            }
+
+            std::memset(m_buffer, 0, sizeof(m_buffer));
+        }
+
+        /**
+         * @brief Destroy the CdnsEncoder object and properly close the C-DNS output
          */
         ~CdnsEncoder() { if(m_cos) delete m_cos; }
 

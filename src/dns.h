@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 namespace CDNS {
 
@@ -16,6 +17,18 @@ namespace CDNS {
         OP_NOTIFY = 4,
         OP_UPDATE,
         OP_DSO
+    };
+
+    /**
+     * @brief Vector with all OpCodes supported by the library, used as default for Storage Parameters
+     */
+    static const std::vector<OpCodes> OpCodesDefault {
+        OpCodes::OP_QUERY,
+        OpCodes::OP_IQUERY,
+        OpCodes::OP_STATUS,
+        OpCodes::OP_NOTIFY,
+        OpCodes::OP_UPDATE,
+        OpCodes::OP_DSO
     };
 
     /**
@@ -106,5 +119,87 @@ namespace CDNS {
 
         NSEC3PARAMS = NSEC3PARAM,
         CERT = CERTIFICATE
+    };
+
+    static const std::vector<RrTypes> RrTypesDefault {
+        RrTypes::A,
+        RrTypes::NS,
+        RrTypes::MD,
+        RrTypes::MF,
+        RrTypes::CNAME,
+        RrTypes::SOA,
+        RrTypes::MB,
+        RrTypes::MG,
+        RrTypes::MR,
+        RrTypes::NULL_R,
+        RrTypes::WKS,
+        RrTypes::PTR,
+        RrTypes::HINFO,
+        RrTypes::MINFO,
+        RrTypes::MX,
+        RrTypes::TXT,
+        RrTypes::RP,
+        RrTypes::AFSDB,
+        RrTypes::X25,
+        RrTypes::ISDN,
+        RrTypes::RT,
+        RrTypes::NSAP,
+        RrTypes::NSAP_PTR,
+        RrTypes::SIG,
+        RrTypes::KEY,
+        RrTypes::PX,
+        RrTypes::GPOS,
+        RrTypes::AAAA,
+        RrTypes::LOC,
+        RrTypes::NXT,
+        RrTypes::EID,
+        RrTypes::NIMLOC,
+        RrTypes::SRV,
+        RrTypes::ATMA,
+        RrTypes::NAPTR,
+        RrTypes::KX,
+        RrTypes::CERTIFICATE,
+        RrTypes::A6,
+        RrTypes::DNAM,
+        RrTypes::SINK,
+        RrTypes::OPT,
+        RrTypes::APL,
+        RrTypes::DS,
+        RrTypes::SSHFP,
+        RrTypes::IPSECKEY,
+        RrTypes::RRSIG,
+        RrTypes::NSEC,
+        RrTypes::DNSKEY,
+        RrTypes::DHCID,
+        RrTypes::NSEC3,
+        RrTypes::NSEC3PARAM,
+        RrTypes::TLSA,
+        RrTypes::HIP,
+        RrTypes::NINFO,
+        RrTypes::RKEY,
+        RrTypes::TALINK,
+        RrTypes::CDS,
+        RrTypes::SPF,
+        RrTypes::UINFO,
+        RrTypes::UID,
+        RrTypes::GID,
+        RrTypes::UNSPEC,
+        RrTypes::NID,
+        RrTypes::L32,
+        RrTypes::L64,
+        RrTypes::LP,
+        RrTypes::EU148,
+        RrTypes::EUI64,
+        RrTypes::TKEY,
+        RrTypes::TSIG,
+        RrTypes::IXFR,
+        RrTypes::AXFR,
+        RrTypes::MAILB,
+        RrTypes::MAILA,
+        RrTypes::TYPE_ANY,
+        RrTypes::URI,
+        RrTypes::CAA,
+        RrTypes::TA,
+        RrTypes::DLV
     };
 }

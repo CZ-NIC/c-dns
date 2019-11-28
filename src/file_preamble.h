@@ -15,26 +15,34 @@ namespace CDNS {
     static constexpr uint8_t VERSION_MINOR = 0;
     static constexpr uint8_t VERSION_PRIVATE = 0;
 
+    static constexpr uint64_t DEFAULT_TICKS_PER_SECOND = 1000000;
+    static constexpr uint64_t DEFAULT_MAX_BLOCK_ITEMS = 10000;
+
     /**
      * @brief Storage Hints structure
      */
     struct StorageHints {
+        StorageHints() : query_response_hints(0), query_response_signature_hints(0),
+                         rr_hints(0), other_data_hints(0) {}
         /**
          * @brief Serialize the Storage hints to C-DNS CBOR representation
          * @param enc C-DNS encoder
          */
         void write(CdnsEncoder& enc);
 
-        /*QueryResponseHintsMask*/ uint32_t query_response_hints;
-        /*QueryResponseSignatureHintsMask*/ uint32_t query_response_signature_hints;
-        /*RrHintsMask*/ uint8_t rr_hints;
-        /*OtherDataHintsMask*/ uint8_t other_data_hints;
+        uint32_t query_response_hints;
+        uint32_t query_response_signature_hints;
+        uint8_t rr_hints;
+        uint8_t other_data_hints;
     };
 
     /**
      * @brief Storage Parameters structure
      */
     struct StorageParameters {
+        StorageParameters() : ticks_per_second(DEFAULT_TICKS_PER_SECOND),
+                              max_block_items(DEFAULT_MAX_BLOCK_ITEMS), storage_hints(),
+                              opcodes(OpCodesDefault), rr_types(RrTypesDefault) {}
         /**
          * @brief Serialize the Storage parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -59,6 +67,8 @@ namespace CDNS {
      * @brief Collection Parameters structure
      */
     struct CollectionParameters {
+        CollectionParameters() : interfaces(), server_address(), vlan_ids() {}
+
         /**
          * @brief Serialize the Collection parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -81,6 +91,8 @@ namespace CDNS {
      * @brief Block Parameters structure
      */
     struct BlockParameters {
+        BlockParameters() : storage_parameters() {}
+
         /**
          * @brief Serialize the Block parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -100,7 +112,7 @@ namespace CDNS {
         /**
          * @brief Default constructor
          */
-        FilePreamble(){}
+        FilePreamble() : m_block_parameters() {}
 
         /**
          * @brief Construct a new FilePreamble object with already filled Block parameters
