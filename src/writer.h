@@ -29,112 +29,166 @@ namespace CDNS {
     };
 
     /**
-     * @brief Basic output writer for writing uncompressed data to output file
+     * @brief Abstract class serving as common interface for output writers
      */
     class BaseCborOutputWriter {
         public:
         /**
-         * @brief Construct a new BaseCborOutputWriter object
-         * @param name Name of the new output file without compression file extensions
+         * @brief Construct a new BaseCborOutputWriter object with output file
+         * @param filename Name of the new output file without comperssion file extensions
          */
-        BaseCborOutputWriter(const std::string& name) : m_name(name) {}
+        BaseCborOutputWriter(const std::string& filename) : m_name(filename), m_is_fd(false) {}
 
         /**
-         * @brief Destroy the BaseCborOutputWriter object and close any open output file
+         * @brief Construct a new BaseCborOutputWriter object with ouput file descriptor
+         * @param fd Valid file descriptor to output data
          */
-        virtual ~BaseCborOutputWriter() { close(); }
+        BaseCborOutputWriter(const int fd) : m_fd(fd), m_is_fd(true) {}
 
         /**
-         * @brief Open new output file to write to. If there's already a file open, it gets 
-         * closed before opening the new one.
-         * @param name Name of the new output file without compression file extensions
-         * @throw CborOutputException if opening of output file failed
+         * @brief Destroy the BaseCborOutputWriter object
          */
-        virtual void open(const std::string& name);
+        virtual ~BaseCborOutputWriter() {}
 
         /**
-         * @brief Open new output file to write to. If there's already a file open, it gets
-         * closed before opening the new one.
-         * @throw CborOutputException if opening of output file failed
-         */
-        virtual void open () { open(m_name); }
-
-        /**
-         * @brief Close the current output file if there's any.
-         */
-        virtual void close() {
-            if (m_out.is_open()) {
-                m_out.flush();
-                m_out.close();
-            }
-        };
-
-        /**
-         * @brief Write data in buffer to output file
+         * @brief Write data in buffer to output
          * @param p Start of the buffer with data
          * @param size Size of the data in bytes
-         * @throw CborOutputException if no output file is opened for writing
          */
-        virtual void write(const char* p, std::size_t size);
+        virtual void write(const char* p, std::size_t size) = 0;
+
+        /**
+         * @brief Rotate the output file (currently opened file or file descriptor is closed)
+         * @param filename Name of the new output file without compression file extensions
+         */
+        void rotate_output(const std::string& filename) {
+            close();
+            m_name = filename;
+            m_is_fd = false;
+            open();
+        }
+
+        /**
+         * @brief Rotate the output file descriptor (currently opened file or file descriptor is closed)
+         * @param fd Valid file descriptor to output data
+         */
+        void rotate_output(const int fd)
+        {
+            close();
+            m_fd = fd;
+            m_is_fd = true;
+            open();
+        }
 
         protected:
+        /**
+         * @brief Open the output file with given filename or check if given file descriptor is valid
+         */
+        virtual void open() = 0;
+
+        /**
+         * @brief Close the opened output file or file descriptor
+         */
+        virtual void close() = 0;
+
         std::string m_name;
+        int m_fd;
+        bool m_is_fd;
+    };
+
+    /**
+     * @brief Basic output writer for writing uncompressed data to output
+     */
+    class CborOutputWriter : public BaseCborOutputWriter {
+        public:
+        /**
+         * @brief Construct a new CborOutputWriter object with output file
+         * @param filename Name of the new output file without compression file extensions
+         * @throw CborOutputException if opening of output file fails
+         */
+        CborOutputWriter(const std::string& filename) : BaseCborOutputWriter(filename) { open(); }
+
+        /**
+         * @brief Construct a new CborOutputWriter object with output file descriptor
+         * @param fd Valid file descriptor to output data
+         * @throw CborOutputException if given file descriptor isn't valid
+         */
+        CborOutputWriter(const int fd) : BaseCborOutputWriter(fd) { open(); }
+
+        /**
+         * @brief Destroy the CborOutputWriter object and close any opened file or file descriptor
+         */
+        ~CborOutputWriter() override { close(); }
+
+        /**
+         * @brief Write data in buffer to output
+         * @param p Start of the buffer with data
+         * @param size Size of the data in bytes
+         * @throw CborOutputException if writing to output file descriptor fails
+         * @throw std::ios_base::failure if writing to output file fails
+         */
+         void write(const char* p, std::size_t size) override;
 
         private:
+        /**
+         * @brief Open the output file with given filename or check if given file descriptor is valid
+         * @throw CborOutputException if opening of the file or checking of file descriptor fails
+         */
+        void open() override;
+
+        /**
+         * @brief Close the opened output file or file descriptor
+         */
+        void close() override;
+
         std::string m_extension = ".cdns";
         std::ofstream m_out;
     };
 
     /**
-     * @brief Output writer that uses gzip compression for the data it writes to output file
+     * @brief Output writer that uses gzip compression for the data it writes to output
      */
     class GzipCborOutputWriter : public BaseCborOutputWriter {
         public:
         /**
-         * @brief Construct a new GzipCborOutputWriter object
-         * @param name Name of the new output file without compression file extensions
+         * @brief Construct a new GzipCborOutputWriter object with output file
+         * @param filename Name of the new output file without compression file extensions
+         * @throw CborOutputException if opening of output file fails
          */
-        GzipCborOutputWriter(const std::string& name) : BaseCborOutputWriter(name), m_gzip(nullptr) {}
+        GzipCborOutputWriter(const std::string& filename) : BaseCborOutputWriter(filename), m_gzip(nullptr) { open(); }
 
         /**
-         * @brief Destroy the GzipCborOutputWriter object and close any open output file
+         * @brief Construct a new GzipCborOutputWriter object with output file descriptor
+         * @param fd Valid file descriptor to output data
+         * @throw CborOutputException if given file descriptor isn't valid
          */
-        ~GzipCborOutputWriter() { close(); }
+        GzipCborOutputWriter(const int fd) : BaseCborOutputWriter(fd), m_gzip(nullptr) { open(); }
 
         /**
-         * @brief Open new output file to write to. If there's already a file open, it gets 
-         * closed before opening the new one.
-         * @param name Name of the new output file without compression file extensions
-         * @throw CborOutputException if opening of output file failed
+         * @brief Destroy the GzipCborOutputWriter object and close any opened output file or file descriptor
          */
-        void open(const std::string& name) override;
-
-        /**
-         * @brief Open new output file to write to. If there's already a file open, it gets
-         * closed before opening the new one.
-         * @throw CborOutputException if opening of output file failed
-         */
-        void open() override { open(m_name); }
-
-        /**
-         * @brief Close the current output file if there's any
-         */
-        void close() override {
-            if (m_gzip) {
-                gzclose(m_gzip);
-                m_gzip = nullptr;
-            }
-        }
+        ~GzipCborOutputWriter() override { close(); }
 
         /**
          * @brief Write data in buffer to output file
          * @param p Start of the buffer with the data
          * @param size Size of the data in bytes
-         * @throw CborOutputException if no file is opened or writing to file fails
+         * @throw CborOutputException if writing to output fails
          */
         void write(const char* p, std::size_t size) override;
 
         private:
+        /**
+         * @brief Open the output file with given filename or check if given file descriptor is valid
+         * @throw CborOutputException if opening of the file or checking of file descriptor fails
+         */
+        void open() override;
+
+        /**
+         * @brief Close the opened output file or file descriptor
+         */
+        void close() override;
+
         std::string m_extension = ".cdns.gz";
         gzFile m_gzip;
     };
@@ -145,50 +199,51 @@ namespace CDNS {
     class XzCborOutputWriter : public BaseCborOutputWriter {
         public:
         /**
-         * @brief Construct a new XzCborOutputWriter object
-         * @param name Name of the new output file without compression file extensions
+         * @brief Construct a new XzCborOutputWriter object with output file
+         * @param filename Name of the new output file without compression file extensions
+         * @throw CborOutputException if opening of output file fails
          */
-        XzCborOutputWriter(const std::string& name) : BaseCborOutputWriter(name), m_lzma(LZMA_STREAM_INIT) {}
+        XzCborOutputWriter(const std::string& filename) : BaseCborOutputWriter(filename),
+                                                          m_lzma(LZMA_STREAM_INIT) { open(); }
 
         /**
-         * @brief Destroy the XzCborOutputWriter object and close any open output file
+         * @brief Construct a new XzCborOutputWriter object with output file descriptor
+         * @param fd Valid file descriptor to output data
+         * @throw CborOutputException if given file descriptor isn't valid
          */
-        ~XzCborOutputWriter() { close(); }
+        XzCborOutputWriter(const int fd) : BaseCborOutputWriter(fd), m_lzma(LZMA_STREAM_INIT) { open(); }
 
         /**
-         * @brief Open new output file to write to. If there's already a file open, it gets
-         * closed before opening the new one.
-         * @param name Name of the new output file without compression file extensions
-         * @throw CborOutputException if opening of output file failed
+         * @brief Destroy the XzCborOutputWriter object and close any opened output file or file descriptor
          */
-        void open(const std::string& name) override;
-
-        /**
-         * @brief Open new output file to write to. If there's already a file open, it gets
-         * closed before opening the new one.
-         * @throw CborOutputException if opening of output file failed
-         */
-        void open() override { open(m_name); }
-
-        /**
-         * @brief Close the current output file if there's any
-         */
-        void close() override;
+        ~XzCborOutputWriter() override { close(); }
 
         /**
          * @brief Write data in buffer to output file
          * @param p Start of the buffer with data
          * @param size Size of the data in bytes
-         * @throw CborOutputException if no file is opened or writing to file failed
+         * @throw CborOutputException if writing to output failed
          */
         void write(const char* p, std::size_t size) override;
 
         private:
         /**
-         * @brief Compress data with LZMA2 and write them to output file
+         * @brief Open the output file with given filename or check if given file descriptor is valid
+         * @throw CborOutputException if opening of the file or checking of file descriptor fails
+         */
+        void open() override;
+
+        /**
+         * @brief Close the opened output file or file descriptor
+         */
+        void close() override;
+
+        /**
+         * @brief Compress data with LZMA2 and write them to output
          * @param in_size Size of the uncompressed data in bytes
          * @param action What to do with LZMA stream (LZMA_RUN, LZMA_FINISH)
-         * @throw CborOutputException if no file is opened or writing to file
+         * @throw CborOutputException if writing to file descriptor fails
+         * @throw std::ios_base::failure if writing to output file fails
          * @return LZMA return code
          */
         lzma_ret write_lzma(std::size_t in_size, lzma_action action);

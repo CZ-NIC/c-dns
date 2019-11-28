@@ -235,9 +235,8 @@ int main(int argc, char** argv)
 
     // Try Writer
     CDNS::BaseCborOutputWriter* writer = new CDNS::XzCborOutputWriter("test");
-    writer->open();
     writer->write("Hello", std::strlen("Hello"));
-    writer->close();
+    writer->write(" world!", std::strlen(" world!"));
     delete writer;
 
     return EXIT_SUCCESS;

@@ -8,7 +8,7 @@ CDNS::CdnsEncoder::CdnsEncoder(std::string& output_name, CborOutputCompression c
 {
     switch (compression) {
         case CborOutputCompression::NO_COMPRESSION:
-            m_cos = new BaseCborOutputWriter(output_name);
+            m_cos = new CborOutputWriter(output_name);
             break;
         case CborOutputCompression::GZIP:
             m_cos = new GzipCborOutputWriter(output_name);
