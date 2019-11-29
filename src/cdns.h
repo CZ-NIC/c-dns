@@ -49,7 +49,7 @@ namespace CDNS {
          */
         template<typename T>
         CdnsExporter(FilePreamble& fp, const T& out, CborOutputCompression compression)
-            : m_file_preamble(fp), m_block(fp.get_block_parameters(0)), m_encoder(out, compression),
+            : m_file_preamble(fp), m_block(fp.get_block_parameters(0), 0), m_encoder(out, compression),
               m_blocks_written(0) {}
 
         /**

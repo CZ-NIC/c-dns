@@ -157,7 +157,7 @@ namespace CDNS {
         /**
          * @brief Default constructor
          */
-        FilePreamble() : m_block_parameters() {}
+        FilePreamble() : m_block_parameters({BlockParameters()}) {}
 
         /**
          * @brief Construct a new FilePreamble object with already filled Block parameters
