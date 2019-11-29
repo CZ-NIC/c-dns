@@ -18,12 +18,57 @@ namespace CDNS {
     static constexpr uint64_t DEFAULT_TICKS_PER_SECOND = 1000000;
     static constexpr uint64_t DEFAULT_MAX_BLOCK_ITEMS = 10000;
 
+    static constexpr uint32_t DEFAULT_QR_HINTS = QueryResponseHintsMask::time_offset |
+                                                 QueryResponseHintsMask::client_address_index |
+                                                 QueryResponseHintsMask::client_port |
+                                                 QueryResponseHintsMask::transaction_id |
+                                                 QueryResponseHintsMask::qr_signature_index |
+                                                 QueryResponseHintsMask::client_hoplimit |
+                                                 QueryResponseHintsMask::response_delay |
+                                                 QueryResponseHintsMask::query_name_index |
+                                                 QueryResponseHintsMask::query_size |
+                                                 QueryResponseHintsMask::response_size |
+                                                 QueryResponseHintsMask::response_processing_data |
+                                                 QueryResponseHintsMask::query_question_sections |
+                                                 QueryResponseHintsMask::query_answer_sections |
+                                                 QueryResponseHintsMask::query_authority_sections |
+                                                 QueryResponseHintsMask::query_additional_sections |
+                                                 QueryResponseHintsMask::response_answer_sections |
+                                                 QueryResponseHintsMask::response_authority_sections |
+                                                 QueryResponseHintsMask::response_additional_sections;
+
+    static constexpr uint32_t DEFAULT_QR_SIG_HINTS = QueryResponseSignatureHintsMask::server_address_index |
+                                                     QueryResponseSignatureHintsMask::server_port |
+                                                     QueryResponseSignatureHintsMask::qr_transport_flags |
+                                                     QueryResponseSignatureHintsMask::qr_type |
+                                                     QueryResponseSignatureHintsMask::qr_sig_flags |
+                                                     QueryResponseSignatureHintsMask::query_opcode |
+                                                     QueryResponseSignatureHintsMask::qr_dns_flags |
+                                                     QueryResponseSignatureHintsMask::query_rcode |
+                                                     QueryResponseSignatureHintsMask::query_classtype_index |
+                                                     QueryResponseSignatureHintsMask::query_qdcount |
+                                                     QueryResponseSignatureHintsMask::query_ancount |
+                                                     QueryResponseSignatureHintsMask::query_nscount |
+                                                     QueryResponseSignatureHintsMask::query_arcount |
+                                                     QueryResponseSignatureHintsMask::query_edns_version |
+                                                     QueryResponseSignatureHintsMask::query_udp_size |
+                                                     QueryResponseSignatureHintsMask::query_opt_rdata_index |
+                                                     QueryResponseSignatureHintsMask::response_rcode;
+
+    static constexpr uint8_t DEFAULT_RR_HINTS = RrHintsMask::ttl |
+                                                RrHintsMask::rdata_index;
+
+    static constexpr uint8_t DEFAULT_OTHER_DATA_HINTS = OtherDataHintsMask::malformed_messages |
+                                                        OtherDataHintsMask::address_event_counts;
+
     /**
      * @brief Storage Hints structure
      */
     struct StorageHints {
-        StorageHints() : query_response_hints(0), query_response_signature_hints(0),
-                         rr_hints(0), other_data_hints(0) {}
+        StorageHints() : query_response_hints(DEFAULT_QR_HINTS),
+                         query_response_signature_hints(DEFAULT_QR_SIG_HINTS),
+                         rr_hints(DEFAULT_RR_HINTS),
+                         other_data_hints(DEFAULT_OTHER_DATA_HINTS) {}
         /**
          * @brief Serialize the Storage hints to C-DNS CBOR representation
          * @param enc C-DNS encoder
