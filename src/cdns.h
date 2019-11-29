@@ -53,6 +53,15 @@ namespace CDNS {
               m_blocks_written(0) {}
 
         /**
+         * @brief Destroy the CdnsExporter object and write the end of C-DNS output
+         * if any output is currently open
+         */
+        ~CdnsExporter() {
+            if (m_blocks_written > 0)
+                m_encoder.write_break();
+        }
+
+        /**
          * @brief Buffer new DNS record to C-DNS block
          * @param qr New DNS record to buffer
          * @throw std::exception if inserting DNS record to the Block fails
