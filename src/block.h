@@ -501,10 +501,13 @@ namespace CDNS {
         /**
          * @brief Construct a new CdnsBlock object
          * @param bp Block parameters for this block
+         * @param bp_index Index of the given Block parameters in corresponding File preamble
          */
-        CdnsBlock(BlockParameters& bp) : m_block_parameters(bp) {
-            m_block_preamble.block_parameters_index = 0;
+        CdnsBlock(BlockParameters& bp, index_t bp_index) : m_block_parameters(bp) {
+            m_block_preamble.block_parameters_index = bp_index;
         }
+
+        ~CdnsBlock() { clear(); }
 
         /**
          * @brief Serialize Block to C-DNS CBOR representation
@@ -640,7 +643,8 @@ namespace CDNS {
          * @brief Add new DNS record to C-DNS block. Uses generic structure to hold all DNS record data and
          * adds it to the Block
          * @param qr Generic structure holding data of new DNS record
-         * @return `true` when the DNS record is inserted into the Block
+         * @throw std::exception if inserting DNS record to the Block fails
+         * @return `true` if the Block is full (DNS record is still inserted), `false` otherwise
          */
         bool add_question_response_record(const GenericQueryResponse& qr);
 
@@ -660,6 +664,29 @@ namespace CDNS {
          */
         std::size_t get_item_count() const {
             return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
+        }
+
+        /**
+         * @brief Clear the contents of the C-DNS Block
+         */
+        void clear() {
+            m_block_preamble.earliest_time = {0, 0};
+            if (m_block_statistics)
+                m_block_statistics = std::nullopt;
+
+            m_ip_address.clear();
+            m_classtype.clear();
+            m_name_rdata.clear();
+            m_qr_sig.clear();
+            m_qlist.clear();
+            m_qrr.clear();
+            m_rrlist.clear();
+            m_rr.clear();
+            m_malformed_message_data.clear();
+
+            m_query_responses.clear();
+            m_address_event_counts.clear();
+            m_malformed_messages.clear();
         }
 
         BlockPreamble m_block_preamble;

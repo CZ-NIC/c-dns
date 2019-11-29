@@ -60,7 +60,11 @@ namespace CDNS {
         /**
          * @brief Destroy the CdnsEncoder object and properly close the C-DNS output
          */
-        ~CdnsEncoder() { if(m_cos) delete m_cos; }
+        ~CdnsEncoder() {
+            flush_buffer();
+            if(m_cos)
+                delete m_cos;
+        }
 
         /**
          * @brief Write start of CBOR array
@@ -172,6 +176,16 @@ namespace CDNS {
          * @param value In64_t value to write
          */
         void write(int64_t value);
+
+        /**
+         * @brief Close the current output and open a new one with given file name or file descriptor
+         * @param out New output to open (file name[std::string] or file descriptor[int])
+         */
+        template<typename T>
+        void rotate_output(const T& out) {
+            flush_buffer();
+            m_cos->rotate_output(out);
+        }
 
         private:
         /**

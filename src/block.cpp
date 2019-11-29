@@ -668,7 +668,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
      * Check if it'll be the first record in the block and set earliest time and stats if yes
      * @todo Update block statistics!!!
      */
-    if (m_query_responses.size() == 0) {
+    if (m_query_responses.size() == 0 && m_malformed_messages.size() == 0) {
         m_block_preamble.earliest_time = *gr.ts;
     }
     else if (m_block_preamble.earliest_time < *gr.ts) {
@@ -859,5 +859,9 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
      */
     m_query_responses.push_back(qr);
 
-    return true;
+    // Indicate if the Block if full (DNS record is inserted anyway, the limit is just a guideline)
+    if (get_item_count() >= m_block_parameters.storage_parameters.max_block_items)
+        return true;
+
+    return false;
 }
