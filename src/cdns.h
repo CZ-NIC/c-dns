@@ -21,24 +21,21 @@
 #include "cdns_encoder.h"
 
 namespace CDNS {
-    /* Other */
 
-    typedef enum
-    {
-        E_SUCCESS = 0,
-        E_ERROR   = -1
-    } cdns_ret_t;
-
-    /* Functions */
-
-    int cdns_push(CdnsBlock& ctx, const QueryResponse& qr);
-
-    int cdns_serialize_file_preamble(const FilePreamble& ctx, unsigned char** buff, size_t* buff_size);
-
-    int cdns_serialize_block(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size);
-
-    int cdns_serialize_end(CdnsBlock& ctx, unsigned char** buff, size_t* buff_size);
-
+    /**
+     * @brief Class serving as C-DNS library's main interface with users
+     *
+     * CdnsExporter is initialized with filled File preamble structure, output destination
+     * and output compression option. User only needs to call buffer_*() methods, which
+     * buffer records, events and malformed messages to C-DNS block and when the block is full,
+     * it automatically gets written to output.
+     *
+     * To change the output file or file descriptor user can call rotate_output() method.
+     *
+     * To enforce writing of not fully buffered block to output write_block() method is provided.
+     * This method can also write to output an externally created C-DNS block. (WARNING: External
+     * blocks aren't checked against CdnsExporter's Block parameters. This is up to the user!!!)
+     */
     class CdnsExporter {
         public:
         /**
