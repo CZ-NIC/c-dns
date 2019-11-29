@@ -689,10 +689,7 @@ namespace CDNS {
             m_malformed_messages.clear();
         }
 
-        BlockPreamble m_block_preamble;
-        std::optional<BlockStatistics> m_block_statistics;
-
-        private: // @todo make all member variables private
+        private:
 
         /**
          * @brief Serialize Block tables to C-DNS CBOR representation
@@ -700,6 +697,9 @@ namespace CDNS {
          * @param fields Number of non-empty fields in Block tables map
          */
         void write_blocktables(CdnsEncoder& enc, std::size_t& fields);
+
+        BlockPreamble m_block_preamble;
+        std::optional<BlockStatistics> m_block_statistics;
 
         // Block Tables
         BlockTable<StringItem, std::string> m_ip_address;
