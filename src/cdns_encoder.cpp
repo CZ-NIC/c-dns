@@ -148,7 +148,6 @@ void CDNS::CdnsEncoder::flush_buffer()
     if (m_p != m_buffer) {
         try {
             m_cos->write(reinterpret_cast<const char*>(m_buffer), m_p - m_buffer);
-            m_bytes_written += m_p - m_buffer;
             m_p = m_buffer;
             m_avail = BUFFER_SIZE;
         }
