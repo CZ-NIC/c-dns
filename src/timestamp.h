@@ -68,7 +68,7 @@ namespace CDNS {
             if (ticks_per_second == 0)
                 throw std::runtime_error("Ticks per second resolution is zero!");
 
-            int64_t secs, ticks;
+            int64_t secs, ticks, overflow;
 
             // Substract seconds part of timestamp
             if (reference.m_secs <= m_secs) {
@@ -81,13 +81,15 @@ namespace CDNS {
             // Substract subseconds part of timestamp
             if (reference.m_ticks <= m_ticks) {
                 ticks = m_ticks - reference.m_ticks;
+                overflow = ticks / ticks_per_second;
             }
             else {
                 ticks = -1 * (reference.m_ticks - m_ticks);
+                overflow = -1 * (std::abs(ticks) / ticks_per_second);
             }
 
             // Calculate timestamp offset
-            int64_t diff_secs = (secs + (ticks / ticks_per_second)) * ticks_per_second;
+            int64_t diff_secs = (secs + overflow) * ticks_per_second;
             int64_t diff_ticks = std::abs(ticks) % ticks_per_second;
             if (ticks < 0)
                 diff_ticks *= -1;
