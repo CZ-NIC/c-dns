@@ -9,6 +9,8 @@ find_package(ZLIB REQUIRED)
 
 find_package(LibLZMA REQUIRED)
 
+option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
+
 file(GLOB sources "src/*.cpp")
 add_library(cdns SHARED
     ${sources}
@@ -40,3 +42,7 @@ install(TARGETS cdns
 install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc 
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
 )
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif(BUILD_TESTS)
