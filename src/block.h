@@ -103,6 +103,51 @@ namespace CDNS {
         }
 
         /**
+         * @brief Calculate hash for QueryResponseSignature
+         * @param qrs Data to calculate hash on
+         * @return Hash value for "qrs"
+         */
+        friend std::size_t hash_value(const QueryResponseSignature& qrs) {
+            std::size_t hash = ~0U;
+            if (qrs.server_address_index)
+                hash = hash_value(qrs.server_address_index.value());
+            if (qrs.server_port)
+                hash = hash_value(qrs.server_port.value(), hash);
+            if (qrs.qr_transport_flags)
+                hash = hash_value(qrs.qr_transport_flags.value(), hash);
+            if (qrs.qr_type)
+                hash = hash_value(qrs.qr_type.value(), hash);
+            if (qrs.qr_sig_flags)
+                hash = hash_value(qrs.qr_sig_flags.value(), hash);
+            if (qrs.query_opcode)
+                hash = hash_value(qrs.query_opcode.value(), hash);
+            if (qrs.qr_dns_flags)
+                hash = hash_value(qrs.qr_dns_flags.value(), hash);
+            if (qrs.query_rcode)
+                hash = hash_value(qrs.query_rcode.value(), hash);
+            if (qrs.query_classtype_index)
+                hash = hash_value(qrs.query_classtype_index.value(), hash);
+            if (qrs.query_qdcount)
+                hash = hash_value(qrs.query_qdcount.value(), hash);
+            if (qrs.query_ancount)
+                hash = hash_value(qrs.query_ancount.value(), hash);
+            if (qrs.query_nscount)
+                hash = hash_value(qrs.query_nscount.value(), hash);
+            if (qrs.query_arcount)
+                hash = hash_value(qrs.query_arcount.value(), hash);
+            if (qrs.query_edns_version)
+                hash = hash_value(qrs.query_edns_version.value(), hash);
+            if (qrs.query_udp_size)
+                hash = hash_value(qrs.query_udp_size.value(), hash);
+            if (qrs.query_opt_rdata_index)
+                hash = hash_value(qrs.query_opt_rdata_index.value(), hash);
+            if (qrs.response_rcode)
+                hash = hash_value(qrs.response_rcode.value(), hash);
+
+            return hash;
+        }
+
+        /**
          * @brief Serialize the QueryResponseSignature to C-DNS CBOR representation
          * @param enc C-DNS encoder
          */
@@ -194,6 +239,22 @@ namespace CDNS {
         }
 
         /**
+         * @brief Calculate hash for RR
+         * @param rr Data to calculate hash on
+         * @return Hash value for "rr"
+         */
+        friend std::size_t hash_value(const RR& rr) {
+            std::size_t hash = hash_value(rr.name_index);
+            hash = hash_value(rr.classtype_index, hash);
+            if (rr.ttl)
+                hash = hash_value(rr.ttl.value(), hash);
+            if (rr.rdata_index)
+                hash = hash_value(rr.rdata_index.value(), hash);
+
+            return hash;
+        }
+
+        /**
          * @brief Returns reference to itself as key for unordered_map
          */
         const RR& key() const {
@@ -243,6 +304,25 @@ namespace CDNS {
          */
         const MalformedMessageData& key() const {
             return *this;
+        }
+
+        /**
+         * @brief Calculate hash for MalformedMessageData
+         * @param mmd Data to calculate hash on
+         * @return Hash value for "mmd"
+         */
+        friend std::size_t hash_value(const MalformedMessageData& mmd) {
+            std::size_t hash = ~0U;
+            if (mmd.server_address_index)
+                hash = hash_value(mmd.server_address_index.value());
+            if (mmd.server_port)
+                hash = hash_value(mmd.server_port.value(), hash);
+            if (mmd.mm_transport_flags)
+                hash = hash_value(mmd.mm_transport_flags.value(), hash);
+            if (mmd.mm_payload)
+                hash = hash_value(mmd.mm_payload.value(), hash);
+
+            return hash;
         }
 
         /**
@@ -382,6 +462,22 @@ namespace CDNS {
         }
 
         /**
+         * @brief Calculate hash for AddressEventCount
+         * @param aec Data to calculate hash on
+         * @return Hash value for "aec"
+         */
+        friend std::size_t hash_value(const AddressEventCount& aec) {
+            std::size_t hash = hash_value(aec.ae_type);
+            if (aec.ae_code)
+                hash = hash_value(aec.ae_code.value(), hash);
+            if (aec.ae_transport_flags)
+                hash = hash_value(aec.ae_transport_flags.value(), hash);
+
+            hash = hash_value(aec.ae_address_index, hash);
+            return hash;
+        }
+
+        /**
          * @brief Serialize the AddressEventCount to C-DNS CBOR representation
          * @param enc C-DNS encoder
          */
@@ -439,8 +535,18 @@ namespace CDNS {
         /**
          * @brief Return reference to the byte string data as key for unordered_map
          */
-        const std::string& key() const {
-            return data;
+        const StringItem& key() const {
+            return *this;
+        }
+
+        /**
+         * @brief Calculate hash for StringItem
+         * @param si Data to calculate hash on
+         * @return Hash value for "si"
+         */
+        friend std::size_t hash_value(const StringItem& si) {
+            std::size_t hash = hash_value(si.data.data(), si.data.size() * sizeof(char));
+            return hash;
         }
 
         /**
@@ -479,8 +585,18 @@ namespace CDNS {
         /**
          * @brief Return reference to the list as key for unordered_map
          */
-        const std::vector<index_t>& key() const {
-            return list;
+        const IndexListItem& key() const {
+            return *this;
+        }
+
+        /**
+         * @brief Calculate hash for IndexListItem
+         * @param ili Data to calculate hash on
+         * @return Hash value for "ili"
+         */
+        friend std::size_t hash_value(const IndexListItem& ili) {
+            std::size_t hash = hash_value(ili.list.data(), ili.list.size() * sizeof(index_t));
+            return hash;
         }
 
         /**
@@ -534,7 +650,7 @@ namespace CDNS {
         index_t add_ip_address(const std::string& address) {
             index_t ret;
 
-            if (!m_ip_address.find(address, ret)) {
+            if (!m_ip_address.find(reinterpret_cast<const StringItem&>(address), ret)) {
                 StringItem tmp;
                 tmp.data = address;
                 ret = m_ip_address.add_value(std::move(tmp));
@@ -560,7 +676,7 @@ namespace CDNS {
         index_t add_name_rdata(const std::string& nrd) {
             index_t ret;
 
-            if (!m_name_rdata.find(nrd, ret)) {
+            if (!m_name_rdata.find(reinterpret_cast<const StringItem&>(nrd), ret)) {
                 StringItem tmp;
                 tmp.data = nrd;
                 ret = m_name_rdata.add_value(std::move(tmp));
@@ -586,7 +702,7 @@ namespace CDNS {
         index_t add_question_list(const std::vector<index_t>& qlist) {
             index_t ret;
 
-            if (!m_qlist.find(qlist, ret)) {
+            if (!m_qlist.find(reinterpret_cast<const IndexListItem&>(qlist), ret)) {
                 IndexListItem tmp;
                 tmp.list = qlist;
                 ret = m_qlist.add_value(std::move(tmp));
@@ -612,7 +728,7 @@ namespace CDNS {
         index_t add_rr_list(const std::vector<index_t>& rrlist) {
             index_t ret;
 
-            if (!m_rrlist.find(rrlist, ret)) {
+            if (!m_rrlist.find(reinterpret_cast<const IndexListItem&>(rrlist), ret)) {
                 IndexListItem tmp;
                 tmp.list = rrlist;
                 ret = m_rrlist.add_value(std::move(tmp));
@@ -702,13 +818,13 @@ namespace CDNS {
         std::optional<BlockStatistics> m_block_statistics;
 
         // Block Tables
-        BlockTable<StringItem, std::string> m_ip_address;
+        BlockTable<StringItem> m_ip_address;
         BlockTable<ClassType> m_classtype;
-        BlockTable<StringItem, std::string> m_name_rdata;
+        BlockTable<StringItem> m_name_rdata;
         BlockTable<QueryResponseSignature> m_qr_sig;
-        BlockTable<IndexListItem, std::vector<index_t>> m_qlist;
+        BlockTable<IndexListItem> m_qlist;
         BlockTable<Question> m_qrr;
-        BlockTable<IndexListItem, std::vector<index_t>> m_rrlist;
+        BlockTable<IndexListItem> m_rrlist;
         BlockTable<RR> m_rr;
         BlockTable<MalformedMessageData> m_malformed_message_data;
 
