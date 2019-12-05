@@ -90,10 +90,10 @@ namespace CDNS {
         delete cow;
 
         gzFile file = gzopen((filename + ".cdns.gz").c_str(), "rb");
-        char gz[out.size()];
-        int ret = gzread(file, gz, out.size());
+        char gz[255];
+        int ret = gzread(file, gz, 255);
         EXPECT_EQ(ret, out.size());
-        EXPECT_EQ(std::string(gz), out);
+        EXPECT_EQ(std::string(gz, ret), out);
         gzclose(file);
 
         if (stat((filename + ".cdns.gz").c_str(), &buff) == 0)
