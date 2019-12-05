@@ -13,11 +13,11 @@
 namespace CDNS {
     TEST(CborOutputWriterTest, COWCTest) {
         std::string filename = "test.out";
-        CborOutputWriter cow(filename);
+        CborOutputWriter* cow = new CborOutputWriter(filename);
         struct stat buff;
 
         EXPECT_EQ(stat((filename + ".cdns").c_str(), &buff), 0);
-        cow.~CborOutputWriter();
+        delete cow;
         if (stat((filename + ".cdns").c_str(), &buff) == 0)
             remove((filename + ".cdns").c_str());
 
@@ -26,12 +26,12 @@ namespace CDNS {
 
     TEST(CborOutputWriterTest, COWWriteTest) {
         std::string filename = "test.out";
-        CborOutputWriter cow(filename);
+        CborOutputWriter* cow = new CborOutputWriter(filename);
         struct stat buff;
         std::string out("test");
 
-        cow.write(out.c_str(), out.size());
-        cow.~CborOutputWriter();
+        cow->write(out.c_str(), out.size());
+        delete cow;
 
         std::ifstream file(filename + ".cdns");
         std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -43,16 +43,16 @@ namespace CDNS {
     TEST(CborOutputWriterTest, COWRotateTest) {
         std::string filename = "test.out";
         std::string filename2 = "test2.out";
-        CborOutputWriter cow(filename);
+        CborOutputWriter* cow = new CborOutputWriter(filename);
         struct stat buff;
         std::string out("test");
 
-        cow.write(out.c_str(), out.size());
+        cow->write(out.c_str(), out.size());
 
         int fd = open(filename2.c_str(), O_CREAT | O_RDWR, 0644);
-        cow.rotate_output(fd);
-        cow.write(out.c_str(), out.size());
-        cow.~CborOutputWriter();
+        cow->rotate_output(fd);
+        cow->write(out.c_str(), out.size());
+        delete cow;
 
         std::ifstream file(filename + ".cdns");
         std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -69,11 +69,11 @@ namespace CDNS {
 
     TEST(GzipCborOutputWriterTest, GCOWCTest) {
         std::string filename = "test.out";
-        GzipCborOutputWriter cow(filename);
+        GzipCborOutputWriter* cow = new GzipCborOutputWriter(filename);
         struct stat buff;
 
         EXPECT_EQ(stat((filename + ".cdns.gz").c_str(), &buff), 0);
-        cow.~GzipCborOutputWriter();
+        delete cow;
         if (stat((filename + ".cdns.gz").c_str(), &buff) == 0)
             remove((filename + ".cdns.gz").c_str());
 
@@ -82,12 +82,12 @@ namespace CDNS {
 
     TEST(GzipCborOutputWriterTest, GCOWWriteTest) {
         std::string filename = "test.out";
-        GzipCborOutputWriter cow(filename);
+        GzipCborOutputWriter* cow = new GzipCborOutputWriter(filename);
         struct stat buff;
         std::string out("test");
 
-        cow.write(out.c_str(), out.size());
-        cow.~GzipCborOutputWriter();
+        cow->write(out.c_str(), out.size());
+        delete cow;
 
         gzFile file = gzopen((filename + ".cdns.gz").c_str(), "rb");
         char gz[out.size()];
@@ -102,11 +102,11 @@ namespace CDNS {
 
     TEST(XzCborOutputWriterTest, XCOWCTest) {
         std::string filename = "test.out";
-        XzCborOutputWriter cow(filename);
+        XzCborOutputWriter* cow = new XzCborOutputWriter(filename);
         struct stat buff;
 
         EXPECT_EQ(stat((filename + ".cdns.xz").c_str(), &buff), 0);
-        cow.~XzCborOutputWriter();
+        delete cow;
         if (stat((filename + ".cdns.xz").c_str(), &buff) == 0)
             remove((filename + ".cdns.xz").c_str());
 
@@ -115,13 +115,13 @@ namespace CDNS {
 
     TEST(XzCborOutputWriterTest, XCOWWriteTest) {
         std::string filename = "test.out";
-        XzCborOutputWriter cow(filename);
+        XzCborOutputWriter* cow = new XzCborOutputWriter(filename);
         struct stat buff;
         std::string out("test");
         std::string result;
 
-        cow.write(out.c_str(), out.size());
-        cow.~XzCborOutputWriter();
+        cow->write(out.c_str(), out.size());
+        delete cow;
 
         FILE* file = fopen((filename + ".cdns.xz").c_str(), "r");
         lzma_stream lzma = LZMA_STREAM_INIT;
