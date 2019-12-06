@@ -680,22 +680,31 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
      */
 
     QueryResponse qr;
+    bool qr_filled = false;
 
     // Time offset
-    if ((qr_hints & QueryResponseHintsMask::time_offset) && gr.ts)
+    if ((qr_hints & QueryResponseHintsMask::time_offset) && gr.ts) {
         qr.time_offset = *gr.ts;
+        qr_filled = true;
+    }
 
     // Client IP address
-    if ((qr_hints & QueryResponseHintsMask::client_address_index) && gr.client_ip)
+    if ((qr_hints & QueryResponseHintsMask::client_address_index) && gr.client_ip) {
         qr.client_address_index = add_ip_address(*gr.client_ip);
+        qr_filled = true;
+    }
 
     // Client port
-    if ((qr_hints & QueryResponseHintsMask::client_port) && gr.client_port)
+    if ((qr_hints & QueryResponseHintsMask::client_port) && gr.client_port) {
         qr.client_port = *gr.client_port;
+        qr_filled = true;
+    }
 
     // DNS transaction ID
-    if ((qr_hints & QueryResponseHintsMask::transaction_id) && gr.transaction_id)
+    if ((qr_hints & QueryResponseHintsMask::transaction_id) && gr.transaction_id) {
         qr.transaction_id = *gr.transaction_id;
+        qr_filled = true;
+    }
 
     // Fill Query Response Signature
     if (qr_hints & QueryResponseHintsMask::qr_signature_index) {
@@ -705,129 +714,141 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         // Server IP address
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_address_index) && gr.server_ip) {
             qrs.server_address_index = add_ip_address(*gr.server_ip);
-            qrs_filled |= !!qrs.server_address_index;
+            qrs_filled = true;
         }
 
         // Server port
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::server_port) && gr.server_port) {
             qrs.server_port = *gr.server_port;
-            qrs_filled |= !!qrs.server_port;
+            qrs_filled = true;
         }
 
         // Transport flags (IP version, transport protocol, trailing data)
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_transport_flags) && gr.qr_transport_flags) {
             qrs.qr_transport_flags = *gr.qr_transport_flags;
-            qrs_filled |= !!qrs.qr_transport_flags;
+            qrs_filled = true;
         }
 
         // Query type (stub, resolver, etc.)
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_type) && gr.qr_type) {
             qrs.qr_type = *gr.qr_type;
-            qrs_filled |= !!qrs.qr_type;
+            qrs_filled = true;
         }
 
         // QR Signature flags (is query, is response, etc.)
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_sig_flags) && gr.qr_sig_flags) {
             qrs.qr_sig_flags = *gr.qr_sig_flags;
-            qrs_filled |= !!qrs.qr_sig_flags;
+            qrs_filled = true;
         }
 
         // Query OpCode
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opcode) && gr.query_opcode) {
             qrs.query_opcode = *gr.query_opcode;
-            qrs_filled |= !!qrs.query_opcode;
+            qrs_filled = true;
         }
 
         // DNS header flags
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::qr_dns_flags) && gr.qr_dns_flags) {
             qrs.qr_dns_flags = *gr.qr_dns_flags;
-            qrs_filled |= !!qrs.qr_dns_flags;
+            qrs_filled = true;
         }
 
         // Query RCode
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_rcode) && gr.query_rcode) {
             qrs.query_rcode = *gr.query_rcode;
-            qrs_filled |= !!qrs.query_rcode;
+            qrs_filled = true;
         }
 
         // Query question type and class
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_classtype_index) && gr.query_classtype) {
             qrs.query_classtype_index = add_classtype(*gr.query_classtype);
-            qrs_filled |= !!qrs.query_classtype_index;
+            qrs_filled = true;
         }
 
         // Query question count
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_qdcount) && gr.query_qdcount) {
             qrs.query_qdcount = *gr.query_qdcount;
-            qrs_filled |= !!qrs.query_qdcount;
+            qrs_filled = true;
         }
 
         // Query answer count
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_ancount) && gr.query_ancount) {
             qrs.query_ancount = *gr.query_ancount;
-            qrs_filled |= !!qrs.query_ancount;
+            qrs_filled = true;
         }
 
         // Query authority records count
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_nscount) && gr.query_nscount) {
             qrs.query_nscount = *gr.query_nscount;
-            qrs_filled |= !!qrs.query_nscount;
+            qrs_filled = true;
         }
 
         // Query additional records count
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_arcount) && gr.query_arcount) {
             qrs.query_arcount = *gr.query_arcount;
-            qrs_filled |= !!qrs.query_arcount;
+            qrs_filled = true;
         }
 
         // EDNS version
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_edns_version) && gr.query_edns_version) {
             qrs.query_edns_version = *gr.query_edns_version;
-            qrs_filled |= !!qrs.query_edns_version;
+            qrs_filled = true;
         }
 
         // EDNS UDP size
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_udp_size) && gr.query_udp_size) {
             qrs.query_udp_size = *gr.query_udp_size;
-            qrs_filled |= !!qrs.query_udp_size;
+            qrs_filled = true;
         }
 
         // EDNS record's rdata
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opt_rdata_index) && gr.opt_rdata) {
             qrs.query_opt_rdata_index = add_name_rdata(*gr.opt_rdata);
-            qrs_filled |= !!qrs.query_opt_rdata_index;
+            qrs_filled = true;
         }
 
         // Response RCode
         if ((qr_sig_hints & QueryResponseSignatureHintsMask::response_rcode) && gr.response_rcode) {
             qrs.response_rcode = *gr.response_rcode;
-            qrs_filled |= !!qrs.response_rcode;
+            qrs_filled = true;
         }
 
         // Add Query Response Signature to Block table
-        if (qrs_filled)
+        if (qrs_filled) {
             qr.qr_signature_index = add_qr_signature(qrs);
+            qr_filled = true;
+        }
     }
 
     // Client hoplimit (TTL)
-    if ((qr_hints & QueryResponseHintsMask::client_hoplimit) && gr.client_hoplimit)
+    if ((qr_hints & QueryResponseHintsMask::client_hoplimit) && gr.client_hoplimit) {
         qr.client_hoplimit = *gr.client_hoplimit;
+        qr_filled = true;
+    }
 
     // Response delay
-    if ((qr_hints & QueryResponseHintsMask::response_delay) && gr.response_delay)
+    if ((qr_hints & QueryResponseHintsMask::response_delay) && gr.response_delay) {
         qr.response_delay = *gr.response_delay;
+        qr_filled = true;
+    }
 
     // Question name
-    if ((qr_hints & QueryResponseHintsMask::query_name_index) && gr.query_name)
+    if ((qr_hints & QueryResponseHintsMask::query_name_index) && gr.query_name) {
         qr.query_name_index = add_name_rdata(*gr.query_name);
+        qr_filled = true;
+    }
 
     // Query DNS size
-    if ((qr_hints & QueryResponseHintsMask::query_size) && gr.query_size)
+    if ((qr_hints & QueryResponseHintsMask::query_size) && gr.query_size) {
         qr.query_size = *gr.query_size;
+        qr_filled = true;
+    }
 
     // Response DNS size
-    if ((qr_hints & QueryResponseHintsMask::response_size) && gr.response_size)
+    if ((qr_hints & QueryResponseHintsMask::response_size) && gr.response_size) {
         qr.response_size = *gr.response_size;
+        qr_filled = true;
+    }
 
     // Fill Response Processing Data
     if (qr_hints & QueryResponseHintsMask::response_processing_data) {
@@ -837,17 +858,19 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         // Response Bailiwick
         if (gr.bailiwick) {
             rpd.bailiwick_index = add_name_rdata(*gr.bailiwick);
-            rpd_filled |= !!rpd.bailiwick_index;
+            rpd_filled = true;
         }
 
         // Response processing flags (Is response from cache?)
         if (gr.processing_flags) {
             rpd.processing_flags = *gr.processing_flags;
-            rpd_filled |= !!rpd.processing_flags;
+            rpd_filled = true;
         }
 
-        if (rpd_filled)
+        if (rpd_filled) {
             qr.response_processing_data = rpd;
+            qr_filled = true;
+        }
     }
 
     /**
@@ -857,7 +880,8 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
     /**
      * Add Query Response to the Block
      */
-    m_query_responses.push_back(qr);
+    if (qr_filled)
+        m_query_responses.push_back(qr);
 
     // Indicate if the Block if full (DNS record is inserted anyway, the limit is just a guideline)
     if (get_item_count() >= m_block_parameters.storage_parameters.max_block_items)

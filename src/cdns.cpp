@@ -2,6 +2,9 @@
 
 void CDNS::CdnsExporter::write_block(CdnsBlock& block)
 {
+    if (block.get_item_count() == 0)
+        return;
+
     // If it's the first Block in current output write start of the C-DNS file
     if (m_blocks_written == 0)
         write_file_header();
