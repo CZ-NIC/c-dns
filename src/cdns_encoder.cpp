@@ -40,10 +40,7 @@ void CDNS::CdnsEncoder::write_bytestring(const unsigned char* str, std::size_t s
         flush_buffer();
     update_buffer(cbor_encode_bytestring_start(size, m_p, m_avail));
 
-    if (m_avail < size)
-        flush_buffer();
-    std::memcpy(m_p, str, size);
-    update_buffer(size);
+    write_string(str, size);
 }
 
 void CDNS::CdnsEncoder::write_textstring(const unsigned char* str, std::size_t size)
@@ -55,10 +52,7 @@ void CDNS::CdnsEncoder::write_textstring(const unsigned char* str, std::size_t s
         flush_buffer();
     update_buffer(cbor_encode_string_start(size, m_p, m_avail));
 
-    if (m_avail < size)
-        flush_buffer();
-    std::memcpy(m_p, str, size);
-    update_buffer(size);
+    write_string(str, size);
 }
 
 void CDNS::CdnsEncoder::write_break()
@@ -155,4 +149,21 @@ void CDNS::CdnsEncoder::flush_buffer()
             std::cerr << e.what() << std::endl;
         }
     }
+}
+
+void CDNS::CdnsEncoder::write_string(const unsigned char* str, std::size_t size)
+{
+    const unsigned char* str_left = str;
+    std::size_t size_left = size;
+
+    while(m_avail < size_left) {
+        std::memcpy(m_p, str_left, m_avail);
+        size_left -= m_avail;
+        str_left += m_avail;
+        update_buffer(m_avail);
+        flush_buffer();
+    }
+
+    std::memcpy(m_p, str_left, size_left);
+    update_buffer(size_left);
 }

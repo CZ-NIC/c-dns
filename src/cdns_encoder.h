@@ -26,7 +26,7 @@ namespace CDNS {
     class CdnsEncoder {
         public:
 
-        static constexpr std::size_t BUFFER_SIZE = UINT16_MAX;
+        static constexpr std::size_t BUFFER_SIZE = 2048;
 
         /**
          * @brief Construct a new CdnsEncoder object
@@ -192,6 +192,13 @@ namespace CDNS {
          * @brief Write contents of internal buffer to ouptut C-DNS file
          */
         void flush_buffer();
+
+        /**
+         * @brief Write string to CBOR
+         * @param str Pointer to start of the string
+         * @param size Size of the string in bytes
+         */
+        void write_string(const unsigned char* str, std::size_t size);
 
         /**
          * @brief Update internal buffer parameters
