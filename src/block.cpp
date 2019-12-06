@@ -668,10 +668,10 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
      * Check if it'll be the first record in the block and set earliest time and stats if yes
      * @todo Update block statistics!!!
      */
-    if (m_query_responses.size() == 0 && m_malformed_messages.size() == 0) {
+    if (gr.ts && m_query_responses.size() == 0 && m_malformed_messages.size() == 0) {
         m_block_preamble.earliest_time = *gr.ts;
     }
-    else if (m_block_preamble.earliest_time < *gr.ts) {
+    else if (gr.ts && m_block_preamble.earliest_time < *gr.ts) {
         m_block_preamble.earliest_time = *gr.ts;
     }
 

@@ -116,6 +116,14 @@ namespace CDNS {
             m_blocks_written = 0;
         }
 
+        /**
+         * @brief Get the number of items in currently buffered Block
+         * @return Number of items in currently buffered Block
+         */
+        std::size_t get_block_item_count() {
+            return m_block.get_item_count();
+        }
+
         private:
         /**
          * @brief Writes beginning of C-DNS file (File type ID, File preamble and start of File blocks array)
