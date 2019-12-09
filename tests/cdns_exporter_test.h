@@ -47,6 +47,7 @@ namespace CDNS {
     TEST(CdnsExporterTest, CEBufferWriteMultipleBlocksTest) {
         FilePreamble fp;
         fp.m_block_parameters[0].storage_parameters.max_block_items = 2;
+        BlockParameters bp;
         CdnsExporter* exporter = new CdnsExporter(fp, "test.out", CborOutputCompression::NO_COMPRESSION);
         GenericQueryResponse gqr, gqr2, gqr3;
         Timestamp ts(12, 12543), ts2(6, 3020);
@@ -58,12 +59,27 @@ namespace CDNS {
         gqr3.ts = &ts;
         gqr3.server_ip = &ip;
 
+        // Add another Block parameters
+        index_t index = exporter->add_block_parameters(bp);
+        EXPECT_EQ(index, 1);
+
+        // Buffer 1st QueryResponse
         std::size_t written = exporter->buffer_qr(gqr);
         EXPECT_EQ(exporter->get_block_item_count(), 1);
         EXPECT_EQ(written, 0);
+
+        // Try to set another Block parameters
+        bool ret = exporter->set_active_block_parameters(13);
+        EXPECT_FALSE(ret);
+        ret = exporter->set_active_block_parameters(index);
+        EXPECT_TRUE(ret);
+
+        // Buffer 2nd QueryResponse (should export full Block)
         written = exporter->buffer_qr(gqr2);
         EXPECT_EQ(exporter->get_block_item_count(), 0);
         EXPECT_GT(written, 0);
+
+        // Buffer 3rd QueryResponse and write Block
         written += exporter->buffer_qr(gqr3);
         EXPECT_EQ(exporter->get_block_item_count(), 1);
         written += exporter->write_block();

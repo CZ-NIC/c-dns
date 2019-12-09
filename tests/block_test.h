@@ -269,4 +269,22 @@ namespace CDNS {
         block.clear();
         EXPECT_EQ(block.get_item_count(), 0);
     }
+
+    TEST(BlockTest, BlockSetBPTest) {
+        BlockParameters bp, bp2;
+        bp2.storage_parameters.max_block_items = 100;
+        CdnsBlock block(bp, 0);
+        GenericQueryResponse qr;
+        Timestamp ts(13, 1234);
+        qr.ts = &ts;
+
+        bool ret = block.add_question_response_record(qr);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
+        ret = block.set_block_parameters(bp2, 1);
+        EXPECT_FALSE(ret);
+        block.clear();
+        ret = block.set_block_parameters(bp2, 1);
+        EXPECT_TRUE(ret);
+    }
 }

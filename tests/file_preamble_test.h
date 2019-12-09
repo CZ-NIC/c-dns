@@ -64,7 +64,8 @@ namespace CDNS {
         EXPECT_EQ(fp.block_parameters_size(), 1);
         
         BlockParameters bp;
-        fp.add_block_parameters(bp);
+        std::size_t index = fp.add_block_parameters(bp);
         EXPECT_EQ(fp.block_parameters_size(), 2);
+        EXPECT_EQ(index, 1);
     }
 }
