@@ -37,8 +37,7 @@ namespace CDNS {
          */
         template<typename T>
         CdnsEncoder(const T& output, CborOutputCompression compression) : m_p(m_buffer),
-                                                                       m_avail(BUFFER_SIZE),
-                                                                       m_bytes_written(0) {
+                                                                          m_avail(BUFFER_SIZE) {
             switch (compression) {
                 case CborOutputCompression::NO_COMPRESSION:
                     m_cos = new CborOutputWriter(output);
@@ -225,13 +224,11 @@ namespace CDNS {
         void update_buffer(std::size_t bytes) {
             m_p += bytes;
             m_avail -= bytes;
-            m_bytes_written += bytes;
         }
 
         BaseCborOutputWriter* m_cos;
         unsigned char m_buffer[BUFFER_SIZE];
         unsigned char *m_p;
         std::size_t m_avail;
-        std::size_t m_bytes_written;
     };
 }
