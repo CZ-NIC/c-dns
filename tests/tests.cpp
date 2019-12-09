@@ -5,3 +5,4 @@
 #include "block_test.h"
 #include "writer_test.h"
 #include "cdns_encoder_test.h"
+#include "cdns_exporter_test.h"
