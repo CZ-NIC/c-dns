@@ -60,15 +60,16 @@ namespace CDNS {
          * @brief Buffer new DNS record to C-DNS block
          * @param qr New DNS record to buffer
          * @throw std::exception if inserting DNS record to the Block fails
-         * @return `true` if full Block was written to output, `false` otherwise
+         * @return Number of uncompressed bytes written if full Block was written to output, 0 otherwise
          */
-        bool buffer_qr(const GenericQueryResponse& qr) {
+        std::size_t buffer_qr(const GenericQueryResponse& qr) {
+            std::size_t written = 0;
             if (m_block.add_question_response_record(qr)) {
-                write_block();
-                return true;
+                written = write_block();
+                return written;
             }
 
-            return false;
+            return written;
         }
 
          /**
@@ -106,17 +107,20 @@ namespace CDNS {
          * @param export_current_block If `true` currently internally buffered Block will be exported
          * before current output is closed
          * @throw CborOutputException if output rotation fails
+         * @return Number of uncompressed bytes written to close current output, 0 if closing empty output
          */
         template<typename T>
-        void rotate_output(const T& out, bool export_current_block) {
+        std::size_t rotate_output(const T& out, bool export_current_block) {
+            std::size_t written = 0;
             if (export_current_block)
-                write_block();
+                written += write_block();
 
             if (m_blocks_written > 0)
-                m_encoder.write_break();
+                written += m_encoder.write_break();
 
             m_encoder.rotate_output(out);
             m_blocks_written = 0;
+            return written;
         }
 
         /**
