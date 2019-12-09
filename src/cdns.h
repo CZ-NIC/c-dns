@@ -86,15 +86,18 @@ namespace CDNS {
         /**
          * @brief Write the given C-DNS block to output
          * @param block C-DNS block to output
+         * @return Number of uncompressed bytes written
          */
-        void write_block(CdnsBlock& block);
+        std::size_t write_block(CdnsBlock& block);
 
         /**
          * @brief Write the internally buffered C-DNS block to output
+         * @return Number of uncompressed bytes written
          */
-        void write_block() {
-            write_block(m_block);
+        std::size_t write_block() {
+            std::size_t written = write_block(m_block);
             m_block.clear();
+            return written;
         }
 
         /**
@@ -127,8 +130,9 @@ namespace CDNS {
         private:
         /**
          * @brief Writes beginning of C-DNS file (File type ID, File preamble and start of File blocks array)
+         * @return Number of uncompressed bytes written
          */
-        void write_file_header();
+        std::size_t write_file_header();
 
         FilePreamble m_file_preamble;
         CdnsBlock m_block;

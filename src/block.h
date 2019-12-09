@@ -53,8 +53,9 @@ namespace CDNS {
         /**
          * @brief Serialize the ClassType to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         uint16_t type;
         uint16_t class_;
@@ -150,8 +151,9 @@ namespace CDNS {
         /**
          * @brief Serialize the QueryResponseSignature to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<index_t> server_address_index;
         std::optional<uint16_t> server_port;
@@ -206,8 +208,9 @@ namespace CDNS {
         /**
          * @brief Serialize the Question to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         index_t name_index;
         index_t classtype_index;
@@ -264,8 +267,9 @@ namespace CDNS {
         /**
          * @brief Serialize the RR to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         index_t name_index;
         index_t classtype_index;
@@ -328,8 +332,9 @@ namespace CDNS {
         /**
          * @brief Serialize the MalformedMessageData to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<index_t> server_address_index;
         std::optional<uint16_t> server_port;
@@ -344,8 +349,9 @@ namespace CDNS {
         /**
          * @brief Serialize the ResponseProcessingData to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<index_t> bailiwick_index;
         std::optional<ResponseProcessingFlagsMask> processing_flags;
@@ -358,8 +364,9 @@ namespace CDNS {
         /**
          * @brief Serialize the QueryResponseExtended to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<index_t> question_index;
         std::optional<index_t> answer_index;
@@ -375,8 +382,9 @@ namespace CDNS {
         /**
          * @brief Serialize the BlockPreamble to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         Timestamp earliest_time;
         std::optional<index_t> block_parameters_index;
@@ -389,8 +397,9 @@ namespace CDNS {
         /**
          * @brief Serialize the BlockStatistics to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<unsigned> processed_messages;
         std::optional<unsigned> qr_data_items;
@@ -409,8 +418,9 @@ namespace CDNS {
          * @param enc C-DNS encoder
          * @param earliest Earliest timestamp in the Block
          * @param ticks_per_second Subsecond resolution of timestamps
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+        std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
         std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
@@ -480,8 +490,9 @@ namespace CDNS {
         /**
          * @brief Serialize the AddressEventCount to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         AddressEventTypeValues ae_type;
         std::optional<uint8_t> ae_code;
@@ -499,8 +510,9 @@ namespace CDNS {
          * @param enc C-DNS encoder
          * @param earliest Earliest timestamp in the Block
          * @param ticks_per_second Subsecond resolution of timestamps
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+        std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
         std::optional<Timestamp> time_offset;
         std::optional<index_t> client_address_index;
@@ -552,8 +564,9 @@ namespace CDNS {
         /**
          * @brief Serialize the StringItem to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::string data;
     };
@@ -602,8 +615,9 @@ namespace CDNS {
         /**
          * @brief Serialize the IndexListItem to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::vector<index_t> list;
     };
@@ -628,8 +642,9 @@ namespace CDNS {
         /**
          * @brief Serialize Block to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         /**
          * @brief Get index for Block parameters of this block
@@ -811,8 +826,9 @@ namespace CDNS {
          * @brief Serialize Block tables to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @param fields Number of non-empty fields in Block tables map
+         * @return Number of uncompressed bytes written
          */
-        void write_blocktables(CdnsEncoder& enc, std::size_t& fields);
+        std::size_t write_blocktables(CdnsEncoder& enc, std::size_t& fields);
 
         BlockPreamble m_block_preamble;
         std::optional<BlockStatistics> m_block_statistics;

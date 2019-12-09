@@ -1,30 +1,38 @@
 #include "cdns.h"
 
-void CDNS::CdnsExporter::write_block(CdnsBlock& block)
+std::size_t CDNS::CdnsExporter::write_block(CdnsBlock& block)
 {
     if (block.get_item_count() == 0)
-        return;
+        return 0;
+
+    std::size_t written = 0;
 
     // If it's the first Block in current output write start of the C-DNS file
     if (m_blocks_written == 0)
-        write_file_header();
+        written += write_file_header();
 
     // Write the given C-DNS block to output
-    block.write(m_encoder);
+    written += block.write(m_encoder);
     m_blocks_written++;
+
+    return written;
 }
 
-void CDNS::CdnsExporter::write_file_header()
+std::size_t CDNS::CdnsExporter::write_file_header()
 {
+    std::size_t written = 0;
+
     // Write start of C-DNS file
-    m_encoder.write_array_start(get_map_index(FileMapIndex::file_size));
+    written += m_encoder.write_array_start(get_map_index(FileMapIndex::file_size));
 
     // Write File type ID
-    m_encoder.write_textstring("C-DNS");
+    written += m_encoder.write_textstring("C-DNS");
 
     // Write File preamble
-    m_file_preamble.write(m_encoder);
+    written += m_file_preamble.write(m_encoder);
 
     // Write start of indefinite length array of File blocks
-    m_encoder.write_indef_array_start();
+    written += m_encoder.write_indef_array_start();
+
+    return written;
 }

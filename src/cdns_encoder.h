@@ -69,113 +69,131 @@ namespace CDNS {
         /**
          * @brief Write start of CBOR array
          * @param size Number of items in the array
+         * @return Number of uncompressed bytes written
          */
-        void write_array_start(std::size_t size);
+        std::size_t write_array_start(std::size_t size);
 
         /**
          * @brief Write start of CBOR array of indefinite length
+         * @return Number of uncompressed bytes written
          */
-        void write_indef_array_start();
+        std::size_t write_indef_array_start();
 
         /**
          * @brief Write start of CBOR map
          * @param size Number of key:value pairs in the map
+         * @return Number of uncompressed bytes written
          */
-        void write_map_start(std::size_t size);
+        std::size_t write_map_start(std::size_t size);
 
         /**
          * @brief Write start of CBOR map of indefinite length
+         * @return Number of uncompressed bytes written
          */
-        void write_indef_map_start();
+        std::size_t write_indef_map_start();
 
         /**
          * @brief Write CBOR Byte string
          * @param char Pointer to start of the byte string
          * @param size Size of the byte string in bytes
+         * @return Number of uncompressed bytes written
          */
-        void write_bytestring(const unsigned char* str, std::size_t size);
+        std::size_t write_bytestring(const unsigned char* str, std::size_t size);
 
         /**
          * @brief Write CBOR Byte string
          * @param str Byte string to write
+         * @return Number of uncompressed bytes written
          */
-        void write_bytestring(const std::string& str) {
-            write_bytestring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
+        std::size_t write_bytestring(const std::string& str) {
+            return write_bytestring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
         }
 
         /**
          * @brief Write CBOR Text string
          * @param char Pointer to start of the text string
          * @param size Size of the text string in bytes
+         * @return Number of uncompressed bytes written
          */
-        void write_textstring(const unsigned char* str, std::size_t size);
+        std::size_t write_textstring(const unsigned char* str, std::size_t size);
 
         /**
          * @brief Write CBOR Text string
          * @param str Text string to write
+         * @return Number of uncompressed bytes written
          */
-        void write_textstring(const std::string& str) {
-            write_textstring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
+        std::size_t write_textstring(const std::string& str) {
+            return write_textstring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
         }
 
         /**
          * @brief Write CBOR Break stop code to close indefinite length arrays and maps
+         * @return Number of uncompressed bytes written
          */
-        void write_break();
+        std::size_t write_break();
 
         /**
          * @brief Write bool value to CBOR
          * @param value Bool value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(bool value);
+        std::size_t write(bool value);
 
         /**
          * @brief Write uint8_t value to CBOR
          * @param value Uint8_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(uint8_t value);
+        std::size_t write(uint8_t value);
 
         /**
          * @brief Write uint16_t value to CBOR
          * @param value Uint16_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(uint16_t value);
+        std::size_t write(uint16_t value);
 
         /**
          * @brief Write uint32_t value to CBOR
          * @param value Uint32_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(uint32_t value);
+        std::size_t write(uint32_t value);
 
         /**
          * @brief Write uint64_t value to CBOR
          * @param value Uint64_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(uint64_t value);
+        std::size_t write(uint64_t value);
 
         /**
          * @brief Write int8_t value to CBOR
          * @param value Int8_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(int8_t value);
+        std::size_t write(int8_t value);
 
         /**
          * @brief Write int16_t value to CBOR
          * @param value Int16_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(int16_t value);
+        std::size_t write(int16_t value);
 
         /**
          * @brief Write int32_t value to CBOR
          * @param value Int32_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(int32_t value);
+        std::size_t write(int32_t value);
 
         /**
          * @brief Write int64_t value to CBOR
          * @param value In64_t value to write
+         * @return Number of uncompressed bytes written
          */
-        void write(int64_t value);
+        std::size_t write(int64_t value);
 
         /**
          * @brief Close the current output and open a new one with given file name or file descriptor

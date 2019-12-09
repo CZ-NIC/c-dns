@@ -100,16 +100,21 @@ namespace CDNS {
         /**
          * @brief Serialize the Timestamp to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc) {
+        std::size_t write(CdnsEncoder& enc) {
+            std::size_t written = 0;
+
             // Start Timestamp array
-            enc.write_array_start(2);
+            written += enc.write_array_start(2);
 
             // Write Seconds
-            enc.write(m_secs);
+            written += enc.write(m_secs);
 
             // Write Ticks
-            enc.write(m_ticks);
+            written += enc.write(m_ticks);
+
+            return written;
         }
 
         uint64_t m_secs;

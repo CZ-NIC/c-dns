@@ -72,8 +72,9 @@ namespace CDNS {
         /**
          * @brief Serialize the Storage hints to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         uint32_t query_response_hints;
         uint32_t query_response_signature_hints;
@@ -91,8 +92,9 @@ namespace CDNS {
         /**
          * @brief Serialize the Storage parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         uint64_t ticks_per_second;
         uint64_t max_block_items;
@@ -117,8 +119,9 @@ namespace CDNS {
         /**
          * @brief Serialize the Collection parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         std::optional<uint64_t> query_timeout;
         std::optional<uint64_t> skew_timeout;
@@ -141,8 +144,9 @@ namespace CDNS {
         /**
          * @brief Serialize the Block parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         StorageParameters storage_parameters;
         std::optional<CollectionParameters> collection_parameters;
@@ -201,8 +205,9 @@ namespace CDNS {
         /**
          * @brief Serialize the File preamble to C-DNS CBOR representation
          * @param enc C-DNS encoder
+         * @return Number of uncompressed bytes written
          */
-        void write(CdnsEncoder& enc);
+        std::size_t write(CdnsEncoder& enc);
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;

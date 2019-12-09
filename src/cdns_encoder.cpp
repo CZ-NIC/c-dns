@@ -3,138 +3,194 @@
 
 #include "cdns_encoder.h"
 
-void CDNS::CdnsEncoder::write_array_start(std::size_t size)
+std::size_t CDNS::CdnsEncoder::write_array_start(std::size_t size)
 {
     if (m_avail < 9)
         flush_buffer();
-    update_buffer(cbor_encode_array_start(size, m_p, m_avail));
+    std::size_t written = cbor_encode_array_start(size, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write_indef_array_start()
+std::size_t CDNS::CdnsEncoder::write_indef_array_start()
 {
     if (m_avail < 1)
         flush_buffer();
-    update_buffer(cbor_encode_indef_array_start(m_p, m_avail));
+    std::size_t written = cbor_encode_indef_array_start(m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write_map_start(std::size_t size)
+std::size_t CDNS::CdnsEncoder::write_map_start(std::size_t size)
 {
     if (m_avail < 9)
         flush_buffer();
-    update_buffer(cbor_encode_map_start(size, m_p, m_avail));
+    std::size_t written = cbor_encode_map_start(size, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write_indef_map_start()
+std::size_t CDNS::CdnsEncoder::write_indef_map_start()
 {
     if (m_avail < 1)
         flush_buffer();
-    update_buffer(cbor_encode_indef_map_start(m_p, m_avail));
+    std::size_t written = cbor_encode_indef_map_start(m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write_bytestring(const unsigned char* str, std::size_t size)
+std::size_t CDNS::CdnsEncoder::write_bytestring(const unsigned char* str, std::size_t size)
 {
     if (!str)
-        return;
+        return 0;
     
     if (m_avail < 9)
         flush_buffer();
-    update_buffer(cbor_encode_bytestring_start(size, m_p, m_avail));
+    std::size_t written = cbor_encode_bytestring_start(size, m_p, m_avail);
+    update_buffer(written);
 
     write_string(str, size);
+    return written + size;
 }
 
-void CDNS::CdnsEncoder::write_textstring(const unsigned char* str, std::size_t size)
+std::size_t CDNS::CdnsEncoder::write_textstring(const unsigned char* str, std::size_t size)
 {
     if (!str)
-        return;
+        return 0;
 
     if (m_avail < 9)
         flush_buffer();
-    update_buffer(cbor_encode_string_start(size, m_p, m_avail));
+    std::size_t written = cbor_encode_string_start(size, m_p, m_avail);
+    update_buffer(written);
 
     write_string(str, size);
+    return written + size;
 }
 
-void CDNS::CdnsEncoder::write_break()
+std::size_t CDNS::CdnsEncoder::write_break()
 {
     if (m_avail < 1)
         flush_buffer();
-    update_buffer(cbor_encode_break(m_p, m_avail));
+    std::size_t written = cbor_encode_break(m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(bool value)
+std::size_t CDNS::CdnsEncoder::write(bool value)
 {
     if (m_avail < 1)
         flush_buffer();
-    update_buffer(cbor_encode_bool(value, m_p, m_avail));
+    std::size_t written = cbor_encode_bool(value, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(uint8_t value)
+std::size_t CDNS::CdnsEncoder::write(uint8_t value)
 {
     if (m_avail < 2)
         flush_buffer();
-    update_buffer(cbor_encode_uint8(value, m_p, m_avail));
+    std::size_t written = cbor_encode_uint8(value, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(uint16_t value)
+std::size_t CDNS::CdnsEncoder::write(uint16_t value)
 {
     if (m_avail < 3)
         flush_buffer();
-    update_buffer(cbor_encode_uint16(value, m_p, m_avail));
+    std::size_t written = cbor_encode_uint16(value, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(uint32_t value)
+std::size_t CDNS::CdnsEncoder::write(uint32_t value)
 {
     if (m_avail < 5)
         flush_buffer();
-    update_buffer(cbor_encode_uint32(value, m_p, m_avail));
+    std::size_t written = cbor_encode_uint32(value, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(uint64_t value)
+std::size_t CDNS::CdnsEncoder::write(uint64_t value)
 {
     if (m_avail < 9)
         flush_buffer();
-    update_buffer(cbor_encode_uint64(value, m_p, m_avail));
+    std::size_t written = cbor_encode_uint64(value, m_p, m_avail);
+    update_buffer(written);
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(int8_t value)
+std::size_t CDNS::CdnsEncoder::write(int8_t value)
 {
+    std::size_t written;
+
     if (m_avail < 2)
         flush_buffer();
-    if (value < 0)
-        update_buffer(cbor_encode_negint8(~value, m_p, m_avail));
-    else
-        update_buffer(cbor_encode_uint8(value, m_p, m_avail));
+    if (value < 0) {
+        written = cbor_encode_negint8(~value, m_p, m_avail);
+        update_buffer(written);
+    }
+    else {
+        written = cbor_encode_uint8(value, m_p, m_avail);
+        update_buffer(written);
+    }
+
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(int16_t value)
+std::size_t CDNS::CdnsEncoder::write(int16_t value)
 {
+    std::size_t written;
+
     if (m_avail < 3)
         flush_buffer();
-    if (value < 0)
-        update_buffer(cbor_encode_negint16(~value, m_p, m_avail));
-    else
-        update_buffer(cbor_encode_uint16(value, m_p, m_avail));
+    if (value < 0) {
+        written = cbor_encode_negint16(~value, m_p, m_avail);
+        update_buffer(written);
+    }
+    else {
+        written = cbor_encode_uint16(value, m_p, m_avail);
+        update_buffer(written);
+    }
+
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(int32_t value)
+std::size_t CDNS::CdnsEncoder::write(int32_t value)
 {
+    std::size_t written;
+
     if (m_avail < 5)
         flush_buffer();
-    if (value < 0)
-        update_buffer(cbor_encode_negint32(~value, m_p, m_avail));
-    else
-        update_buffer(cbor_encode_uint32(value, m_p, m_avail));
+    if (value < 0) {
+        written = cbor_encode_negint32(~value, m_p, m_avail);
+        update_buffer(written);
+    }
+    else {
+        written = cbor_encode_uint32(value, m_p, m_avail);
+        update_buffer(written);
+    }
+
+    return written;
 }
 
-void CDNS::CdnsEncoder::write(int64_t value)
+std::size_t CDNS::CdnsEncoder::write(int64_t value)
 {
+    std::size_t written;
+
     if (m_avail < 9)
         flush_buffer();
-    if (value < 0)
-        update_buffer(cbor_encode_negint64(~value, m_p, m_avail));
-    else
-        update_buffer(cbor_encode_uint64(value, m_p, m_avail));
+    if (value < 0) {
+        written = cbor_encode_negint64(~value, m_p, m_avail);
+        update_buffer(written);
+    }
+    else {
+        written = cbor_encode_uint64(value, m_p, m_avail);
+        update_buffer(written);
+    }
+
+    return written;
 }
 
 void CDNS::CdnsEncoder::flush_buffer()
