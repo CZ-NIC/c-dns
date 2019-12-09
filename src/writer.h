@@ -50,6 +50,12 @@ namespace CDNS {
          */
         virtual ~BaseCborOutputWriter() {}
 
+        /** Delete [move] copy constructors and assignment operators */
+        BaseCborOutputWriter(BaseCborOutputWriter& copy) = delete;
+        BaseCborOutputWriter(BaseCborOutputWriter&& copy) = delete;
+        virtual BaseCborOutputWriter& operator=(BaseCborOutputWriter& rhs) = delete;
+        virtual BaseCborOutputWriter& operator==(BaseCborOutputWriter&& rhs) = delete;
+
         /**
          * @brief Write data in buffer to output
          * @param p Start of the buffer with data
@@ -120,6 +126,10 @@ namespace CDNS {
          */
         ~CborOutputWriter() override { close(); }
 
+        /** Delete [move] copy constructors */
+        CborOutputWriter(CborOutputWriter& copy) = delete;
+        CborOutputWriter(CborOutputWriter&& copy) = delete;
+
         /**
          * @brief Write data in buffer to output
          * @param p Start of the buffer with data
@@ -169,6 +179,10 @@ namespace CDNS {
          */
         ~GzipCborOutputWriter() override { close(); }
 
+        /** Delete [move] copy constructors */
+        GzipCborOutputWriter(GzipCborOutputWriter& copy) = delete;
+        GzipCborOutputWriter(GzipCborOutputWriter&& copy) = delete;
+
         /**
          * @brief Write data in buffer to output file
          * @param p Start of the buffer with the data
@@ -217,6 +231,10 @@ namespace CDNS {
          * @brief Destroy the XzCborOutputWriter object and close any opened output file or file descriptor
          */
         ~XzCborOutputWriter() override { close(); }
+
+        /** Delete [move] copy constructors */
+        XzCborOutputWriter(XzCborOutputWriter& copy) = delete;
+        XzCborOutputWriter(XzCborOutputWriter&& copy) = delete;
 
         /**
          * @brief Write data in buffer to output file

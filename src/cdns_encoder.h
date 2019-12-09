@@ -65,6 +65,12 @@ namespace CDNS {
                 delete m_cos;
         }
 
+        /** Delete [move] copy constructors and assignment operators */
+        CdnsEncoder(CdnsEncoder& copy) = delete;
+        CdnsEncoder(CdnsEncoder&& copy) = delete;
+        CdnsEncoder& operator=(CdnsEncoder& rhs) = delete;
+        CdnsEncoder& operator=(CdnsEncoder&& rhs) = delete;
+
         /**
          * @brief Write start of CBOR array
          * @param size Number of items in the array

@@ -637,7 +637,58 @@ namespace CDNS {
             m_block_preamble.block_parameters_index = bp_index;
         }
 
+        /**
+         * @brief Destroy the C-DNS Block object and clear all buffered data
+         */
         ~CdnsBlock() { clear(); }
+
+        /**
+         * @brief Copy constructor
+         */
+        CdnsBlock(CdnsBlock& copy) : m_block_parameters(copy.m_block_parameters) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Move constructor
+         */
+        CdnsBlock(CdnsBlock&& copy) : m_block_parameters(copy.m_block_parameters) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Assignment operator
+         */
+        CdnsBlock& operator=(CdnsBlock& rhs) {
+            if (this != &rhs) {
+                this->m_block_preamble = rhs.m_block_preamble;
+                this->m_block_statistics = rhs.m_block_statistics;
+                this->m_ip_address = rhs.m_ip_address;
+                this->m_classtype = rhs.m_classtype;
+                this->m_name_rdata = rhs.m_name_rdata;
+                this->m_qr_sig = rhs.m_qr_sig;
+                this->m_qlist = rhs.m_qlist;
+                this->m_qrr = rhs.m_qrr;
+                this->m_rrlist = rhs.m_rrlist;
+                this->m_rr = rhs.m_rr;
+                this->m_malformed_message_data = rhs.m_malformed_message_data;
+                this->m_query_responses = rhs.m_query_responses;
+                this->m_address_event_counts = rhs.m_address_event_counts;
+                this->m_malformed_messages = rhs.m_malformed_messages;
+                this->m_block_parameters = rhs.m_block_parameters;
+            }
+            return *this;
+        }
+
+        /**
+         * @brief Move assignment operator
+         */
+        CdnsBlock& operator=(CdnsBlock&& rhs) {
+            if (this != &rhs) {
+                *this = rhs;
+            }
+            return *this;
+        }
 
         /**
          * @brief Serialize Block to C-DNS CBOR representation
@@ -795,6 +846,21 @@ namespace CDNS {
          */
         std::size_t get_item_count() const {
             return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
+        }
+
+        /**
+         * @brief Set Block parameters for this Block. Block parameters can be set only if the Block is empty.
+         * @param bp New Block parameters
+         * @param index Index of the new Block parameters in File Preamble's array of Block parameters
+         * @return 'true' if new Block parameters were successfuly set, 'false' otherwise
+         */
+        bool set_block_parameters(BlockParameters& bp, index_t index) {
+            if (get_item_count() > 0)
+                return false;
+
+            m_block_parameters = bp;
+            m_block_preamble.block_parameters_index = index;
+            return true;
         }
 
         /**

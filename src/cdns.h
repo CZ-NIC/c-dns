@@ -45,7 +45,7 @@ namespace CDNS {
         template<typename T>
         CdnsExporter(FilePreamble& fp, const T& out, CborOutputCompression compression)
             : m_file_preamble(fp), m_block(fp.get_block_parameters(0), 0), m_encoder(out, compression),
-              m_blocks_written(0) {}
+              m_active_block_parameters(0), m_blocks_written(0) {}
 
         /**
          * @brief Destroy the CdnsExporter object and write the end of C-DNS output
@@ -55,6 +55,12 @@ namespace CDNS {
             if (m_blocks_written > 0)
                 m_encoder.write_break();
         }
+
+        /** Delete [move] copy constructors and assignment operators */
+        CdnsExporter(CdnsExporter& copy) = delete;
+        CdnsExporter(CdnsExporter&& copy) = delete;
+        CdnsExporter& operator=(CdnsExporter& rhs) = delete;
+        CdnsExporter& operator=(CdnsExporter&& rhs) = delete;
 
         /**
          * @brief Buffer new DNS record to C-DNS block
@@ -98,6 +104,8 @@ namespace CDNS {
         std::size_t write_block() {
             std::size_t written = write_block(m_block);
             m_block.clear();
+            m_block.set_block_parameters(m_file_preamble.get_block_parameters(m_active_block_parameters),
+                                         m_active_block_parameters);
             return written;
         }
 
@@ -131,6 +139,43 @@ namespace CDNS {
             return m_block.get_item_count();
         }
 
+        /**
+         * @brief Add another Block parameters to File preamble
+         * @param bp New Block parameters to add
+         * @return Index of the new Block parameters in File preamble array of Block parameters
+         */
+        index_t add_block_parameters(BlockParameters& bp) {
+            return m_file_preamble.add_block_parameters(bp);
+        }
+
+        /**
+         * @brief Set Block parameters used for next internally buffered CDNS blocks (doesn't
+         * affect currently buffered Block)
+         *
+         * User can enforce using these Block parameters immediately by calling write_block() right
+         * after calling this method. This writes currently buffered Block to output and starts a new
+         * Block that will use these new Block parameters.
+         *
+         * @param index Index to File preamble's array of Block parameters
+         * @return 'true' if Block parameters are successfuly set, 'false' if given index is out of
+         * bounds for File preamble's array of Block parameters
+         */
+        bool set_active_block_parameters(index_t index) {
+            if (index >= m_file_preamble.block_parameters_size())
+                return false;
+
+            m_active_block_parameters = index;
+            return true;
+        }
+
+        /**
+         * @brief Get index of the active Block parameters in File Preamble's array of Block parameters
+         * @return Index of active Block parameters
+         */
+        index_t get_active_block_parameters() const {
+            return m_active_block_parameters;
+        }
+
         private:
         /**
          * @brief Writes beginning of C-DNS file (File type ID, File preamble and start of File blocks array)
@@ -141,6 +186,7 @@ namespace CDNS {
         FilePreamble m_file_preamble;
         CdnsBlock m_block;
         CdnsEncoder m_encoder;
+        index_t m_active_block_parameters;
 
         /**
          * @brief Number of Blocks written to the currently open output (gets reset on output rotation)
