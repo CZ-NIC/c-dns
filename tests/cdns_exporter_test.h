@@ -44,6 +44,34 @@ namespace CDNS {
             remove("test.out.cdns");
     }
 
+    TEST(CdnsExporterTest, CEBufferWriteAECTest) {
+        FilePreamble fp;
+        CdnsExporter* exporter = new CdnsExporter(fp, "test.out", CborOutputCompression::NO_COMPRESSION);
+        GenericAddressEventCount aec;
+        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
+        QueryResponseTransportFlagsMask tflags = QueryResponseTransportFlagsMask::tcp;
+        std::string ip = "8.8.8.8";
+        aec.ae_type = &type;
+        aec.ae_transport_flags = &tflags;
+        aec.ip_address = &ip;
+
+        std::size_t written = exporter->buffer_aec(aec);
+        written += exporter->buffer_aec(aec);
+        EXPECT_EQ(written, 0);
+        EXPECT_EQ(exporter->get_block_item_count(), 1);
+        written += exporter->write_block();
+        EXPECT_GT(written, 0);
+        delete exporter;
+
+        struct stat buff;
+        std::ifstream file("test.out.cdns");
+        std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        EXPECT_EQ(written + 1, str.size());
+
+        if (stat("test.out.cdns", &buff) == 0)
+            remove("test.out.cdns");
+    }
+
     TEST(CdnsExporterTest, CEBufferWriteMMTest) {
         FilePreamble fp;
         CdnsExporter* exporter = new CdnsExporter(fp, "test.out", CborOutputCompression::NO_COMPRESSION);

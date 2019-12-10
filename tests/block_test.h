@@ -262,7 +262,32 @@ namespace CDNS {
 
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
         ret = block.add_question_response_record(qr);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        block.clear();
+        EXPECT_EQ(block.get_item_count(), 0);
+    }
+
+    TEST(BlockTest, BlockAddAECTest) {
+        BlockParameters bp;
+        CdnsBlock block(bp, 0);
+        GenericAddressEventCount aec;
+        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
+        std::string ip = "8.8.8.8";
+        aec.ae_type = &type;
+        aec.ip_address = &ip;
+
+        bool ret = block.add_addres_event_count(aec);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
+        ret = block.add_addres_event_count(aec);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
+        type = AddressEventTypeValues::icmp_dest_unreachable;
+        ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
 
@@ -294,19 +319,23 @@ namespace CDNS {
         EXPECT_EQ(block.get_item_count(), 0);
     }
 
-    TEST(BlockTest, BlockAddQRMMTest) {
+    TEST(BlockTest, BlockAddQRAECMMTest) {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         GenericQueryResponse qr;
         GenericMalformedMessage mm;
+        GenericAddressEventCount aec;
         Timestamp ts(13, 1234);
         std::string ip = "8.8.8.8";
         std::string mdata = "TestMM";
+        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
         qr.ts = &ts;
         qr.client_ip = &ip;
         mm.ts = &ts;
         mm.server_ip = &ip;
         mm.mm_payload = &mdata;
+        aec.ae_type = &type;
+        aec.ip_address = &ip;
 
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
@@ -314,6 +343,9 @@ namespace CDNS {
         ret = block.add_malformed_message(mm);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
+        ret = block.add_addres_event_count(aec);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 3);
 
         block.clear();
         EXPECT_EQ(block.get_item_count(), 0);
