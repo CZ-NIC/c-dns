@@ -723,7 +723,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
     // Check if it'll be the first record in the block and set earliest time if yes
     if (gr.ts && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
                   (*gr.ts < m_block_preamble.earliest_time)))
-        m_block_preamble.earliest_time = * gr.ts;
+        m_block_preamble.earliest_time = *gr.ts;
 
     /**
      * Fill Query Response
@@ -937,7 +937,94 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
     if (stats)
         m_block_statistics = stats;
 
-    // Indicate if the Block if full (DNS record is inserted anyway, the limit is just a guideline)
+    // Indicate if the Block is full (DNS record is inserted anyway, the limit is just a guideline)
+    if (full())
+        return true;
+
+    return false;
+}
+
+bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
+                                            const std::optional<BlockStatistics>& stats)
+{
+    if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::malformed_messages))
+        return false;
+
+    // Check if it'll be the first item in the block and set earliest time if yes
+    if (gmm.ts && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                  (*gmm.ts < m_block_preamble.earliest_time)))
+        m_block_preamble.earliest_time = *gmm.ts;
+
+    /**
+     * Fill Malformed Message
+     */
+
+    MalformedMessage mm;
+    bool mm_filled = false;
+
+    // Time offset
+    if (gmm.ts) {
+        mm.time_offset = *gmm.ts;
+        mm_filled = true;
+    }
+
+    // Client IP address
+    if (gmm.client_ip) {
+        mm.client_address_index = add_ip_address(*gmm.client_ip);
+        mm_filled = true;
+    }
+
+    // Client port
+    if (gmm.client_port) {
+        mm.client_port = *gmm.client_port;
+        mm_filled = true;
+    }
+
+    // Fill Malformed Message Data
+    MalformedMessageData mmd;
+    bool mmd_filled = false;
+
+    // Server address
+    if (gmm.server_ip) {
+        mmd.server_address_index = add_ip_address(*gmm.server_ip);
+        mmd_filled = true;
+    }
+
+    // Server port
+    if (gmm.server_port) {
+        mmd.server_port = *gmm.server_port;
+        mmd_filled = true;
+    }
+
+    // Transport flags
+    if (gmm.mm_transport_flags) {
+        mmd.mm_transport_flags = *gmm.mm_transport_flags;
+        mmd_filled = true;
+    }
+
+    // Malformed message payload
+    if (gmm.mm_payload) {
+        mmd.mm_payload = *gmm.mm_payload;
+        mmd_filled = true;
+    }
+
+    // Add Malformed Message Data to Block table
+    if (mmd_filled) {
+        mm.message_data_index = add_malformed_message_data(mmd);
+        mm_filled = true;
+    }
+
+    /**
+     * Add Malformed Message to the Block
+     */
+    if (mm_filled)
+        m_malformed_messages.push_back(mm);
+
+    // Update block statistics
+    if (stats)
+        m_block_statistics = stats;
+
+    // Indicate if the Block is full (Malformed message is inserted anyway, the limit is just a guideline)
     if (full())
         return true;
 

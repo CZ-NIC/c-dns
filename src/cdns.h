@@ -73,19 +73,33 @@ namespace CDNS {
          */
         std::size_t buffer_qr(const GenericQueryResponse& qr, const std::optional<BlockStatistics>& stats = std::nullopt) {
             std::size_t written = 0;
-            if (m_block.add_question_response_record(qr, stats)) {
+            if (m_block.add_question_response_record(qr, stats))
                 written = write_block();
-                return written;
-            }
 
             return written;
         }
 
-         /**
+        /**
          * @todo
          * bool buffer_aec(generic_aec& aec, const std::optional<BlockStatistics>& stats = std::nullopt);
-         * bool buffer_mm(generic_mm& mm, const std::optional<BlockStatistics>& stats = std::nullopt);
          */
+
+        /**
+         * @brief Buffer new Malformed message to C-DNS block
+         * @param mm New Malformed message to buffer
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update them
+         * in the Block. User also has to start counting statistics from 0 again if new Block is started -> method
+         * returns non-0 value)
+         * @throw std::exception if inserting Malformed message to the Block fails
+         * @return Number of uncompressed bytes written if full Block was written to output, 0 otherwise
+         */
+        std::size_t buffer_mm(const GenericMalformedMessage& mm, const std::optional<BlockStatistics>& stats = std::nullopt) {
+            std::size_t written = 0;
+            if (m_block.add_malformed_message(mm, stats))
+                written = write_block();
+
+            return written;
+        }
 
         /**
          * @brief Write the given C-DNS block to output

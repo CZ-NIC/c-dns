@@ -840,10 +840,16 @@ namespace CDNS {
          */
 
         /**
-         * @todo Add new Malformed Message to C-DNS block.
-         * bool add_malformed_message(const generic_mm& mm,
-         *                            std::optional<BlockStatistics> stats = std::nullopt);
+         * @brief Add new Malformed message to C-DNS block. Uses generic structure to hold all Malformed Message's
+         * data and adds it to the Block
+         * @param gmm Generic structure holding data of new Malformed message
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
+         * @throw std::exception if inserting Malformed message to the Block fails
+         * @return 'true' if the Block is full (Malformed message is still inserted), 'false' otherwise
          */
+        bool add_malformed_message(const GenericMalformedMessage& gmm,
+                                   const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
