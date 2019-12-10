@@ -939,7 +939,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         m_query_responses.push_back(qr);
 
     // Indicate if the Block if full (DNS record is inserted anyway, the limit is just a guideline)
-    if (get_item_count() >= m_block_parameters.storage_parameters.max_block_items)
+    if (full())
         return true;
 
     return false;

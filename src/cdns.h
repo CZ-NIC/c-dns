@@ -133,6 +133,10 @@ namespace CDNS {
 
         /**
          * @brief Get the number of items in currently buffered Block
+         *
+         * Can be up to 3 x <max_block_items>, because <max_block_items> affects each array in Block
+         * individually.
+         *
          * @return Number of items in currently buffered Block
          */
         std::size_t get_block_item_count() {

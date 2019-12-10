@@ -842,10 +842,25 @@ namespace CDNS {
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
+         *
+         * Can be up to 3 x <max_block_items>, because <max_block_items> affects each array in Block
+         * individually.
+         *
          * @return Current number of items in the Block
          */
         std::size_t get_item_count() const {
             return m_query_responses.size() + m_address_event_counts.size() + m_malformed_messages.size();
+        }
+
+        /**
+         * @brief Check if the Block is full (one of the QueryResponse, AddressEventCount or
+         * MalformedMessage arrays reached <max_block_items> limit)
+         * @return 'true' if the Block is full, 'false' otherwise
+         */
+        bool full() const {
+            return m_query_responses.size() >= m_block_parameters.storage_parameters.max_block_items ||
+                   m_address_event_counts.size() >= m_block_parameters.storage_parameters.max_block_items ||
+                   m_malformed_messages.size() >= m_block_parameters.storage_parameters.max_block_items;
         }
 
         /**
