@@ -831,7 +831,7 @@ namespace CDNS {
          * @return `true` if the Block is full (DNS record is still inserted), `false` otherwise
          */
         bool add_question_response_record(const GenericQueryResponse& qr,
-                                          std::optional<BlockStatistics> stats = std::nullopt);
+                                          const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @todo Add new Address Event Count to C-DNS block.
