@@ -270,6 +270,55 @@ namespace CDNS {
         EXPECT_EQ(block.get_item_count(), 0);
     }
 
+    TEST(BlockTest, BlockAddMMTest) {
+        BlockParameters bp;
+        CdnsBlock block(bp, 0);
+        GenericMalformedMessage mm;
+        Timestamp ts(13, 1234);
+        std::string ip = "8.8.8.8";
+        std::string mdata = "TestMM";
+        uint16_t port = 53;
+        mm.ts = &ts;
+        mm.client_ip = &ip;
+        mm.server_port = &port;
+        mm.mm_payload = &mdata;
+
+        bool ret = block.add_malformed_message(mm);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
+        ret = block.add_malformed_message(mm);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        block.clear();
+        EXPECT_EQ(block.get_item_count(), 0);
+    }
+
+    TEST(BlockTest, BlockAddQRMMTest) {
+        BlockParameters bp;
+        CdnsBlock block(bp, 0);
+        GenericQueryResponse qr;
+        GenericMalformedMessage mm;
+        Timestamp ts(13, 1234);
+        std::string ip = "8.8.8.8";
+        std::string mdata = "TestMM";
+        qr.ts = &ts;
+        qr.client_ip = &ip;
+        mm.ts = &ts;
+        mm.server_ip = &ip;
+        mm.mm_payload = &mdata;
+
+        bool ret = block.add_question_response_record(qr);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 1);
+        ret = block.add_malformed_message(mm);
+        EXPECT_FALSE(ret);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        block.clear();
+        EXPECT_EQ(block.get_item_count(), 0);
+    }
+
     TEST(BlockTest, BlockSetBPTest) {
         BlockParameters bp, bp2;
         bp2.storage_parameters.max_block_items = 100;

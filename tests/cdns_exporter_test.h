@@ -44,6 +44,33 @@ namespace CDNS {
             remove("test.out.cdns");
     }
 
+    TEST(CdnsExporterTest, CEBufferWriteMMTest) {
+        FilePreamble fp;
+        CdnsExporter* exporter = new CdnsExporter(fp, "test.out", CborOutputCompression::NO_COMPRESSION);
+        GenericMalformedMessage mm;
+        Timestamp ts(12, 12543);
+        std::string ip = "8.8.8.8";
+        std::string mdata = "TestMM";
+        mm.ts = &ts;
+        mm.client_ip = &ip;
+        mm.mm_payload = &mdata;
+
+        std::size_t written = exporter->buffer_mm(mm);
+        EXPECT_EQ(written, 0);
+        EXPECT_EQ(exporter->get_block_item_count(), 1);
+        written += exporter->write_block();
+        EXPECT_GT(written, 0);
+        delete exporter;
+
+        struct stat buff;
+        std::ifstream file("test.out.cdns");
+        std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        EXPECT_EQ(written + 1, str.size());
+
+        if (stat("test.out.cdns", &buff) == 0)
+            remove("test.out.cdns");
+    }
+
     TEST(CdnsExporterTest, CEBufferWriteMultipleBlocksTest) {
         FilePreamble fp;
         fp.m_block_parameters[0].storage_parameters.max_block_items = 2;
