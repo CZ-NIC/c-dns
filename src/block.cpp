@@ -726,7 +726,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
     if (gr.ts && m_query_responses.size() == 0 && m_malformed_messages.size() == 0) {
         m_block_preamble.earliest_time = *gr.ts;
     }
-    else if (gr.ts && m_block_preamble.earliest_time < *gr.ts) {
+    else if (gr.ts && *gr.ts < m_block_preamble.earliest_time) {
         m_block_preamble.earliest_time = *gr.ts;
     }
 
