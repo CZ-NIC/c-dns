@@ -834,10 +834,16 @@ namespace CDNS {
                                           const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
-         * @todo Add new Address Event Count to C-DNS block.
-         * bool add_address_event_count(const generic_aec& aec,
-         *                              std::optional<BlockStatistics> stats = std::nullopt);
+         * @brief Add new Address Event to C-DNS block. Uses generic structure to hold all Address Event's data
+         * and adds it to the Block
+         * @param gaec Generic structure holding data of new Address Event
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
+         * @throw std::exception if inserting Address Event to the Block fails
+         * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
+        bool add_addres_event_count(const GenericAddressEventCount& gaec,
+                                    const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @brief Add new Malformed message to C-DNS block. Uses generic structure to hold all Malformed Message's

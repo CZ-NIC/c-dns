@@ -944,9 +944,63 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
     return false;
 }
 
+bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gaec,
+                                             const std::optional<BlockStatistics>& stats)
+{
+    // Check if Address Event Counts are buffered in this Block
+    if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
+        return false;
+
+    // Check if mandatory fiels are present
+    if (!gaec.ae_type || !gaec.ip_address)
+        return false;
+
+    /**
+     * Fill Address Event Count
+     */
+
+    AddressEventCount aec;
+
+    // Address event type
+    if (gaec.ae_type)
+        aec.ae_type = *gaec.ae_type;
+
+    // Address event code
+    if (gaec.ae_code)
+        aec.ae_code = *gaec.ae_code;
+
+    // Tranport flags
+    if (gaec.ae_transport_flags)
+        aec.ae_transport_flags = *gaec.ae_transport_flags;
+
+    // IP address
+    if (gaec.ip_address)
+        aec.ae_address_index = add_ip_address(*gaec.ip_address);
+
+    /*
+     * Count Address Event to the Block
+     */
+    auto found = m_address_event_counts.find(aec);
+    if (found != m_address_event_counts.end())
+        found->second++;
+    else
+        m_address_event_counts[aec] = 1;
+
+    // Update block statistics
+    if (stats)
+        m_block_statistics = stats;
+
+    // Indicate if the Block is full (Address Event is inserted anyway, the limit is just a guideline)
+    if (full())
+        return true;
+
+    return false;
+}
+
 bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
                                             const std::optional<BlockStatistics>& stats)
 {
+    // Check if Malformed messages are buffered in this Block
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::malformed_messages))
         return false;
 

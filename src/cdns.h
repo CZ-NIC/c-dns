@@ -80,9 +80,21 @@ namespace CDNS {
         }
 
         /**
-         * @todo
-         * bool buffer_aec(generic_aec& aec, const std::optional<BlockStatistics>& stats = std::nullopt);
+         * @brief Buffer new Address Event to C-DNS block
+         * @param aec New Address Event to buffer
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update them
+         * in the Block. User also has to start counting statistics from 0 again if new Block is started -> method
+         * returns non-0 value)
+         * @throw std::exception if inserting Address Event to the Block fails
+         * @return Number of uncompressed bytes written if full Block was written to output, 'false' otherwise
          */
+        std::size_t buffer_aec(const GenericAddressEventCount& aec, const std::optional<BlockStatistics>& stats = std::nullopt) {
+            std::size_t written = 0;
+            if (m_block.add_addres_event_count(aec, stats))
+                written = write_block();
+
+            return written;
+        }
 
         /**
          * @brief Buffer new Malformed message to C-DNS block
