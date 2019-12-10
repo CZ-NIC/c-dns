@@ -825,20 +825,25 @@ namespace CDNS {
          * @brief Add new DNS record to C-DNS block. Uses generic structure to hold all DNS record data and
          * adds it to the Block
          * @param qr Generic structure holding data of new DNS record
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
          * @throw std::exception if inserting DNS record to the Block fails
          * @return `true` if the Block is full (DNS record is still inserted), `false` otherwise
          */
-        bool add_question_response_record(const GenericQueryResponse& qr);
+        bool add_question_response_record(const GenericQueryResponse& qr,
+                                          std::optional<BlockStatistics> stats = std::nullopt);
 
         /**
          * @todo Add new Address Event Count to C-DNS block.
+         * bool add_address_event_count(const generic_aec& aec,
+         *                              std::optional<BlockStatistics> stats = std::nullopt);
          */
-        //bool add_address_event_count(const generic_aec& aec, const BlockParameters& bp);
 
         /**
          * @todo Add new Malformed Message to C-DNS block.
+         * bool add_malformed_message(const generic_mm& mm,
+         *                            std::optional<BlockStatistics> stats = std::nullopt);
          */
-        //bool add_malformed_message(const generic_mm& mm, const BlockParameters& bp);
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)

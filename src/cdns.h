@@ -65,12 +65,15 @@ namespace CDNS {
         /**
          * @brief Buffer new DNS record to C-DNS block
          * @param qr New DNS record to buffer
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update them
+         * in the Block. User also has to start counting statistics from 0 again if new Block is started -> method
+         * returns non-0 value)
          * @throw std::exception if inserting DNS record to the Block fails
          * @return Number of uncompressed bytes written if full Block was written to output, 0 otherwise
          */
-        std::size_t buffer_qr(const GenericQueryResponse& qr) {
+        std::size_t buffer_qr(const GenericQueryResponse& qr, const std::optional<BlockStatistics>& stats = std::nullopt) {
             std::size_t written = 0;
-            if (m_block.add_question_response_record(qr)) {
+            if (m_block.add_question_response_record(qr, stats)) {
                 written = write_block();
                 return written;
             }
@@ -80,14 +83,8 @@ namespace CDNS {
 
          /**
          * @todo
-         * bool buffer_aec(generic_aec& aec);
-         * bool buffer_mm(generic_mm& mm);
-         */
-
-        /**
-         * @todo
-         * Change Block parameters for different Blocks
-         * Only when current internal Block is empty -> immediately after writing internal Block to output
+         * bool buffer_aec(generic_aec& aec, const std::optional<BlockStatistics>& stats = std::nullopt);
+         * bool buffer_mm(generic_mm& mm, const std::optional<BlockStatistics>& stats = std::nullopt);
          */
 
         /**

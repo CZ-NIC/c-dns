@@ -712,23 +712,18 @@ std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
     return written;
 }
 
-bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr)
+bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr,
+                                                   std::optional<BlockStatistics> stats)
 {
     uint32_t qr_hints = m_block_parameters.storage_parameters.storage_hints.query_response_hints;
     uint32_t qr_sig_hints = m_block_parameters.storage_parameters.storage_hints.query_response_signature_hints;
     uint8_t rr_hints = m_block_parameters.storage_parameters.storage_hints.rr_hints;
     uint8_t other_data_hints = m_block_parameters.storage_parameters.storage_hints.other_data_hints;
 
-    /**
-     * Check if it'll be the first record in the block and set earliest time and stats if yes
-     * @todo Update block statistics!!!
-     */
-    if (gr.ts && m_query_responses.size() == 0 && m_malformed_messages.size() == 0) {
-        m_block_preamble.earliest_time = *gr.ts;
-    }
-    else if (gr.ts && *gr.ts < m_block_preamble.earliest_time) {
-        m_block_preamble.earliest_time = *gr.ts;
-    }
+    // Check if it'll be the first record in the block and set earliest time if yes
+    if (gr.ts && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                  (*gr.ts < m_block_preamble.earliest_time)))
+        m_block_preamble.earliest_time = * gr.ts;
 
     /**
      * Fill Query Response
@@ -937,6 +932,10 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
      */
     if (qr_filled)
         m_query_responses.push_back(qr);
+
+    // Update block statistics
+    if (stats)
+        m_block_statistics = stats;
 
     // Indicate if the Block if full (DNS record is inserted anyway, the limit is just a guideline)
     if (full())
