@@ -851,6 +851,27 @@ namespace CDNS {
                                           const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
+         * @brief Add new DNS record to C-DNS block
+         * @param qr New DNS record to add to Block
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
+         * @return 'true' if the Block is full (DNS record is still inserted), 'false' otherwise
+         */
+        bool add_question_response_record(const QueryResponse& qr,
+                                          const std::optional<BlockStatistics>& stats = std::nullopt) {
+            if (qr.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                                   (qr.time_offset < m_block_preamble.earliest_time)))
+                m_block_preamble.earliest_time = *qr.time_offset;
+
+            m_query_responses.push_back(qr);
+
+            if (stats)
+                m_block_statistics = stats;
+
+            return full() ? true : false;
+        }
+
+        /**
          * @brief Add new Address Event to C-DNS block. Uses generic structure to hold all Address Event's data
          * and adds it to the Block
          * @param gaec Generic structure holding data of new Address Event
@@ -863,6 +884,30 @@ namespace CDNS {
                                     const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
+         * @brief Add new Address Event to C-DNS block
+         * @param aec New Address Event to add to Block
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
+         * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
+         */
+        bool add_addres_event_count(const AddressEventCount& aec,
+                                    const std::optional<BlockStatistics>& stats = std::nullopt) {
+            if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
+                return false;
+
+            auto found = m_address_event_counts.find(aec);
+            if (found != m_address_event_counts.end())
+                found->second++;
+            else
+                m_address_event_counts[aec] = 1;
+
+            if (stats)
+                m_block_statistics = stats;
+
+            return full() ? true : false;
+        }
+
+        /**
          * @brief Add new Malformed message to C-DNS block. Uses generic structure to hold all Malformed Message's
          * data and adds it to the Block
          * @param gmm Generic structure holding data of new Malformed message
@@ -873,6 +918,27 @@ namespace CDNS {
          */
         bool add_malformed_message(const GenericMalformedMessage& gmm,
                                    const std::optional<BlockStatistics>& stats = std::nullopt);
+
+        /**
+         * @brief Add new Malformed message to C-DNS block.
+         * @param mm New Malformed message to add to Block
+         * @param stats Current Block statistics (It's user's responsibility to count statistics and update
+         * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
+         * @return 'true' if the Block is full (Malformed message is still inserted), 'false' otherwise
+         */
+        bool add_malformed_message(const MalformedMessage& mm,
+                                   const std::optional<BlockStatistics>& stats = std::nullopt) {
+            if (mm.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                                   (mm.time_offset < m_block_preamble.earliest_time)))
+                m_block_preamble.earliest_time = *mm.time_offset;
+
+            m_malformed_messages.push_back(mm);
+
+            if (stats)
+                m_block_statistics = stats;
+
+            return full() ? true : false;
+        }
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
