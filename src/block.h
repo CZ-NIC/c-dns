@@ -15,6 +15,7 @@
 #include "cdns_encoder.h"
 
 namespace CDNS {
+    struct GenericResourceRecord;
     struct GenericQueryResponse;
     struct GenericAddressEventCount;
     struct GenericMalformedMessage;
@@ -820,6 +821,22 @@ namespace CDNS {
         index_t add_malformed_message_data(const MalformedMessageData& mmd) {
             return m_malformed_message_data.add(mmd);
         }
+
+        /**
+         * @brief Add new Question list and its Questions to C-DNS block tables. Uses generic structure
+         * to hold all Questions' data and adds it to the Block.
+         * @param glist Vector of generic structures holding data of new Question list and its Questions
+         * @return Index of the Question list in Block table
+         */
+        index_t add_generic_qlist(const std::vector<GenericResourceRecord>& glist);
+
+        /**
+         * @brief Add new Resource record list and its Resource records to C-DNS block tables. Uses generic
+         * structure to hold all Resource records' data and adds it to the Block
+         * @param glist Vector of generic structures holding data of new Resource record list and its Resource records
+         * @return Index of the Resource record list in Block table
+         */
+        index_t add_generic_rrlist(const std::vector<GenericResourceRecord>& glist);
 
         /**
          * @brief Add new DNS record to C-DNS block. Uses generic structure to hold all DNS record data and

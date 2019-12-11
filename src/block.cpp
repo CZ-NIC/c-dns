@@ -712,6 +712,45 @@ std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
     return written;
 }
 
+CDNS::index_t CDNS::CdnsBlock::add_generic_qlist(const std::vector<GenericResourceRecord>& glist) {
+    std::vector<index_t> qlist;
+
+    for (auto grr : glist) {
+        // Check for mandatory items in Question
+        if (!grr.name || !grr.classtype)
+            continue;
+
+        Question q;
+        q.name_index = add_name_rdata(*grr.name);
+        q.classtype_index = add_classtype(*grr.classtype);
+        qlist.push_back(add_question(q));
+    }
+
+    return add_question_list(qlist);
+}
+
+CDNS::index_t CDNS::CdnsBlock::add_generic_rrlist(const std::vector<GenericResourceRecord>& glist) {
+    const uint8_t& rr_hints = m_block_parameters.storage_parameters.storage_hints.rr_hints;
+    std::vector<index_t> rrlist;
+
+    for (auto grr : glist) {
+        // Check for mandatory items in Resource record
+        if (!grr.name || !grr.classtype)
+            continue;
+
+        RR rr;
+        rr.name_index = add_name_rdata(*grr.name);
+        rr.classtype_index = add_classtype(*grr.classtype);
+        if ((rr_hints & RrHintsMask::ttl) && grr.ttl)
+            rr.ttl = *grr.ttl;
+        if ((rr_hints & RrHintsMask::rdata_index) && grr.rdata)
+            rr.rdata_index = add_name_rdata(*grr.rdata);
+        rrlist.push_back(add_rr(rr));
+    }
+
+    return add_rr_list(rrlist);
+}
+
 bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr,
                                                    const std::optional<BlockStatistics>& stats)
 {
@@ -923,9 +962,71 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         }
     }
 
-    /**
-     * @todo Query-extended and Reponse-extended fields
-     */
+    // Fill Query Extended
+    QueryResponseExtended qe;
+    bool qe_filled = false;
+
+    if ((qr_hints & QueryResponseHintsMask::query_question_sections) && gr.query_questions
+        && (gr.query_questions->size() > 0)) {
+        qe.question_index = add_generic_qlist(*gr.query_questions);
+        qe_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::query_answer_sections) && gr.query_answers
+        && (gr.query_answers->size() > 0)) {
+        qe.answer_index = add_generic_rrlist(*gr.query_answers);
+        qe_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::query_authority_sections) && gr.query_authority
+        && (gr.query_authority->size() > 0)) {
+        qe.authority_index = add_generic_rrlist(*gr.query_authority);
+        qe_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::query_additional_sections) && gr.query_additional
+        && (gr.query_additional->size() > 0)) {
+        qe.additional_index = add_generic_rrlist(*gr.query_additional);
+        qe_filled = true;
+    }
+
+    if (qe_filled) {
+        qr.query_extended = qe;
+        qr_filled = true;
+    }
+
+    // Fill Response Extended
+    QueryResponseExtended re;
+    bool re_filled = false;
+
+    if ((qr_hints & QueryResponseHintsMask::query_question_sections) && gr.response_questions
+        && (gr.response_questions->size() > 0)) {
+        re.question_index = add_generic_qlist(*gr.response_questions);
+        re_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::response_answer_sections) && gr.response_answers
+        && (gr.response_answers->size() > 0)) {
+        re.answer_index = add_generic_rrlist(*gr.response_answers);
+        re_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::response_authority_sections) && gr.response_authority
+        && (gr.response_authority->size() > 0)) {
+        re.authority_index = add_generic_rrlist(*gr.response_authority);
+        re_filled = true;
+    }
+
+    if ((qr_hints & QueryResponseHintsMask::response_additional_sections) && gr.response_additional
+        && (gr.response_additional->size() > 0)) {
+        re.additional_index = add_generic_rrlist(*gr.response_additional);
+        re_filled = true;
+    }
+
+    if (re_filled) {
+        qr.response_extended = re;
+        qr_filled = true;
+    }
 
     /**
      * Add Query Response to the Block
