@@ -224,25 +224,77 @@ namespace CDNS {
         MalformedMessageData mmd;
 
         index_t index = block.add_ip_address(ip);
+        index_t index_dup = block.add_ip_address(ip);
         index_t index2 = block.add_classtype(ct);
+        index_t index2_dup = block.add_classtype(ct);
         index_t index3 = block.add_name_rdata(rdata);
+        index_t index3_dup = block.add_name_rdata(rdata);
         index_t index4 = block.add_qr_signature(qrs);
+        index_t index4_dup = block.add_qr_signature(qrs);
         index_t index5 = block.add_question_list(list);
+        index_t index5_dup = block.add_question_list(list);
         index_t index6 = block.add_question(q);
+        index_t index6_dup = block.add_question(q);
         index_t index7 = block.add_rr_list(list);
+        index_t index7_dup = block.add_rr_list(list);
         index_t index8 = block.add_rr(rr);
+        index_t index8_dup = block.add_rr(rr);
         index_t index9 = block.add_malformed_message_data(mmd);
+        index_t index9_dup = block.add_malformed_message_data(mmd);
 
         EXPECT_EQ(index, 0);
+        EXPECT_EQ(index, index_dup);
         EXPECT_EQ(index2, 0);
+        EXPECT_EQ(index2, index2_dup);
         EXPECT_EQ(index3, 0);
+        EXPECT_EQ(index3, index3_dup);
         EXPECT_EQ(index4, 0);
+        EXPECT_EQ(index4, index4_dup);
         EXPECT_EQ(index5, 0);
+        EXPECT_EQ(index5, index5_dup);
         EXPECT_EQ(index6, 0);
+        EXPECT_EQ(index6, index6_dup);
         EXPECT_EQ(index7, 0);
+        EXPECT_EQ(index7, index7_dup);
         EXPECT_EQ(index8, 0);
+        EXPECT_EQ(index8, index8_dup);
         EXPECT_EQ(index9, 0);
+        EXPECT_EQ(index9, index9_dup);
         EXPECT_EQ(block.get_item_count(), 0);
+    }
+
+    TEST(BlockTest, BlockAddGListTest) {
+        BlockParameters bp;
+        CdnsBlock block(bp, 0);
+        std::vector<GenericResourceRecord> grr;
+        std::string name = "test_name";
+        ClassType classtype;
+        classtype.type = 2;
+        classtype.class_ = 3;
+        uint8_t ttl = 128;
+        std::string data = "test_data";
+
+        for (int i = 0; i < 2; i++) {
+            GenericResourceRecord rr(&name, &classtype, &ttl, &data);
+            grr.push_back(rr);
+        }
+
+        index_t index = block.add_generic_qlist(grr);
+        index_t index_dup = block.add_generic_qlist(grr);
+        index_t index2 = block.add_generic_rrlist(grr);
+        index_t index2_dup = block.add_generic_rrlist(grr);
+
+        EXPECT_EQ(index, 0);
+        EXPECT_EQ(index, index_dup);
+        EXPECT_EQ(index2, 0);
+        EXPECT_EQ(index2, index2_dup);
+
+        grr.pop_back();
+        index_t index3 = block.add_generic_qlist(grr);
+        index_t index4 = block.add_generic_rrlist(grr);
+
+        EXPECT_EQ(index3, 1);
+        EXPECT_EQ(index4, 1);
     }
 
     TEST(BlockTest, BlockAddQRTest) {

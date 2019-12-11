@@ -26,7 +26,23 @@ namespace CDNS {
         CdnsExporter* exporter = new CdnsExporter(fp, "test.out", CborOutputCompression::NO_COMPRESSION);
         GenericQueryResponse gqr;
         Timestamp ts(12, 12543);
+        std::vector<GenericResourceRecord> grr;
+        std::string name = "test_name";
+        ClassType classtype;
+        classtype.type = 2;
+        classtype.class_ = 3;
+        uint8_t ttl = 128;
+        std::string data = "test_data";
+
+        for (int i = 0; i < 2; i++) {
+            GenericResourceRecord rr(&name, &classtype, &ttl, &data);
+            grr.push_back(rr);
+        }
+
         gqr.ts = &ts;
+        gqr.query_questions = &grr;
+        gqr.query_additional = &grr;
+        gqr.response_answers = &grr;
 
         std::size_t written = exporter->buffer_qr(gqr);
         EXPECT_EQ(written, 0);
