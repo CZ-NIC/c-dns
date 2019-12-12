@@ -858,18 +858,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (DNS record is still inserted), 'false' otherwise
          */
         bool add_question_response_record(const QueryResponse& qr,
-                                          const std::optional<BlockStatistics>& stats = std::nullopt) {
-            if (qr.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
-                                   (qr.time_offset < m_block_preamble.earliest_time)))
-                m_block_preamble.earliest_time = *qr.time_offset;
-
-            m_query_responses.push_back(qr);
-
-            if (stats)
-                m_block_statistics = stats;
-
-            return full() ? true : false;
-        }
+                                          const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @brief Add new Address Event to C-DNS block. Uses generic structure to hold all Address Event's data
@@ -891,21 +880,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
         bool add_addres_event_count(const AddressEventCount& aec,
-                                    const std::optional<BlockStatistics>& stats = std::nullopt) {
-            if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
-                return false;
-
-            auto found = m_address_event_counts.find(aec);
-            if (found != m_address_event_counts.end())
-                found->second++;
-            else
-                m_address_event_counts[aec] = 1;
-
-            if (stats)
-                m_block_statistics = stats;
-
-            return full() ? true : false;
-        }
+                                    const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @brief Add new Malformed message to C-DNS block. Uses generic structure to hold all Malformed Message's
@@ -927,18 +902,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Malformed message is still inserted), 'false' otherwise
          */
         bool add_malformed_message(const MalformedMessage& mm,
-                                   const std::optional<BlockStatistics>& stats = std::nullopt) {
-            if (mm.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
-                                   (mm.time_offset < m_block_preamble.earliest_time)))
-                m_block_preamble.earliest_time = *mm.time_offset;
-
-            m_malformed_messages.push_back(mm);
-
-            if (stats)
-                m_block_statistics = stats;
-
-            return full() ? true : false;
-        }
+                                   const std::optional<BlockStatistics>& stats = std::nullopt);
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)

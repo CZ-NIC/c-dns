@@ -1039,10 +1039,31 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         m_block_statistics = stats;
 
     // Indicate if the Block is full (DNS record is inserted anyway, the limit is just a guideline)
-    if (full())
-        return true;
+    return full() ? true : false;
+}
 
-    return false;
+bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
+                                                   const std::optional<BlockStatistics>& stats)
+{
+    std::size_t fields = !!qr.time_offset + !!qr.client_address_index + !!qr.client_port
+                            + !!qr.transaction_id + !!qr.qr_signature_index + !!qr.client_hoplimit
+                            + !!qr.response_delay + !!qr.query_name_index + !!qr.query_size
+                            + !!qr.response_size + !!qr.response_processing_data + !!qr.query_extended
+                            + !!qr.response_extended;
+
+    if (fields == 0)
+        return full() ? true : false;
+
+    if (qr.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                            (qr.time_offset < m_block_preamble.earliest_time)))
+        m_block_preamble.earliest_time = *qr.time_offset;
+
+    m_query_responses.push_back(qr);
+
+    if (stats)
+        m_block_statistics = stats;
+
+    return full() ? true : false;
 }
 
 bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gaec,
@@ -1092,10 +1113,25 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
         m_block_statistics = stats;
 
     // Indicate if the Block is full (Address Event is inserted anyway, the limit is just a guideline)
-    if (full())
-        return true;
+    return full() ? true : false;
+}
 
-    return false;
+bool CDNS::CdnsBlock::add_addres_event_count(const AddressEventCount& aec,
+                                             const std::optional<BlockStatistics>& stats)
+{
+    if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
+        return false;
+
+    auto found = m_address_event_counts.find(aec);
+    if (found != m_address_event_counts.end())
+        found->second++;
+    else
+        m_address_event_counts[aec] = 1;
+
+    if (stats)
+        m_block_statistics = stats;
+
+    return full() ? true : false;
 }
 
 bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
@@ -1180,8 +1216,26 @@ bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
         m_block_statistics = stats;
 
     // Indicate if the Block is full (Malformed message is inserted anyway, the limit is just a guideline)
-    if (full())
-        return true;
+    return full() ? true : false;
+}
 
-    return false;
+bool CDNS::CdnsBlock::add_malformed_message(const MalformedMessage& mm,
+                                            const std::optional<BlockStatistics>& stats)
+{
+    std::size_t fields = !!mm.time_offset + !!mm.client_address_index + !!mm.client_port
+                            + !!mm.message_data_index;
+
+    if (fields == 0)
+        return full() ? true : false;
+
+    if (mm.time_offset && ((m_query_responses.size() == 0 && m_malformed_messages.size() == 0) ||
+                            (mm.time_offset < m_block_preamble.earliest_time)))
+        m_block_preamble.earliest_time = *mm.time_offset;
+
+    m_malformed_messages.push_back(mm);
+
+    if (stats)
+        m_block_statistics = stats;
+
+    return full() ? true : false;
 }
