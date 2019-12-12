@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "../src/cdns.h"
+#include "common.h"
 
 namespace CDNS {
     TEST(ClassTypeTest, ClassTypeCTest) {
@@ -315,6 +316,7 @@ namespace CDNS {
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
@@ -335,9 +337,11 @@ namespace CDNS {
         bool ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         type = AddressEventTypeValues::icmp_dest_unreachable;
         ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
@@ -363,6 +367,7 @@ namespace CDNS {
         bool ret = block.add_malformed_message(mm);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         ret = block.add_malformed_message(mm);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
@@ -392,9 +397,11 @@ namespace CDNS {
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         ret = block.add_malformed_message(mm);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
+
         ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 3);
@@ -414,8 +421,10 @@ namespace CDNS {
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
+
         ret = block.set_block_parameters(bp2, 1);
         EXPECT_FALSE(ret);
+
         block.clear();
         ret = block.set_block_parameters(bp2, 1);
         EXPECT_TRUE(ret);

@@ -70,6 +70,7 @@ namespace CDNS {
         EXPECT_TRUE(bt.find(i.key(), found));
         EXPECT_TRUE(bt.find(j.key(), found));
         EXPECT_FALSE(bt.find(k.key(), found));
+
         index_t index3 = bt.add_value(k);
         EXPECT_TRUE(bt.find(k.key(), found));
         EXPECT_EQ(index3, found);
