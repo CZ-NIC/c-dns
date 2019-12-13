@@ -1,33 +1,46 @@
 # C-DNS Library
 
-WORK IN PROCESS - STILL IN DEVELOPMENT
+Library that converts DNS transmission to [C-DNS](https://tools.ietf.org/html/rfc8618), the compacted DNS Packet Capture format.
 
-Library that converts DNS transmission to C-DNS file format.
+## Dependencies
+
+This project has the following dependencies:
+
+* [CMake >= 3.9] (https://cmake.org/)
+* [libcbor] (https://github.com/PJK/libcbor)
+* [zlib] (https://www.zlib.net/)
+* [XZ Utils] (https://tukaani.org/xz/)
 
 ## Build
 
-Basic instructions for build. This is not deploy process, it's intended just for development or testing.
+Basic build instructions using CMake.
+```shell
+mkdir build
+cd build
+cmake -DBUILD_TESTS=ON ..
+make
+make install
+```
+If you don't want to build the test suite with the library, you can omit `-DBUILD_TESTS` option.
 
-    mkdir build
-    cd build
-    cmake ..
-    make
-    cd ..
-    ./link_and_run_test.sh
-    ./a.out
+To generate Doxygen documentation run `make doc`.
+
+## Basic Usage
+
+To use the C-DNS library you only have to include the `<cdns/cdns.h>` header file.
+```cpp
+#include <cdns/cdns.h>
+...
+CDNS::FilePreamble fp;
+CDNS::CdnsExporter exporter(fp, "output.out", CDNS::CborOutputCompression::XZ);
+CDNS::QueryResponse qr;
+
+qr.client_port = 1234;
+exporter.buffer_qr(qr);
+exporter.write_block();
+```
 
 ## TODO-List
 
-**High priority**
-
+* [ ] Implement C-DNS decoder
 * [ ] Enhance library interface
-* [ ] Finalize file and block preamble
-
-**Medium priotity**
-
-* [ ] CBOR (*libcbor*) performance improve
-* [ ] Replace `cmake` with autotools (`automake`)
-
-**Low priority**
-
-* [ ] Deploy
