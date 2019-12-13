@@ -13,7 +13,10 @@ find_package(LibLZMA REQUIRED)
 
 find_package(CBOR REQUIRED)
 
+find_package(Doxygen)
+
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
+option(BUILD_DOC "Generate Doxygen documentation" ON)
 
 file(GLOB sources "src/*.cpp")
 file(GLOB headers "src/*.h")
@@ -51,3 +54,21 @@ install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif(BUILD_TESTS)
+
+if (BUILD_DOC)
+    if(DOXYGEN_FOUND)
+        set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+        set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+        add_custom_target(doc
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating API Doxygen documentation"
+            VERBATIM)
+
+    else(DOXYGEN_FOUND)
+        message("Install Doxygen to generate documentation")
+    endif(DOXYGEN_FOUND)
+endif(BUILD_DOC)
