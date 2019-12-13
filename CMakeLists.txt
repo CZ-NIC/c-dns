@@ -5,18 +5,23 @@ include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 find_package(ZLIB REQUIRED)
 
 find_package(LibLZMA REQUIRED)
 
+find_package(CBOR REQUIRED)
+
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
 
 file(GLOB sources "src/*.cpp")
+file(GLOB headers "src/*.h")
 add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns -lcbor ZLIB::ZLIB LibLZMA::LibLZMA)
+target_link_libraries(cdns CBOR::CBOR ZLIB::ZLIB LibLZMA::LibLZMA)
 
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-msse4 SSE4_FLAG)
@@ -28,7 +33,7 @@ endif()
 
 set_target_properties(cdns PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(cdns PROPERTIES SOVERSION 0)
-set_target_properties(cdns PROPERTIES PUBLIC_HEADER src/cdns.h)
+set_target_properties(cdns PROPERTIES PUBLIC_HEADER "${headers}")
 
 configure_file(src/cdns.pc.in src/cdns.pc @ONLY)
 
@@ -36,7 +41,7 @@ target_include_directories(cdns PRIVATE .)
 
 install(TARGETS cdns
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cdns
 )
 
 install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc 
