@@ -19,7 +19,7 @@
 
 #include "hash.h"
 
-namespace CDNS{
+namespace CDNS {
 
     /**
      * @class KeyRef
