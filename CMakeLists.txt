@@ -56,7 +56,7 @@ install(TARGETS cdns
 )
 
 install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc 
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
 if(BUILD_TESTS)
