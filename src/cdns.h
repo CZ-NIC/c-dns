@@ -170,12 +170,25 @@ namespace CDNS {
          *
          * @return Number of items in currently buffered Block
          */
-        std::size_t get_block_item_count() {
+        std::size_t get_block_item_count() const {
             return m_block.get_item_count();
         }
 
         /**
+         * @brief Get the number of Blocks written to the current output file or file descriptor
+         * @return Number of Blocks written to the current output file or file descriptor
+         */
+        std::size_t get_blocks_written_count() const {
+            return m_blocks_written;
+        }
+
+        /**
          * @brief Add another Block parameters to File preamble
+         *
+         * If some Blocks were already written to current output (call get_blocks_written_count()
+         * to find out), the new Block parameters will be written only to the next rotated output.
+         * To enforce the use of these new Block parameters call rotate_output() method.
+         *
          * @param bp New Block parameters to add
          * @return Index of the new Block parameters in File preamble array of Block parameters
          */
@@ -209,6 +222,14 @@ namespace CDNS {
          */
         index_t get_active_block_parameters() const {
             return m_active_block_parameters;
+        }
+
+        /**
+         * @brief Get the active Block parameters in File Preamble's array of Block parameters
+         * @return Active Block parameters
+         */
+        BlockParameters& get_active_block_parameters_ref() {
+            return m_file_preamble.get_block_parameters(m_active_block_parameters);
         }
 
         private:
