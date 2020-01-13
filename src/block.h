@@ -925,6 +925,30 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get the number of QueryResponse items in Block
+         * @return Current number of QueryResponse items in the Block
+         */
+        std::size_t get_qr_count() const {
+            return m_query_responses.size();
+        }
+
+        /**
+         * @brief Get the number of AddressEventCount items in Block
+         * @return Current number of AddressEventCount items in the Block
+         */
+        std::size_t get_aec_count() const {
+            return m_address_event_counts.size();
+        }
+
+        /**
+         * @brief Get the number of MalformedMessage items in Block
+         * @return Current number of MalformedMessage items in the Block
+         */
+        std::size_t get_mm_count() const {
+            return m_malformed_messages.size();
+        }
+
+        /**
          * @brief Check if the Block is full (one of the QueryResponse, AddressEventCount or
          * MalformedMessage arrays reached <max_block_items> limit)
          * @return 'true' if the Block is full, 'false' otherwise
