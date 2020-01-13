@@ -175,6 +175,30 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get the number of QueryResponse items in currently buffered Block
+         * @return Number of QueryResponse items in currently buffered Block
+         */
+        std::size_t get_block_qr_count() const {
+            return m_block.get_qr_count();
+        }
+
+        /**
+         * @brief Get the number of AddressEventCount items in currently buffered Block
+         * @return Number of AddressEventCount items in currently buffered Block
+         */
+        std::size_t get_block_aec_count() const {
+            return m_block.get_aec_count();
+        }
+
+        /**
+         * @brief Get the number of MalformedMessage items in currently buffered Block
+         * @return Number of MalformedMessage items in currently buffered Block
+         */
+        std::size_t get_block_mm_count() const {
+            return m_block.get_mm_count();
+        }
+
+        /**
          * @brief Get the number of Blocks written to the current output file or file descriptor
          * @return Number of Blocks written to the current output file or file descriptor
          */
