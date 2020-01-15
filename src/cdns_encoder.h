@@ -119,7 +119,7 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write_bytestring(const std::string& str) {
-            return write_bytestring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
+            return write_bytestring(reinterpret_cast<const unsigned char*>(str.data()), str.size());
         }
 
         /**
@@ -136,7 +136,7 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write_textstring(const std::string& str) {
-            return write_textstring(reinterpret_cast<const unsigned char*>(str.c_str()), str.size());
+            return write_textstring(reinterpret_cast<const unsigned char*>(str.data()), str.size());
         }
 
         /**
