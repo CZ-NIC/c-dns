@@ -57,34 +57,88 @@ void CDNS::CborOutputWriter::close()
 
 void CDNS::GzipCborOutputWriter::write(const char* p, std::size_t size)
 {
-    int ret = gzwrite(m_gzip, p, size);
-    if (!ret)
-        throw CborOutputException("Couldn't write to output file!");
-    else if (ret != size) {
-        throw CborOutputException("Given " + std::to_string(size) + " bytes to write, but "
-                                       "only " + std::to_string(ret) + " bytes were written!");
+    m_gzip.next_in = reinterpret_cast<const unsigned char*>(p);
+    m_gzip.avail_in = size;
+
+    while (m_gzip.avail_in > 0) {
+        write_gzip(size, Z_NO_FLUSH);
     }
 }
 
 void CDNS::GzipCborOutputWriter::open()
 {
+    // Initialize GZIP stream
+    m_gzip.zalloc = Z_NULL;
+    m_gzip.zfree = Z_NULL;
+    m_gzip.opaque = Z_NULL;
+    int ret = deflateInit2(&m_gzip, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY);
+    if (ret != Z_OK)
+        throw CborOutputException("Couldn't initialize GZIP compression!");
+
+    // Open output
     if (m_is_fd) {
-        m_gzip = gzdopen(m_fd, "wb");
+        struct stat buffer;
+        if (fstat(m_fd, &buffer) != 0)
+            throw CborOutputException("Given file descriptor is invalid!");
     }
     else {
-        m_gzip = gzopen(std::string(m_name + m_extension).c_str(), "wb");
+        m_out.open(m_name + m_extension);
+        if (m_out.fail())
+            throw CborOutputException("Couldn't open the output file!");
     }
-
-    if (!m_gzip)
-        throw CborOutputException("Couldn't initialize the output!");
 }
 
 void CDNS::GzipCborOutputWriter::close()
 {
-    if (m_gzip) {
-        gzclose(m_gzip);
-        m_gzip = nullptr;
+    // Close GZIP stream
+    try {
+        if (m_gzip.state) {
+            while(write_gzip(2048, Z_FINISH) != Z_STREAM_END);
+            deflateEnd(&m_gzip);
+        }
     }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+
+    // Close output
+    if (m_is_fd) {
+        if (m_fd != -1)
+            ::close(m_fd);
+    }
+    else {
+        if (m_out.is_open()) {
+            m_out.flush();
+            m_out.close();
+        }
+    }
+}
+
+int CDNS::GzipCborOutputWriter::write_gzip(std::size_t in_size, int action)
+{
+    std::size_t size = in_size + in_size / 3 + 128;
+    uint8_t buff[size];
+
+    // Set output buffer
+    m_gzip.next_out = buff;
+    m_gzip.avail_out = size;
+
+    int ret = deflate(&m_gzip, action);
+    if (ret == Z_OK || ret == Z_STREAM_END) {
+        // Write output
+        if (m_is_fd) {
+            std::size_t to_write = sizeof(buff) - m_gzip.avail_out;
+            std::size_t ret = ::write(m_fd, buff, to_write);
+            if (ret != to_write)
+                throw CborOutputException("Couldn't write to output file!");
+        }
+        else
+            m_out.write(reinterpret_cast<const char*>(buff), sizeof(buff) - m_gzip.avail_out);
+    }
+    else
+        throw CborOutputException("Couldn't write to output file!");
+
+    return ret;
 }
 
 void CDNS::XzCborOutputWriter::write(const char* p, std::size_t size)
@@ -92,7 +146,7 @@ void CDNS::XzCborOutputWriter::write(const char* p, std::size_t size)
     m_lzma.next_in = reinterpret_cast<const uint8_t*>(p);
     m_lzma.avail_in = size;
 
-    while(m_lzma.avail_in > 0) {
+    while (m_lzma.avail_in > 0) {
         write_lzma(size, LZMA_RUN);
     }
 }

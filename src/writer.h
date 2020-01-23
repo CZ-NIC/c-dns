@@ -8,6 +8,8 @@
 
 #pragma once
 
+#define ZLIB_CONST
+
 #include <string>
 #include <fstream>
 #include <cstdint>
@@ -173,14 +175,14 @@ namespace CDNS {
          * @param filename Name of the new output file without compression file extensions
          * @throw CborOutputException if opening of output file fails
          */
-        GzipCborOutputWriter(const std::string& filename) : BaseCborOutputWriter(filename), m_gzip(nullptr) { open(); }
+        GzipCborOutputWriter(const std::string& filename) : BaseCborOutputWriter(filename), m_gzip() { open(); }
 
         /**
          * @brief Construct a new GzipCborOutputWriter object with output file descriptor
          * @param fd Valid file descriptor to output data
          * @throw CborOutputException if given file descriptor isn't valid
          */
-        GzipCborOutputWriter(const int fd) : BaseCborOutputWriter(fd), m_gzip(nullptr) { open(); }
+        GzipCborOutputWriter(const int fd) : BaseCborOutputWriter(fd), m_gzip() { open(); }
 
         /**
          * @brief Destroy the GzipCborOutputWriter object and close any opened output file or file descriptor
@@ -211,8 +213,19 @@ namespace CDNS {
          */
         void close() override;
 
+        /**
+         * @brief Compress data with GZIP and write them to output
+         * @param in_size Size of the uncompressed data in bytes
+         * @param action What to do with GZIP stream (Z_NO_FLUSH, Z_FINISH)
+         * @throw CborOutputException if writing to file descriptor fails
+         * @throw std::ios_base::failure if writing to output file fails
+         * @return ZLIB return code
+         */
+        int write_gzip(std::size_t in_size, int action);
+
         std::string m_extension = ".cdns.gz";
-        gzFile m_gzip;
+        z_stream m_gzip;
+        std::ofstream m_out;
     };
 
     /**
