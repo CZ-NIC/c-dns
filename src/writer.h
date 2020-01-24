@@ -313,7 +313,7 @@ namespace CDNS {
          */
         template<typename T>
         GzipCborOutputWriter(const T& value) : m_writer(nullptr), m_gzip() {
-            if (std::is_same<T, std::string>::value)
+            if constexpr (std::is_same_v<T, std::string>)
                 m_writer = std::make_unique<Writer<T>>(value, ".gz");
             else
                 m_writer = std::make_unique<Writer<T>>(value);
@@ -388,7 +388,7 @@ namespace CDNS {
          */
         template<typename T>
         XzCborOutputWriter(const T& value) : m_writer(nullptr), m_lzma(LZMA_STREAM_INIT) {
-            if (std::is_same<T, std::string>::value)
+            if constexpr (std::is_same_v<T, std::string>)
                 m_writer = std::make_unique<Writer<T>>(value, ".xz");
             else
                 m_writer = std::make_unique<Writer<T>>(value);
