@@ -25,7 +25,7 @@ namespace CDNS {
         EXPECT_EQ(exporter->get_block_item_count(), 0);
         delete exporter;
 
-        remove_file(file + ".cdns");
+        remove_file(file);
     }
 
     TEST(CdnsExporterTest, CEBufferWriteQRTest) {
@@ -58,7 +58,7 @@ namespace CDNS {
         EXPECT_GT(written, 0);
         delete exporter;
 
-        test_size_and_remove_file(file + ".cdns", written + 1);
+        test_size_and_remove_file(file, written + 1);
     }
 
     TEST(CdnsExporterTest, CEBufferWriteAECTest) {
@@ -80,7 +80,7 @@ namespace CDNS {
         EXPECT_GT(written, 0);
         delete exporter;
 
-        test_size_and_remove_file(file + ".cdns", written + 1);
+        test_size_and_remove_file(file, written + 1);
     }
 
     TEST(CdnsExporterTest, CEBufferWriteMMTest) {
@@ -101,7 +101,7 @@ namespace CDNS {
         EXPECT_GT(written, 0);
         delete exporter;
 
-        test_size_and_remove_file(file + ".cdns", written + 1);
+        test_size_and_remove_file(file, written + 1);
     }
 
     TEST(CdnsExporterTest, CEBufferWriteMultipleBlocksTest) {
@@ -145,7 +145,7 @@ namespace CDNS {
         written += exporter->write_block();
         delete exporter;
 
-        test_size_and_remove_file(file + ".cdns", written + 1);
+        test_size_and_remove_file(file, written + 1);
     }
 
     TEST(CdnsExporterTest, CERotateTest) {
@@ -163,13 +163,13 @@ namespace CDNS {
         EXPECT_EQ(exporter->get_block_item_count(), 1);
         std::size_t written = exporter->rotate_output(file2, true);
 
-        test_size_and_remove_file(file + ".cdns", written);
+        test_size_and_remove_file(file, written);
 
         exporter->buffer_qr(gqr2);
         EXPECT_EQ(exporter->get_block_item_count(), 1);
         written = exporter->write_block();
         delete exporter;
 
-        test_size_and_remove_file(file2 + ".cdns", written + 1);
+        test_size_and_remove_file(file2, written + 1);
     }
 }
