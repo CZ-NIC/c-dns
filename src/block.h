@@ -1025,6 +1025,6 @@ namespace CDNS {
         std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts;
         std::vector<MalformedMessage> m_malformed_messages;
 
-        BlockParameters& m_block_parameters;
+        BlockParameters m_block_parameters;
     };
 }
