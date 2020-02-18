@@ -31,4 +31,5 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 add_executable(tests tests.cpp)
-target_link_libraries(tests gtest_main ZLIB::ZLIB LibLZMA::LibLZMA cdns)
+target_link_libraries(tests gtest_main ZLIB::ZLIB ${LIBLZMA_LIBRARIES} cdns)
+target_include_directories(tests PUBLIC ${LIBLZMA_INCLUDE_DIRS})

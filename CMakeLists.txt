@@ -6,7 +6,7 @@
 # file, you can obtain one at https://mozilla.org/MPL/2.0/.
 #
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.9)
 project(cdns VERSION 0.0.1 DESCRIPTION "C-DNS format exporter")
 
 include(GNUInstallDirs)
@@ -32,7 +32,8 @@ add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns CBOR::CBOR ZLIB::ZLIB LibLZMA::LibLZMA)
+target_link_libraries(cdns CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
+target_include_directories(cdns PUBLIC ${LIBLZMA_INCLUDE_DIRS})
 
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-msse4 SSE4_FLAG)
