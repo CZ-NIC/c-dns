@@ -24,7 +24,7 @@ namespace CDNS {
         CborOutputWriter* cow = new CborOutputWriter(file);
         struct stat buff;
 
-        EXPECT_EQ(stat(file.c_str(), &buff), 0);
+        EXPECT_EQ(stat((file + ".part").c_str(), &buff), 0);
         delete cow;
         remove_file(file);
 
@@ -96,7 +96,7 @@ namespace CDNS {
         GzipCborOutputWriter* cow = new GzipCborOutputWriter(file);
         struct stat buff;
 
-        EXPECT_EQ(stat((file + ".gz").c_str(), &buff), 0);
+        EXPECT_EQ(stat((file + ".gz" + ".part").c_str(), &buff), 0);
         delete cow;
 
         remove_file(file + ".gz");
@@ -143,7 +143,7 @@ namespace CDNS {
         XzCborOutputWriter* cow = new XzCborOutputWriter(file);
         struct stat buff;
 
-        EXPECT_EQ(stat((file + ".xz").c_str(), &buff), 0);
+        EXPECT_EQ(stat((file + ".xz" + ".part").c_str(), &buff), 0);
         delete cow;
 
         remove_file(file + ".xz");
