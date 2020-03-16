@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <cstdio>
 
 #include <zlib.h>
 #include <lzma.h>
@@ -165,7 +166,7 @@ namespace CDNS {
          * @throw CborOutputException if opening of the file fails
          */
         void open() override {
-            m_out.open(m_value + m_extension);
+            m_out.open(m_value + m_extension + ".part");
             if (m_out.fail())
                 throw CborOutputException("Couldn't open the output file!");
         }
@@ -177,6 +178,8 @@ namespace CDNS {
             if (m_out.is_open()) {
                 m_out.flush();
                 m_out.close();
+                if (std::rename((m_value + m_extension + ".part").c_str(), (m_value + m_extension).c_str()))
+                    throw CborOutputException("Couldn't rename the output file!");
             }
         }
 

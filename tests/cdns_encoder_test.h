@@ -23,7 +23,7 @@ namespace CDNS {
         CdnsEncoder* enc = new CdnsEncoder(file, CborOutputCompression::NO_COMPRESSION);
         struct stat buff;
 
-        EXPECT_EQ(stat(file.c_str(), &buff), 0);
+        EXPECT_EQ(stat((file + ".part").c_str(), &buff), 0);
         delete enc;
 
         remove_file(file);
