@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.9)
-project(cdns VERSION 0.1.0 DESCRIPTION "C-DNS format exporter")
+project(cdns VERSION 0.2.0 DESCRIPTION "C-DNS format exporter")
 
 include(GNUInstallDirs)
 
