@@ -13,7 +13,7 @@
 #include <string>
 #include <fstream>
 #include <cstdint>
-#include <any>
+#include <boost/any.hpp>
 #include <memory>
 #include <type_traits>
 #include <sys/types.h>
@@ -67,7 +67,7 @@ namespace CDNS {
          * @brief Rotate the output file (currently opened output is closed)
          * @param value Name or other identifier of the new output
          */
-        virtual void rotate_output(const std::any& value) = 0;
+        virtual void rotate_output(const boost::any& value) = 0;
 
         protected:
         /**
@@ -105,7 +105,7 @@ namespace CDNS {
          * @brief Rotate the output file (currently opened output is closed)
          * @param value Name or other identifier of the new output
          */
-        void rotate_output(const std::any& value) override {}
+        void rotate_output(const boost::any& value) override {}
 
         protected:
         T m_value;
@@ -151,12 +151,12 @@ namespace CDNS {
          * @param value Name of the new output file
          * @throw CborOutputException if opening of the output file fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             if (value.type() != typeid(std::string))
                 return;
 
             close();
-            m_value = std::any_cast<std::string>(value);
+            m_value = boost::any_cast<std::string>(value);
             open();
         }
 
@@ -230,12 +230,12 @@ namespace CDNS {
          * @param value File descriptor of the new output
          * @throw CborOutputException if checking of the file descriptor fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             if (value.type() != typeid(int))
                 return;
 
             close();
-            m_value = std::any_cast<int>(value);
+            m_value = boost::any_cast<int>(value);
             open();
         }
 
@@ -296,7 +296,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             m_writer->rotate_output(value);
         }
 
@@ -347,7 +347,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             close();
             m_writer->rotate_output(value);
             open();
@@ -422,7 +422,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             close();
             m_writer->rotate_output(value);
             open();
