@@ -15,12 +15,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+find_package(Boost REQUIRED)
 find_package(ZLIB REQUIRED)
-
 find_package(LibLZMA REQUIRED)
-
 find_package(CBOR REQUIRED)
-
 find_package(Doxygen)
 
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
@@ -32,7 +30,7 @@ add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
+target_link_libraries(cdns Boost::boost CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
 target_include_directories(cdns PUBLIC ${LIBLZMA_INCLUDE_DIRS})
 
 include(CheckCCompilerFlag)
