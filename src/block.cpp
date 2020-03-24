@@ -760,7 +760,7 @@ CDNS::index_t CDNS::CdnsBlock::add_generic_rrlist(const std::vector<GenericResou
 }
 
 bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& gr,
-                                                   const std::optional<BlockStatistics>& stats)
+                                                   const boost::optional<BlockStatistics>& stats)
 {
     uint32_t qr_hints = m_block_parameters.storage_parameters.storage_hints.query_response_hints;
     uint32_t qr_sig_hints = m_block_parameters.storage_parameters.storage_hints.query_response_signature_hints;
@@ -1051,7 +1051,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
 }
 
 bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
-                                                   const std::optional<BlockStatistics>& stats)
+                                                   const boost::optional<BlockStatistics>& stats)
 {
     std::size_t fields = !!qr.time_offset + !!qr.client_address_index + !!qr.client_port
                             + !!qr.transaction_id + !!qr.qr_signature_index + !!qr.client_hoplimit
@@ -1075,7 +1075,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
 }
 
 bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gaec,
-                                             const std::optional<BlockStatistics>& stats)
+                                             const boost::optional<BlockStatistics>& stats)
 {
     // Check if Address Event Counts are buffered in this Block
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
@@ -1125,7 +1125,7 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
 }
 
 bool CDNS::CdnsBlock::add_addres_event_count(const AddressEventCount& aec,
-                                             const std::optional<BlockStatistics>& stats)
+                                             const boost::optional<BlockStatistics>& stats)
 {
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
         return false;
@@ -1143,7 +1143,7 @@ bool CDNS::CdnsBlock::add_addres_event_count(const AddressEventCount& aec,
 }
 
 bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
-                                            const std::optional<BlockStatistics>& stats)
+                                            const boost::optional<BlockStatistics>& stats)
 {
     // Check if Malformed messages are buffered in this Block
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::malformed_messages))
@@ -1228,7 +1228,7 @@ bool CDNS::CdnsBlock::add_malformed_message(const GenericMalformedMessage& gmm,
 }
 
 bool CDNS::CdnsBlock::add_malformed_message(const MalformedMessage& mm,
-                                            const std::optional<BlockStatistics>& stats)
+                                            const boost::optional<BlockStatistics>& stats)
 {
     std::size_t fields = !!mm.time_offset + !!mm.client_address_index + !!mm.client_port
                             + !!mm.message_data_index;

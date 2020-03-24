@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <smmintrin.h>
-#include <optional>
+#include <boost/optional.hpp>
 
 namespace CDNS {
 
@@ -72,7 +72,7 @@ namespace CDNS {
      * @return Hash value for "data"
      */
     template<class T>
-    std::size_t hash_value(std::optional<T> const& data, uint32_t seed = ~0U) {
+    std::size_t hash_value(boost::optional<T> const& data, uint32_t seed = ~0U) {
         if (data)
             return hash_value(&data.value(), sizeof(data.value()), seed);
         else

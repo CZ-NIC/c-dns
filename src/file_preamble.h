@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <optional>
+#include <boost/optional.hpp>
 
 #include "format_specification.h"
 #include "dns.h"
@@ -109,13 +109,13 @@ namespace CDNS {
         StorageHints storage_hints;
         std::vector<OpCodes> opcodes;
         std::vector<RrTypes> rr_types;
-        std::optional<StorageFlagsMask> storage_flags;
-        std::optional<uint8_t> client_address_prefix_ipv4;
-        std::optional<uint8_t> client_address_prefix_ipv6;
-        std::optional<uint8_t> server_address_prefix_ipv4;
-        std::optional<uint8_t> server_address_prefix_ipv6;
-        std::optional<std::string> sampling_method;
-        std::optional<std::string> anonymization_method;
+        boost::optional<StorageFlagsMask> storage_flags;
+        boost::optional<uint8_t> client_address_prefix_ipv4;
+        boost::optional<uint8_t> client_address_prefix_ipv6;
+        boost::optional<uint8_t> server_address_prefix_ipv4;
+        boost::optional<uint8_t> server_address_prefix_ipv6;
+        boost::optional<std::string> sampling_method;
+        boost::optional<std::string> anonymization_method;
     };
 
     /**
@@ -131,16 +131,16 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<uint64_t> query_timeout;
-        std::optional<uint64_t> skew_timeout;
-        std::optional<uint64_t> snaplen;
-        std::optional<bool> promisc;
+        boost::optional<uint64_t> query_timeout;
+        boost::optional<uint64_t> skew_timeout;
+        boost::optional<uint64_t> snaplen;
+        boost::optional<bool> promisc;
         std::vector<std::string> interfaces;
         std::vector<std::string> server_address;
         std::vector<uint16_t> vlan_ids;
-        std::optional<std::string> filter;
-        std::optional<std::string> generator_id;
-        std::optional<std::string> host_id;
+        boost::optional<std::string> filter;
+        boost::optional<std::string> generator_id;
+        boost::optional<std::string> host_id;
     };
 
     /**
@@ -157,7 +157,7 @@ namespace CDNS {
         std::size_t write(CdnsEncoder& enc);
 
         StorageParameters storage_parameters;
-        std::optional<CollectionParameters> collection_parameters;
+        boost::optional<CollectionParameters> collection_parameters;
     };
 
     /**
@@ -176,7 +176,7 @@ namespace CDNS {
          * @param bps Vector of Block parameters to be used in the C-DNS file
          * @param private_version Optional private version of C-DNS file standard
          */
-        FilePreamble(std::vector<BlockParameters>& bps, std::optional<uint8_t> private_version = std::nullopt)
+        FilePreamble(std::vector<BlockParameters>& bps, boost::optional<uint8_t> private_version = boost::none)
             : m_block_parameters(bps) {}
 
         /**
@@ -219,7 +219,7 @@ namespace CDNS {
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;
-        std::optional<uint8_t> m_private_version;
+        boost::optional<uint8_t> m_private_version;
         std::vector<BlockParameters> m_block_parameters;
     };
 }

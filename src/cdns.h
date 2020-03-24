@@ -79,7 +79,7 @@ namespace CDNS {
          * @throw std::exception if inserting DNS record to the Block fails
          * @return Number of uncompressed bytes written if full Block was written to output, 0 otherwise
          */
-        std::size_t buffer_qr(const GenericQueryResponse& qr, const std::optional<BlockStatistics>& stats = std::nullopt) {
+        std::size_t buffer_qr(const GenericQueryResponse& qr, const boost::optional<BlockStatistics>& stats = boost::none) {
             std::size_t written = 0;
             if (m_block.add_question_response_record(qr, stats))
                 written = write_block();
@@ -96,7 +96,7 @@ namespace CDNS {
          * @throw std::exception if inserting Address Event to the Block fails
          * @return Number of uncompressed bytes written if full Block was written to output, 'false' otherwise
          */
-        std::size_t buffer_aec(const GenericAddressEventCount& aec, const std::optional<BlockStatistics>& stats = std::nullopt) {
+        std::size_t buffer_aec(const GenericAddressEventCount& aec, const boost::optional<BlockStatistics>& stats = boost::none) {
             std::size_t written = 0;
             if (m_block.add_addres_event_count(aec, stats))
                 written = write_block();
@@ -113,7 +113,7 @@ namespace CDNS {
          * @throw std::exception if inserting Malformed message to the Block fails
          * @return Number of uncompressed bytes written if full Block was written to output, 0 otherwise
          */
-        std::size_t buffer_mm(const GenericMalformedMessage& mm, const std::optional<BlockStatistics>& stats = std::nullopt) {
+        std::size_t buffer_mm(const GenericMalformedMessage& mm, const boost::optional<BlockStatistics>& stats = boost::none) {
             std::size_t written = 0;
             if (m_block.add_malformed_message(mm, stats))
                 written = write_block();

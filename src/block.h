@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <deque>
 #include <vector>
-#include <optional>
+#include <boost/optional.hpp>
 
 #include "format_specification.h"
 #include "block_table.h"
@@ -164,23 +164,23 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<index_t> server_address_index;
-        std::optional<uint16_t> server_port;
-        std::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
-        std::optional<QueryResponseTypeValues> qr_type;
-        std::optional<QueryResponseFlagsMask> qr_sig_flags;
-        std::optional<uint8_t> query_opcode;
-        std::optional<DNSFlagsMask> qr_dns_flags;
-        std::optional<uint16_t> query_rcode;
-        std::optional<index_t> query_classtype_index;
-        std::optional<uint16_t> query_qdcount;
-        std::optional<uint32_t> query_ancount;
-        std::optional<uint16_t> query_nscount;
-        std::optional<uint16_t> query_arcount;
-        std::optional<uint8_t> query_edns_version;
-        std::optional<uint16_t> query_udp_size;
-        std::optional<index_t> query_opt_rdata_index;
-        std::optional<uint16_t> response_rcode;
+        boost::optional<index_t> server_address_index;
+        boost::optional<uint16_t> server_port;
+        boost::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
+        boost::optional<QueryResponseTypeValues> qr_type;
+        boost::optional<QueryResponseFlagsMask> qr_sig_flags;
+        boost::optional<uint8_t> query_opcode;
+        boost::optional<DNSFlagsMask> qr_dns_flags;
+        boost::optional<uint16_t> query_rcode;
+        boost::optional<index_t> query_classtype_index;
+        boost::optional<uint16_t> query_qdcount;
+        boost::optional<uint32_t> query_ancount;
+        boost::optional<uint16_t> query_nscount;
+        boost::optional<uint16_t> query_arcount;
+        boost::optional<uint8_t> query_edns_version;
+        boost::optional<uint16_t> query_udp_size;
+        boost::optional<index_t> query_opt_rdata_index;
+        boost::optional<uint16_t> response_rcode;
     };
 
     /**
@@ -282,8 +282,8 @@ namespace CDNS {
 
         index_t name_index;
         index_t classtype_index;
-        std::optional<uint8_t> ttl;
-        std::optional<index_t> rdata_index;
+        boost::optional<uint8_t> ttl;
+        boost::optional<index_t> rdata_index;
     };
 
     /**
@@ -345,10 +345,10 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<index_t> server_address_index;
-        std::optional<uint16_t> server_port;
-        std::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
-        std::optional<std::string> mm_payload;
+        boost::optional<index_t> server_address_index;
+        boost::optional<uint16_t> server_port;
+        boost::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
+        boost::optional<std::string> mm_payload;
     };
 
     /**
@@ -362,8 +362,8 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<index_t> bailiwick_index;
-        std::optional<ResponseProcessingFlagsMask> processing_flags;
+        boost::optional<index_t> bailiwick_index;
+        boost::optional<ResponseProcessingFlagsMask> processing_flags;
     };
 
     /**
@@ -377,10 +377,10 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<index_t> question_index;
-        std::optional<index_t> answer_index;
-        std::optional<index_t> authority_index;
-        std::optional<index_t> additional_index;
+        boost::optional<index_t> question_index;
+        boost::optional<index_t> answer_index;
+        boost::optional<index_t> authority_index;
+        boost::optional<index_t> additional_index;
     };
 
     /**
@@ -396,7 +396,7 @@ namespace CDNS {
         std::size_t write(CdnsEncoder& enc);
 
         Timestamp earliest_time;
-        std::optional<index_t> block_parameters_index;
+        boost::optional<index_t> block_parameters_index;
     };
 
     /**
@@ -410,12 +410,12 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
-        std::optional<unsigned> processed_messages;
-        std::optional<unsigned> qr_data_items;
-        std::optional<unsigned> unmatched_queries;
-        std::optional<unsigned> unmatched_responses;
-        std::optional<unsigned> discarded_opcode;
-        std::optional<unsigned> malformed_items;
+        boost::optional<unsigned> processed_messages;
+        boost::optional<unsigned> qr_data_items;
+        boost::optional<unsigned> unmatched_queries;
+        boost::optional<unsigned> unmatched_responses;
+        boost::optional<unsigned> discarded_opcode;
+        boost::optional<unsigned> malformed_items;
     };
 
     /**
@@ -431,19 +431,19 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
-        std::optional<Timestamp> time_offset;
-        std::optional<index_t> client_address_index;
-        std::optional<uint16_t> client_port;
-        std::optional<uint16_t> transaction_id;
-        std::optional<index_t> qr_signature_index;
-        std::optional<uint8_t> client_hoplimit;
-        std::optional<int64_t> response_delay;
-        std::optional<index_t> query_name_index;
-        std::optional<std::size_t> query_size;
-        std::optional<std::size_t> response_size;
-        std::optional<ResponseProcessingData> response_processing_data;
-        std::optional<QueryResponseExtended> query_extended;
-        std::optional<QueryResponseExtended> response_extended;
+        boost::optional<Timestamp> time_offset;
+        boost::optional<index_t> client_address_index;
+        boost::optional<uint16_t> client_port;
+        boost::optional<uint16_t> transaction_id;
+        boost::optional<index_t> qr_signature_index;
+        boost::optional<uint8_t> client_hoplimit;
+        boost::optional<int64_t> response_delay;
+        boost::optional<index_t> query_name_index;
+        boost::optional<std::size_t> query_size;
+        boost::optional<std::size_t> response_size;
+        boost::optional<ResponseProcessingData> response_processing_data;
+        boost::optional<QueryResponseExtended> query_extended;
+        boost::optional<QueryResponseExtended> response_extended;
     };
 
     /**
@@ -504,8 +504,8 @@ namespace CDNS {
         std::size_t write(CdnsEncoder& enc);
 
         AddressEventTypeValues ae_type;
-        std::optional<uint8_t> ae_code;
-        std::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
+        boost::optional<uint8_t> ae_code;
+        boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         index_t ae_address_index;
         uint64_t ae_count;
     };
@@ -523,10 +523,10 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
 
-        std::optional<Timestamp> time_offset;
-        std::optional<index_t> client_address_index;
-        std::optional<uint16_t> client_port;
-        std::optional<index_t> message_data_index;
+        boost::optional<Timestamp> time_offset;
+        boost::optional<index_t> client_address_index;
+        boost::optional<uint16_t> client_port;
+        boost::optional<index_t> message_data_index;
     };
 
     /**
@@ -856,7 +856,7 @@ namespace CDNS {
          * @return `true` if the Block is full (DNS record is still inserted), `false` otherwise
          */
         bool add_question_response_record(const GenericQueryResponse& qr,
-                                          const std::optional<BlockStatistics>& stats = std::nullopt);
+                                          const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Add new DNS record to C-DNS block
@@ -866,7 +866,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (DNS record is still inserted), 'false' otherwise
          */
         bool add_question_response_record(const QueryResponse& qr,
-                                          const std::optional<BlockStatistics>& stats = std::nullopt);
+                                          const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Add new Address Event to C-DNS block. Uses generic structure to hold all Address Event's data
@@ -878,7 +878,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
         bool add_addres_event_count(const GenericAddressEventCount& gaec,
-                                    const std::optional<BlockStatistics>& stats = std::nullopt);
+                                    const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Add new Address Event to C-DNS block
@@ -888,7 +888,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
         bool add_addres_event_count(const AddressEventCount& aec,
-                                    const std::optional<BlockStatistics>& stats = std::nullopt);
+                                    const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Add new Malformed message to C-DNS block. Uses generic structure to hold all Malformed Message's
@@ -900,7 +900,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Malformed message is still inserted), 'false' otherwise
          */
         bool add_malformed_message(const GenericMalformedMessage& gmm,
-                                   const std::optional<BlockStatistics>& stats = std::nullopt);
+                                   const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Add new Malformed message to C-DNS block.
@@ -910,7 +910,7 @@ namespace CDNS {
          * @return 'true' if the Block is full (Malformed message is still inserted), 'false' otherwise
          */
         bool add_malformed_message(const MalformedMessage& mm,
-                                   const std::optional<BlockStatistics>& stats = std::nullopt);
+                                   const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
          * @brief Get the overall number of items in Block (QueryResponse + AddressEventCount + MalformedMessage)
@@ -980,7 +980,7 @@ namespace CDNS {
         void clear() {
             m_block_preamble.earliest_time = {0, 0};
             if (m_block_statistics)
-                m_block_statistics = std::nullopt;
+                m_block_statistics = boost::none;
 
             m_ip_address.clear();
             m_classtype.clear();
@@ -1008,7 +1008,7 @@ namespace CDNS {
         std::size_t write_blocktables(CdnsEncoder& enc, std::size_t& fields);
 
         BlockPreamble m_block_preamble;
-        std::optional<BlockStatistics> m_block_statistics;
+        boost::optional<BlockStatistics> m_block_statistics;
 
         // Block Tables
         BlockTable<StringItem> m_ip_address;
