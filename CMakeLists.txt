@@ -6,12 +6,12 @@
 # file, you can obtain one at https://mozilla.org/MPL/2.0/.
 #
 
-cmake_minimum_required(VERSION 3.9)
-project(cdns VERSION 0.2.0 DESCRIPTION "C-DNS format exporter")
+cmake_minimum_required(VERSION 3.7)
+project(cdns VERSION 0.2.0)
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
