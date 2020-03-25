@@ -90,7 +90,7 @@ namespace CDNS {
     template<typename T>
     class Writer : public BaseCborOutputWriter {
         public:
-        Writer(const T& value) : BaseCborOutputWriter(), m_value(value) {}
+        Writer(const T& value, const std::string extension = "") : BaseCborOutputWriter(), m_value(value) {}
         Writer(Writer& copy) = delete;
         Writer(Writer&& copy) = delete;
 
@@ -99,7 +99,7 @@ namespace CDNS {
          * @param p Start of the buffer with data
          * @param size Size of the data in bytes
          */
-        void write([[maybe_unused]] const char* p, [[maybe_unused]] std::size_t size) override {}
+        void write(const char* p, std::size_t size) override {}
 
         /**
          * @brief Rotate the output file (currently opened output is closed)
@@ -198,9 +198,11 @@ namespace CDNS {
         /**
          * @brief Construct a new Writer<int> object for writing data to output file descriptor
          * @param fd File descriptor for the output
+         * @param extension Extension for the output file's name (NOT USED)
          * @throw CborOutputException if the file descriptor isn't valid
          */
-        Writer(const int& fd) : BaseCborOutputWriter(), m_value(fd) { open(); }
+        Writer(const int& fd, const std::string extension = "")
+            : BaseCborOutputWriter(), m_value(fd) { open(); }
 
         /**
          * @brief Destroy the Writer object and close the current output file descriptor
@@ -316,11 +318,7 @@ namespace CDNS {
          */
         template<typename T>
         GzipCborOutputWriter(const T& value) : m_writer(nullptr), m_gzip() {
-            if constexpr (std::is_same_v<T, std::string>)
-                m_writer = std::make_unique<Writer<T>>(value, ".gz");
-            else
-                m_writer = std::make_unique<Writer<T>>(value);
-
+            m_writer = std::make_unique<Writer<T>>(value, ".gz");
             open();
         }
 
@@ -391,11 +389,7 @@ namespace CDNS {
          */
         template<typename T>
         XzCborOutputWriter(const T& value) : m_writer(nullptr), m_lzma(LZMA_STREAM_INIT) {
-            if constexpr (std::is_same_v<T, std::string>)
-                m_writer = std::make_unique<Writer<T>>(value, ".xz");
-            else
-                m_writer = std::make_unique<Writer<T>>(value);
-
+            m_writer = std::make_unique<Writer<T>>(value, ".xz");
             open();
         }
 
