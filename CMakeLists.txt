@@ -6,7 +6,7 @@
 # file, you can obtain one at https://mozilla.org/MPL/2.0/.
 #
 
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.5)
 project(cdns VERSION 0.2.0)
 
 include(GNUInstallDirs)
@@ -30,8 +30,8 @@ add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns Boost::boost CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
-target_include_directories(cdns PUBLIC ${LIBLZMA_INCLUDE_DIRS})
+target_link_libraries(cdns ${Boost_LIBRARIES} CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
+target_include_directories(cdns PUBLIC ${Boost_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
 
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-msse4 SSE4_FLAG)
