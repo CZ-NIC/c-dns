@@ -6,7 +6,7 @@ Library that converts DNS transmission to [C-DNS](https://tools.ietf.org/html/rf
 
 This project has the following dependencies:
 
-* [CMake >= 3.9] (https://cmake.org/)
+* [CMake >= 3.5] (https://cmake.org/)
 * [libcbor] (https://github.com/PJK/libcbor)
 * [zlib] (https://www.zlib.net/)
 * [XZ Utils] (https://tukaani.org/xz/)
