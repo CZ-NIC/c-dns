@@ -13,7 +13,7 @@
 #include <string>
 #include <fstream>
 #include <cstdint>
-#include <any>
+#include <boost/any.hpp>
 #include <memory>
 #include <type_traits>
 #include <sys/types.h>
@@ -67,7 +67,7 @@ namespace CDNS {
          * @brief Rotate the output file (currently opened output is closed)
          * @param value Name or other identifier of the new output
          */
-        virtual void rotate_output(const std::any& value) = 0;
+        virtual void rotate_output(const boost::any& value) = 0;
 
         protected:
         /**
@@ -90,7 +90,7 @@ namespace CDNS {
     template<typename T>
     class Writer : public BaseCborOutputWriter {
         public:
-        Writer(const T& value) : BaseCborOutputWriter(), m_value(value) {}
+        Writer(const T& value, const std::string extension = "") : BaseCborOutputWriter(), m_value(value) {}
         Writer(Writer& copy) = delete;
         Writer(Writer&& copy) = delete;
 
@@ -99,13 +99,13 @@ namespace CDNS {
          * @param p Start of the buffer with data
          * @param size Size of the data in bytes
          */
-        void write([[maybe_unused]] const char* p, [[maybe_unused]] std::size_t size) override {}
+        void write(const char* p, std::size_t size) override {}
 
         /**
          * @brief Rotate the output file (currently opened output is closed)
          * @param value Name or other identifier of the new output
          */
-        void rotate_output(const std::any& value) override {}
+        void rotate_output(const boost::any& value) override {}
 
         protected:
         T m_value;
@@ -151,12 +151,12 @@ namespace CDNS {
          * @param value Name of the new output file
          * @throw CborOutputException if opening of the output file fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             if (value.type() != typeid(std::string))
                 return;
 
             close();
-            m_value = std::any_cast<std::string>(value);
+            m_value = boost::any_cast<std::string>(value);
             open();
         }
 
@@ -198,9 +198,11 @@ namespace CDNS {
         /**
          * @brief Construct a new Writer<int> object for writing data to output file descriptor
          * @param fd File descriptor for the output
+         * @param extension Extension for the output file's name (NOT USED)
          * @throw CborOutputException if the file descriptor isn't valid
          */
-        Writer(const int& fd) : BaseCborOutputWriter(), m_value(fd) { open(); }
+        Writer(const int& fd, const std::string extension = "")
+            : BaseCborOutputWriter(), m_value(fd) { open(); }
 
         /**
          * @brief Destroy the Writer object and close the current output file descriptor
@@ -230,12 +232,12 @@ namespace CDNS {
          * @param value File descriptor of the new output
          * @throw CborOutputException if checking of the file descriptor fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             if (value.type() != typeid(int))
                 return;
 
             close();
-            m_value = std::any_cast<int>(value);
+            m_value = boost::any_cast<int>(value);
             open();
         }
 
@@ -296,7 +298,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             m_writer->rotate_output(value);
         }
 
@@ -316,11 +318,7 @@ namespace CDNS {
          */
         template<typename T>
         GzipCborOutputWriter(const T& value) : m_writer(nullptr), m_gzip() {
-            if constexpr (std::is_same_v<T, std::string>)
-                m_writer = std::make_unique<Writer<T>>(value, ".gz");
-            else
-                m_writer = std::make_unique<Writer<T>>(value);
-
+            m_writer = std::make_unique<Writer<T>>(value, ".gz");
             open();
         }
 
@@ -347,7 +345,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             close();
             m_writer->rotate_output(value);
             open();
@@ -391,11 +389,7 @@ namespace CDNS {
          */
         template<typename T>
         XzCborOutputWriter(const T& value) : m_writer(nullptr), m_lzma(LZMA_STREAM_INIT) {
-            if constexpr (std::is_same_v<T, std::string>)
-                m_writer = std::make_unique<Writer<T>>(value, ".xz");
-            else
-                m_writer = std::make_unique<Writer<T>>(value);
-
+            m_writer = std::make_unique<Writer<T>>(value, ".xz");
             open();
         }
 
@@ -422,7 +416,7 @@ namespace CDNS {
          * @param value Name or other identifier of the new output
          * @throw CborOutputException if initialization of the new output fails
          */
-        void rotate_output(const std::any& value) override {
+        void rotate_output(const boost::any& value) override {
             close();
             m_writer->rotate_output(value);
             open();

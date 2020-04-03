@@ -22,7 +22,7 @@ namespace CDNS {
         EXPECT_FALSE(fp.m_private_version);
         ASSERT_EQ(fp.m_block_parameters.size(), 1);
 
-        EXPECT_FALSE(fp.m_block_parameters[0].collection_parameters.has_value());
+        EXPECT_FALSE(fp.m_block_parameters[0].collection_parameters);
         // BlockParameters tested in separate test
     }
 
@@ -43,28 +43,28 @@ namespace CDNS {
         // StorageHints tested in separate test
         EXPECT_EQ(sp.opcodes, OpCodesDefault);
         EXPECT_EQ(sp.rr_types, RrTypesDefault);
-        EXPECT_FALSE(sp.storage_flags.has_value());
-        EXPECT_FALSE(sp.client_address_prefix_ipv4.has_value());
-        EXPECT_FALSE(sp.client_address_prefix_ipv6.has_value());
-        EXPECT_FALSE(sp.server_address_prefix_ipv4.has_value());
-        EXPECT_FALSE(sp.server_address_prefix_ipv6.has_value());
-        EXPECT_FALSE(sp.sampling_method.has_value());
-        EXPECT_FALSE(sp.anonymization_method.has_value());
+        EXPECT_FALSE(sp.storage_flags);
+        EXPECT_FALSE(sp.client_address_prefix_ipv4);
+        EXPECT_FALSE(sp.client_address_prefix_ipv6);
+        EXPECT_FALSE(sp.server_address_prefix_ipv4);
+        EXPECT_FALSE(sp.server_address_prefix_ipv6);
+        EXPECT_FALSE(sp.sampling_method);
+        EXPECT_FALSE(sp.anonymization_method);
     }
 
     TEST(FilePreambleTest, CollectionParametersCTest) {
         CollectionParameters cp;
 
-        EXPECT_FALSE(cp.query_timeout.has_value());
-        EXPECT_FALSE(cp.skew_timeout.has_value());
-        EXPECT_FALSE(cp.snaplen.has_value());
-        EXPECT_FALSE(cp.promisc.has_value());
+        EXPECT_FALSE(cp.query_timeout);
+        EXPECT_FALSE(cp.skew_timeout);
+        EXPECT_FALSE(cp.snaplen);
+        EXPECT_FALSE(cp.promisc);
         EXPECT_EQ(cp.interfaces.size(), 0);
         EXPECT_EQ(cp.server_address.size(), 0);
         EXPECT_EQ(cp.vlan_ids.size(), 0);
-        EXPECT_FALSE(cp.filter.has_value());
-        EXPECT_FALSE(cp.generator_id.has_value());
-        EXPECT_FALSE(cp.host_id.has_value());
+        EXPECT_FALSE(cp.filter);
+        EXPECT_FALSE(cp.generator_id);
+        EXPECT_FALSE(cp.host_id);
     }
 
     TEST(FilePreambleTest, BPSizeTest) {
