@@ -11,23 +11,28 @@ build:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev libcbor-dev
   script:
-    - cmake -DBUILD_TESTS=ON .
+    - mkdir build
+    - cd build
+    - cmake -DBUILD_TESTS=ON ..
     - make
+  artifacts:
+    paths:
+      - ./build
 
 test:
   stage: test
   dependencies:
     - build
   script:
-    - ./tests/tests
+    - ./build/tests/tests
 
 pages:
   stage: deploy
   dependencies:
     - build
   script:
-    - make doc
-    - mv doc/html/ public/
+    - make -C build doc
+    - mv build/doc/html/ public/
   artifacts:
     paths:
       - public
