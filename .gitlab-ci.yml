@@ -9,7 +9,7 @@ build:
   stage: build
   before_script:
     - apt update
-    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config doxygen libboost-all-dev zlib1g-dev liblzma-dev libcbor-dev
+    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev libcbor-dev
   script:
     - cmake -DBUILD_TESTS=ON .
     - make
