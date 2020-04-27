@@ -16,11 +16,15 @@ build:
 
 test:
   stage: test
+  dependencies:
+    - build
   script:
     - ./tests/tests
 
 pages:
   stage: deploy
+  dependencies:
+    - build
   script:
     - make doc
     - mv doc/html/ public/
