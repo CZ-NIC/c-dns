@@ -1,38 +1,30 @@
 image: ubuntu
 
 stages:
-  - build
-  - test
+  - build_and_test
   - deploy
 
-build:
-  stage: build
+build_and_test:
+  stage: build_and_test
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev libcbor-dev
   script:
-    - mkdir build
-    - cd build
-    - cmake -DBUILD_TESTS=ON ..
+    - cmake -DBUILD_TESTS=ON .
     - make
-  artifacts:
-    paths:
-      - ./build
-
-test:
-  stage: test
-  dependencies:
-    - build
-  script:
-    - ./build/tests/tests
+    - ./tests/tests
 
 pages:
   stage: deploy
   dependencies:
-    - build
+    - build_and_test
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev libcbor-dev
   script:
-    - make -C build doc
-    - mv build/doc/html/ public/
+    - cmake .
+    - make doc
+    - mv doc/html/ public/
   artifacts:
     paths:
       - public
