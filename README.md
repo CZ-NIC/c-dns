@@ -8,7 +8,6 @@ This project has the following dependencies:
 
 * [CMake >= 3.5] (https://cmake.org/)
 * [Boost] (https://www.boost.org/)
-* [libcbor] (https://github.com/PJK/libcbor)
 * [zlib] (https://www.zlib.net/)
 * [XZ Utils] (https://tukaani.org/xz/)
 
