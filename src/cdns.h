@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <cbor.h>
 #include <time.h>
 #include <endian.h>
 #include <string.h>

@@ -12,7 +12,6 @@
 #include <cstring>
 #include <cstdint>
 #include <stdexcept>
-#include <cbor.h>
 
 #include "writer.h"
 
