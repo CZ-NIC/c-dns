@@ -37,6 +37,22 @@ namespace CDNS {
         static constexpr std::size_t BUFFER_SIZE = 2048;
 
         /**
+         * @enum CborTypes
+         * @brief Cbor data types (highest 3 bits of type byte)
+         */
+        enum class CborTypes : uint8_t {
+            UNSIGNED = 0x00,
+            NEGATIVE = 0x20,
+            BYTE_STRING = 0x40,
+            TEXT_STRING = 0x60,
+            ARRAY = 0x80,
+            MAP = 0xA0,
+            TAG = 0xC0,
+            FLOAT = 0xE0,
+            SIMPLE = 0xE0
+        };
+
+        /**
          * @brief Construct a new CdnsEncoder object
          * @param output File name or valid file descriptor to output C-DNS data
          * @param compression Type of compression for the output C-DNS data
@@ -223,6 +239,15 @@ namespace CDNS {
          * @brief Write contents of internal buffer to ouptut C-DNS file
          */
         void flush_buffer();
+
+        /**
+         * @brief Write integer in CBOR to output buffer
+         * @param value Value to write to the buffer
+         * @param major CBOR data type of the value. Doesn't have to be just unsigned or negative number.
+         * It can also be a map, array, string. etc. and the value is its length.
+         * @return Number of uncompressed bytes written
+         */
+        std::size_t write_int(uint64_t value, CborTypes major);
 
         /**
          * @brief Write string to CBOR
