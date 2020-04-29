@@ -24,6 +24,7 @@
 #include "timestamp.h"
 #include "writer.h"
 #include "cdns_encoder.h"
+#include "cdns_decoder.h"
 
 namespace CDNS {
 
