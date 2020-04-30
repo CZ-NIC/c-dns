@@ -28,6 +28,41 @@ std::size_t CDNS::ClassType::write(CdnsEncoder& enc)
     return written;
 }
 
+void CDNS::ClassType::read(CdnsDecoder& dec)
+{
+    bool is_type = false;
+    bool is_class_ = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(ClassTypeMapIndex::type):
+                type = dec.read_unsigned();
+                is_type = true;
+                break;
+            case get_map_index(ClassTypeMapIndex::class_):
+                class_ = dec.read_unsigned();
+                is_class_ = true;
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_type || ! is_class_)
+        throw CdnsDecoderException("ClassType from input stream missing one of mandatory items");
+}
+
 std::size_t CDNS::QueryResponseSignature::write(CdnsEncoder& enc)
 {
     std::size_t fields = !!server_address_index + !!server_port + !!qr_transport_flags + !!qr_type
@@ -149,6 +184,78 @@ std::size_t CDNS::QueryResponseSignature::write(CdnsEncoder& enc)
     return written;
 }
 
+void CDNS::QueryResponseSignature::read(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(QueryResponseSignatureMapIndex::server_address_index):
+                server_address_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::server_port):
+                server_port = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::qr_transport_flags):
+                qr_transport_flags = static_cast<QueryResponseTransportFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::qr_type):
+                qr_type = static_cast<QueryResponseTypeValues>(dec.read_unsigned());
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::qr_sig_flags):
+                qr_sig_flags = static_cast<QueryResponseFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_opcode):
+                query_opcode = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::qr_dns_flags):
+                qr_dns_flags = static_cast<DNSFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_rcode):
+                query_rcode = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_classtype_index):
+                query_classtype_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_qdcount):
+                query_qdcount = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_ancount):
+                query_ancount = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_nscount):
+                query_nscount = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_arcount):
+                query_arcount = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_edns_version):
+                query_edns_version = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_udp_size):
+                query_udp_size = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::query_opt_rdata_index):
+                query_opt_rdata_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseSignatureMapIndex::response_rcode):
+                response_rcode = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
 std::size_t CDNS::Question::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -164,6 +271,41 @@ std::size_t CDNS::Question::write(CdnsEncoder& enc)
     written += enc.write(classtype_index);
 
     return written;
+}
+
+void CDNS::Question::read(CdnsDecoder& dec)
+{
+    bool is_name_index = false;
+    bool is_classtype_index = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(QuestionMapIndex::name_index):
+                name_index = dec.read_unsigned();
+                is_name_index = true;
+                break;
+            case get_map_index(QuestionMapIndex::classtype_index):
+                classtype_index = dec.read_unsigned();
+                is_classtype_index = true;
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_name_index || !is_classtype_index)
+        throw CdnsDecoderException("Question from input stream missing one of mandatory items");
 }
 
 std::size_t CDNS::RR::write(CdnsEncoder& enc)
@@ -195,6 +337,47 @@ std::size_t CDNS::RR::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::RR::read(CdnsDecoder& dec)
+{
+    bool is_name_index = false;
+    bool is_classtype_index = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(RrMapIndex::name_index):
+                name_index = dec.read_unsigned();
+                is_name_index = true;
+                break;
+            case get_map_index(RrMapIndex::classtype_index):
+                classtype_index = dec.read_unsigned();
+                is_classtype_index = true;
+                break;
+            case get_map_index(RrMapIndex::ttl):
+                ttl = dec.read_unsigned();
+                break;
+            case get_map_index(RrMapIndex::rdata_index):
+                rdata_index = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_name_index || !is_classtype_index)
+        throw CdnsDecoderException("RR from input stream missing one of mandatory items");
 }
 
 std::size_t CDNS::MalformedMessageData::write(CdnsEncoder& enc)
@@ -236,6 +419,39 @@ std::size_t CDNS::MalformedMessageData::write(CdnsEncoder& enc)
     return written;
 }
 
+void CDNS::MalformedMessageData::read(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch(dec.read_unsigned()) {
+            case get_map_index(MalformedMessageDataMapIndex::server_address_index):
+                server_address_index = dec.read_unsigned();
+                break;
+            case get_map_index(MalformedMessageDataMapIndex::server_port):
+                server_port = dec.read_unsigned();
+                break;
+            case get_map_index(MalformedMessageDataMapIndex::mm_transport_flags):
+                mm_transport_flags = static_cast<QueryResponseTransportFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(MalformedMessageDataMapIndex::mm_payload):
+                mm_payload = dec.read_bytestring();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
 std::size_t CDNS::ResponseProcessingData::write(CdnsEncoder& enc)
 {
     std::size_t fields = !!bailiwick_index + !!processing_flags;
@@ -261,6 +477,33 @@ std::size_t CDNS::ResponseProcessingData::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::ResponseProcessingData::read(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(ResponseProcessingDataMapIndex::bailiwick_index):
+                bailiwick_index = dec.read_unsigned();
+                break;
+            case get_map_index(ResponseProcessingDataMapIndex::processing_flags):
+                processing_flags = static_cast<ResponseProcessingFlagsMask>(dec.read_unsigned());
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
 }
 
 std::size_t CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
@@ -300,6 +543,39 @@ std::size_t CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::QueryResponseExtended::read(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_unsigned()) {
+            case get_map_index(QueryResponseExtendedMapIndex::question_index):
+                question_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseExtendedMapIndex::answer_index):
+                answer_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseExtendedMapIndex::authority_index):
+                authority_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseExtendedMapIndex::additional_index):
+                additional_index = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
 }
 
 std::size_t CDNS::BlockPreamble::write(CdnsEncoder& enc)

@@ -11,7 +11,10 @@
 CDNS::CborType CDNS::CdnsDecoder::peek_type()
 {
     read_to_buffer();
-    return static_cast<CborType>(m_p[0] & 0xE0);
+    if (m_p[0] == static_cast<uint8_t>(CborType::BREAK))
+        return CborType::BREAK;
+    else
+        return static_cast<CborType>(m_p[0] & 0xE0);
 }
 
 uint64_t CDNS::CdnsDecoder::read_unsigned()
@@ -171,7 +174,7 @@ void CDNS::CdnsDecoder::skip_item()
     uint8_t item_length;
     read_cbor_type(cbor_type, item_length);
 
-    switch(cbor_type) {
+    switch (cbor_type) {
         case CborType::UNSIGNED:
         case CborType::NEGATIVE:
         case CborType::TAG:

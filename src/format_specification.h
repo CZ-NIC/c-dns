@@ -27,7 +27,8 @@ namespace CDNS {
         ARRAY = 0x80,
         MAP = 0xA0,
         TAG = 0xC0,
-        SIMPLE = 0xE0
+        SIMPLE = 0xE0,
+        BREAK = 0xFF
     };
 
     /**

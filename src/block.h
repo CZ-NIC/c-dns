@@ -21,6 +21,7 @@
 #include "file_preamble.h"
 #include "timestamp.h"
 #include "cdns_encoder.h"
+#include "cdns_decoder.h"
 
 namespace CDNS {
     struct GenericResourceRecord;
@@ -65,6 +66,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the ClassType from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
 
         uint16_t type;
         uint16_t class_;
@@ -164,6 +171,12 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the QueryResponseSignature from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
@@ -220,6 +233,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the Question from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
 
         index_t name_index;
         index_t classtype_index;
@@ -279,6 +298,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the RR from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
 
         index_t name_index;
         index_t classtype_index;
@@ -345,6 +370,12 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the MalformedMessageData from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
@@ -362,6 +393,12 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the ResponseProcessingData from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
         boost::optional<index_t> bailiwick_index;
         boost::optional<ResponseProcessingFlagsMask> processing_flags;
     };
@@ -376,6 +413,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the QueryResponseExtended from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
 
         boost::optional<index_t> question_index;
         boost::optional<index_t> answer_index;
