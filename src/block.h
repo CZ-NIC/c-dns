@@ -73,6 +73,12 @@ namespace CDNS {
          */
         void read(CdnsDecoder& dec);
 
+        /**
+         * @brief Reset ClassType to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         uint16_t type;
         uint16_t class_;
     };
@@ -177,6 +183,12 @@ namespace CDNS {
          */
         void read(CdnsDecoder& dec);
 
+        /**
+         * @brief Reset QueryResponseSignature to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
@@ -239,6 +251,12 @@ namespace CDNS {
          * @param dec C-DNS decoder
          */
         void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset Question to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         index_t name_index;
         index_t classtype_index;
@@ -304,6 +322,12 @@ namespace CDNS {
          * @param dec C-DNS decoder
          */
         void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset RR to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         index_t name_index;
         index_t classtype_index;
@@ -376,6 +400,12 @@ namespace CDNS {
          */
         void read(CdnsDecoder& dec);
 
+        /**
+         * @brief Reset MalformedMessageData to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
@@ -399,6 +429,12 @@ namespace CDNS {
          */
         void read(CdnsDecoder& dec);
 
+        /**
+         * @brief Reset ResponseProcessingData to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> bailiwick_index;
         boost::optional<ResponseProcessingFlagsMask> processing_flags;
     };
@@ -420,6 +456,12 @@ namespace CDNS {
          */
         void read(CdnsDecoder& dec);
 
+        /**
+         * @brief Reset QueryResponseExtended to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> question_index;
         boost::optional<index_t> answer_index;
         boost::optional<index_t> authority_index;
@@ -438,6 +480,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the BlockPreamble from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset BlockPreamble to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         Timestamp earliest_time;
         boost::optional<index_t> block_parameters_index;
     };
@@ -452,6 +506,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the BlockStatistics from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset BlockStatistics to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<unsigned> processed_messages;
         boost::optional<unsigned> qr_data_items;
@@ -473,6 +539,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Read the QueryResponse from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Reset QueryResponse to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<Timestamp> time_offset;
         boost::optional<index_t> client_address_index;
@@ -546,6 +624,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the AddressEventCount from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset AddressEventCount to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         AddressEventTypeValues ae_type;
         boost::optional<uint8_t> ae_code;
         boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
@@ -565,6 +655,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Read the MalformedMessage from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Reset MalformedMessage to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<Timestamp> time_offset;
         boost::optional<index_t> client_address_index;
@@ -620,6 +722,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the StringItem from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset StringItem to empty string.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         std::string data;
     };
 
@@ -670,6 +784,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the IndexListItem from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset IndexListItem to default value.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         std::vector<index_t> list;
     };

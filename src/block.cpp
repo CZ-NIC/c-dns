@@ -30,6 +30,7 @@ std::size_t CDNS::ClassType::write(CdnsEncoder& enc)
 
 void CDNS::ClassType::read(CdnsDecoder& dec)
 {
+    reset();
     bool is_type = false;
     bool is_class_ = false;
 
@@ -42,7 +43,7 @@ void CDNS::ClassType::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(ClassTypeMapIndex::type):
                 type = dec.read_unsigned();
                 is_type = true;
@@ -61,6 +62,12 @@ void CDNS::ClassType::read(CdnsDecoder& dec)
 
     if (!is_type || ! is_class_)
         throw CdnsDecoderException("ClassType from input stream missing one of mandatory items");
+}
+
+void CDNS::ClassType::reset()
+{
+    type = 0;
+    class_ = 0;
 }
 
 std::size_t CDNS::QueryResponseSignature::write(CdnsEncoder& enc)
@@ -186,6 +193,7 @@ std::size_t CDNS::QueryResponseSignature::write(CdnsEncoder& enc)
 
 void CDNS::QueryResponseSignature::read(CdnsDecoder& dec)
 {
+    reset();
     bool indef = false;
     uint64_t length = dec.read_map_start(indef);
 
@@ -195,7 +203,7 @@ void CDNS::QueryResponseSignature::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(QueryResponseSignatureMapIndex::server_address_index):
                 server_address_index = dec.read_unsigned();
                 break;
@@ -256,6 +264,27 @@ void CDNS::QueryResponseSignature::read(CdnsDecoder& dec)
     }
 }
 
+void CDNS::QueryResponseSignature::reset()
+{
+    server_address_index = boost::none;
+    server_port = boost::none;
+    qr_transport_flags = boost::none;
+    qr_type = boost::none;
+    qr_sig_flags = boost::none;
+    query_opcode = boost::none;
+    qr_dns_flags = boost::none;
+    query_rcode = boost::none;
+    query_classtype_index = boost::none;
+    query_qdcount = boost::none;
+    query_ancount = boost::none;
+    query_nscount = boost::none;
+    query_arcount = boost::none;
+    query_edns_version = boost::none;
+    query_udp_size = boost::none;
+    query_opt_rdata_index = boost::none;
+    response_rcode = boost::none;
+}
+
 std::size_t CDNS::Question::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -275,6 +304,7 @@ std::size_t CDNS::Question::write(CdnsEncoder& enc)
 
 void CDNS::Question::read(CdnsDecoder& dec)
 {
+    reset();
     bool is_name_index = false;
     bool is_classtype_index = false;
 
@@ -287,7 +317,7 @@ void CDNS::Question::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(QuestionMapIndex::name_index):
                 name_index = dec.read_unsigned();
                 is_name_index = true;
@@ -306,6 +336,12 @@ void CDNS::Question::read(CdnsDecoder& dec)
 
     if (!is_name_index || !is_classtype_index)
         throw CdnsDecoderException("Question from input stream missing one of mandatory items");
+}
+
+void CDNS::Question::reset()
+{
+    name_index = 0;
+    classtype_index = 0;
 }
 
 std::size_t CDNS::RR::write(CdnsEncoder& enc)
@@ -341,6 +377,7 @@ std::size_t CDNS::RR::write(CdnsEncoder& enc)
 
 void CDNS::RR::read(CdnsDecoder& dec)
 {
+    reset();
     bool is_name_index = false;
     bool is_classtype_index = false;
 
@@ -353,7 +390,7 @@ void CDNS::RR::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(RrMapIndex::name_index):
                 name_index = dec.read_unsigned();
                 is_name_index = true;
@@ -378,6 +415,14 @@ void CDNS::RR::read(CdnsDecoder& dec)
 
     if (!is_name_index || !is_classtype_index)
         throw CdnsDecoderException("RR from input stream missing one of mandatory items");
+}
+
+void CDNS::RR::reset()
+{
+    name_index = 0;
+    classtype_index = 0;
+    ttl = boost::none;
+    rdata_index = boost::none;
 }
 
 std::size_t CDNS::MalformedMessageData::write(CdnsEncoder& enc)
@@ -421,6 +466,7 @@ std::size_t CDNS::MalformedMessageData::write(CdnsEncoder& enc)
 
 void CDNS::MalformedMessageData::read(CdnsDecoder& dec)
 {
+    reset();
     bool indef = false;
     uint64_t length = dec.read_map_start(indef);
 
@@ -430,7 +476,7 @@ void CDNS::MalformedMessageData::read(CdnsDecoder& dec)
             break;
         }
 
-        switch(dec.read_unsigned()) {
+        switch(dec.read_integer()) {
             case get_map_index(MalformedMessageDataMapIndex::server_address_index):
                 server_address_index = dec.read_unsigned();
                 break;
@@ -450,6 +496,14 @@ void CDNS::MalformedMessageData::read(CdnsDecoder& dec)
 
         length--;
     }
+}
+
+void CDNS::MalformedMessageData::reset()
+{
+    server_address_index = boost::none;
+    server_port = boost::none;
+    mm_transport_flags = boost::none;
+    mm_payload = boost::none;
 }
 
 std::size_t CDNS::ResponseProcessingData::write(CdnsEncoder& enc)
@@ -481,6 +535,7 @@ std::size_t CDNS::ResponseProcessingData::write(CdnsEncoder& enc)
 
 void CDNS::ResponseProcessingData::read(CdnsDecoder& dec)
 {
+    reset();
     bool indef = false;
     uint64_t length = dec.read_map_start(indef);
 
@@ -490,7 +545,7 @@ void CDNS::ResponseProcessingData::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(ResponseProcessingDataMapIndex::bailiwick_index):
                 bailiwick_index = dec.read_unsigned();
                 break;
@@ -504,6 +559,12 @@ void CDNS::ResponseProcessingData::read(CdnsDecoder& dec)
 
         length--;
     }
+}
+
+void CDNS::ResponseProcessingData::reset()
+{
+    bailiwick_index = boost::none;
+    processing_flags = boost::none;
 }
 
 std::size_t CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
@@ -547,6 +608,7 @@ std::size_t CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
 
 void CDNS::QueryResponseExtended::read(CdnsDecoder& dec)
 {
+    reset();
     bool indef = false;
     uint64_t length = dec.read_map_start(indef);
 
@@ -556,7 +618,7 @@ void CDNS::QueryResponseExtended::read(CdnsDecoder& dec)
             break;
         }
 
-        switch (dec.read_unsigned()) {
+        switch (dec.read_integer()) {
             case get_map_index(QueryResponseExtendedMapIndex::question_index):
                 question_index = dec.read_unsigned();
                 break;
@@ -578,6 +640,14 @@ void CDNS::QueryResponseExtended::read(CdnsDecoder& dec)
     }
 }
 
+void CDNS::QueryResponseExtended::reset()
+{
+    question_index = boost::none;
+    answer_index = boost::none;
+    authority_index = boost::none;
+    additional_index = boost::none;
+}
+
 std::size_t CDNS::BlockPreamble::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -597,6 +667,40 @@ std::size_t CDNS::BlockPreamble::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::BlockPreamble::read(CdnsDecoder& dec)
+{
+    reset();
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockPreambleMapIndex::earliest_time):
+                earliest_time.read(dec);
+                break;
+            case get_map_index(BlockPreambleMapIndex::block_parameters_index):
+                block_parameters_index = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+void CDNS::BlockPreamble::reset()
+{
+    earliest_time.reset();
+    block_parameters_index = boost::none;
 }
 
 std::size_t CDNS::BlockStatistics::write(CdnsEncoder& enc)
@@ -649,6 +753,56 @@ std::size_t CDNS::BlockStatistics::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::BlockStatistics::read(CdnsDecoder& dec)
+{
+    reset();
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockStatisticsMapIndex::processed_messages):
+                processed_messages = dec.read_unsigned();
+                break;
+            case get_map_index(BlockStatisticsMapIndex::qr_data_items):
+                qr_data_items = dec.read_unsigned();
+                break;
+            case get_map_index(BlockStatisticsMapIndex::unmatched_queries):
+                unmatched_queries = dec.read_unsigned();
+                break;
+            case get_map_index(BlockStatisticsMapIndex::unmatched_responses):
+                unmatched_responses = dec.read_unsigned();
+                break;
+            case get_map_index(BlockStatisticsMapIndex::discarded_opcode):
+                discarded_opcode = dec.read_unsigned();
+                break;
+            case get_map_index(BlockStatisticsMapIndex::malformed_items):
+                malformed_items = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+void CDNS::BlockStatistics::reset()
+{
+    processed_messages = boost::none;
+    qr_data_items = boost::none;
+    unmatched_queries = boost::none;
+    unmatched_responses = boost::none;
+    discarded_opcode = boost::none;
+    malformed_items = boost::none;
 }
 
 std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
@@ -747,6 +901,90 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
     return written;
 }
 
+void CDNS::QueryResponse::read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second)
+{
+    reset();
+    bool indef = false;
+    uint64_t offset;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(QueryResponseMapIndex::time_offset):
+                offset = dec.read_unsigned();
+                time_offset = earliest;
+                time_offset->add_time_offset(offset, ticks_per_second);
+                break;
+            case get_map_index(QueryResponseMapIndex::client_address_index):
+                client_address_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::client_port):
+                client_port = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::transaction_id):
+                transaction_id = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::qr_signature_index):
+                qr_signature_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::client_hoplimit):
+                client_hoplimit = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::response_delay):
+                response_delay = dec.read_integer();
+                break;
+            case get_map_index(QueryResponseMapIndex::query_name_index):
+                query_name_index = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::query_size):
+                query_size = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::response_size):
+                response_size = dec.read_unsigned();
+                break;
+            case get_map_index(QueryResponseMapIndex::response_processing_data):
+                response_processing_data = ResponseProcessingData();
+                response_processing_data->read(dec);
+                break;
+            case get_map_index(QueryResponseMapIndex::query_extended):
+                query_extended = QueryResponseExtended();
+                query_extended->read(dec);
+                break;
+            case get_map_index(QueryResponseMapIndex::response_extended):
+                response_extended = QueryResponseExtended();
+                response_extended->read(dec);
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+void CDNS::QueryResponse::reset()
+{
+    time_offset = boost::none;
+    client_address_index = boost::none;
+    client_port = boost::none;
+    transaction_id = boost::none;
+    qr_signature_index = boost::none;
+    client_hoplimit = boost::none;
+    response_delay = boost::none;
+    query_name_index = boost::none;
+    query_size = boost::none;
+    response_size = boost::none;
+    response_processing_data = boost::none;
+    query_extended = boost::none;
+    response_extended = boost::none;
+}
+
 std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -780,6 +1018,62 @@ std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
     written += enc.write(ae_count);
 
     return written;
+}
+
+void CDNS::AddressEventCount::read(CdnsDecoder& dec)
+{
+    reset();
+    bool is_ae_type = false;
+    bool is_ae_address_index = false;
+    bool is_ae_count = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(AddressEventCountMapIndex::ae_type):
+                ae_type = static_cast<AddressEventTypeValues>(dec.read_unsigned());
+                is_ae_type = true;
+                break;
+            case get_map_index(AddressEventCountMapIndex::ae_code):
+                ae_code = dec.read_unsigned();
+                break;
+            case get_map_index(AddressEventCountMapIndex::ae_transport_flags):
+                ae_transport_flags = static_cast<QueryResponseTransportFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(AddressEventCountMapIndex::ae_address_index):
+                ae_address_index = dec.read_unsigned();
+                is_ae_address_index = true;
+                break;
+            case get_map_index(AddressEventCountMapIndex::ae_count):
+                ae_count = dec.read_unsigned();
+                is_ae_count = true;
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_ae_type || !is_ae_address_index || !is_ae_count)
+        throw CdnsDecoderException("AddressEventCount from input stream missing one of mandatory items");
+}
+
+void CDNS::AddressEventCount::reset()
+{
+    ae_type = AddressEventTypeValues::tcp_reset;
+    ae_code = boost::none;
+    ae_transport_flags = boost::none;
+    ae_address_index = 0;
+    ae_count = 0;
 }
 
 std::size_t CDNS::MalformedMessage::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
@@ -821,9 +1115,65 @@ std::size_t CDNS::MalformedMessage::write(CdnsEncoder& enc, const Timestamp& ear
     return written;
 }
 
+void CDNS::MalformedMessage::read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second)
+{
+    reset();
+    bool indef = false;
+    uint64_t offset;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(MalformedMessageMapIndex::time_offset):
+                offset = dec.read_unsigned();
+                time_offset = earliest;
+                time_offset->add_time_offset(offset, ticks_per_second);
+                break;
+            case get_map_index(MalformedMessageMapIndex::client_address_index):
+                client_address_index = dec.read_unsigned();
+                break;
+            case get_map_index(MalformedMessageMapIndex::client_port):
+                client_port = dec.read_unsigned();
+                break;
+            case get_map_index(MalformedMessageMapIndex::message_data_index):
+                message_data_index = dec.read_unsigned();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+void CDNS::MalformedMessage::reset()
+{
+    time_offset = boost::none;
+    client_address_index = boost::none;
+    client_port = boost::none;
+    message_data_index = boost::none;
+}
+
 std::size_t CDNS::StringItem::write(CdnsEncoder& enc)
 {
     return enc.write_bytestring(data);
+}
+
+void CDNS::StringItem::read(CdnsDecoder& dec)
+{
+    reset();
+    data = dec.read_bytestring();
+}
+
+void CDNS::StringItem::reset()
+{
+    data.clear();
 }
 
 std::size_t CDNS::IndexListItem::write(CdnsEncoder& enc)
@@ -839,6 +1189,29 @@ std::size_t CDNS::IndexListItem::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::IndexListItem::read(CdnsDecoder& dec)
+{
+    reset();
+    bool indef = false;
+    uint64_t length = dec.read_array_start(indef);
+    list.reserve(length);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        list.push_back(dec.read_unsigned());
+        length--;
+    }
+}
+
+void CDNS::IndexListItem::reset()
+{
+    list.clear();
 }
 
 std::size_t CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fields)
