@@ -51,6 +51,23 @@ int64_t CDNS::CdnsDecoder::read_negative()
     return -1 - read_int(item_length);
 }
 
+int64_t CDNS::CdnsDecoder::read_integer()
+{
+    CborType peek = peek_type();
+    switch (peek) {
+        case CborType::UNSIGNED:
+            return read_unsigned();
+            break;
+        case CborType::NEGATIVE:
+            return read_negative();
+            break;
+        default:
+            throw CdnsDecoderException(("read_integer() called on wrong major type " +
+                                        std::to_string(static_cast<uint8_t>(peek) >> 5)).c_str());
+            break;
+    }
+}
+
 bool CDNS::CdnsDecoder::read_bool()
 {
     CborType cbor_type;

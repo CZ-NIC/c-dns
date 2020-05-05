@@ -77,6 +77,14 @@ namespace CDNS {
         int64_t read_negative();
 
         /**
+         * @brief Read unsigned or negative integer from input stream
+         * @throw CdnsDecoderEnd if the end of input stream is reached
+         * @throw CdnsDecoderException if an error is encountered decoding CBOR data
+         * @return Integer read from input stream
+         */
+        int64_t read_integer();
+
+        /**
          * @brief Read a bool item from input stream
          * @throw CdnsDecoderEnd if the end of input stream is reached
          * @throw CdnsDecoderException if an error is encountered decoding CBOR data
