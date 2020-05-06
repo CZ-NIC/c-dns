@@ -120,6 +120,30 @@ namespace CDNS {
         uint64_t read_array_start(bool& indef);
 
         /**
+         * @brief Read an array from input stream
+         * @tparam CB Callback type
+         * @param cb Callback that has to contain the reading of one item from array. It takes one parameter
+         * which is a reference to the CdnsDecoder itself.
+         * @throw CdnsDecoderEnd if the end of input stream is reached
+         * @throw CdnsDecoderException if an error is encountered decoding CBOR data
+         */
+        template<typename CB>
+        void read_array(CB cb) {
+            bool indef = false;
+            uint64_t length = read_array_start(indef);
+
+            while (length > 0 || indef) {
+                if (indef && peek_type() == CborType::BREAK) {
+                    read_break();
+                    break;
+                }
+
+                cb(*this); // reading of one item of the array has to happen here
+                length--;
+            }
+        }
+
+        /**
          * @brief Read a start of a map from input stream
          * @param indef Set by this method to TRUE if the map start read from input stream is
          * of indefinite length, FALSE otherwise
