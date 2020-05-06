@@ -8,6 +8,7 @@
 
 #include "file_preamble.h"
 #include "cdns_encoder.h"
+#include "cdns_decoder.h"
 
 std::size_t CDNS::StorageHints::write(CdnsEncoder& enc)
 {
@@ -33,6 +34,60 @@ std::size_t CDNS::StorageHints::write(CdnsEncoder& enc)
     written += enc.write(other_data_hints);
 
     return written;
+}
+
+void CDNS::StorageHints::read(CdnsDecoder& dec)
+{
+    reset();
+    bool is_query_response_hints = false;
+    bool is_query_response_signature_hints = false;
+    bool is_rr_hints = false;
+    bool is_other_data_hints = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(StorageHintsMapIndex::query_response_hints):
+                query_response_hints = dec.read_unsigned();
+                is_query_response_hints = true;
+                break;
+            case get_map_index(StorageHintsMapIndex::query_response_signature_hints):
+                query_response_signature_hints = dec.read_unsigned();
+                is_query_response_signature_hints = true;
+                break;
+            case get_map_index(StorageHintsMapIndex::rr_hints):
+                rr_hints = dec.read_unsigned();
+                is_rr_hints = true;
+                break;
+            case get_map_index(StorageHintsMapIndex::other_data_hints):
+                other_data_hints = dec.read_unsigned();
+                is_other_data_hints = true;
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_query_response_hints || !is_query_response_signature_hints || !is_rr_hints || !is_other_data_hints)
+        throw CdnsDecoderException("StorageHints from input stream missing one of mandatory items");
+}
+
+void CDNS::StorageHints::reset()
+{
+    query_response_hints = DEFAULT_QR_HINTS;
+    query_response_signature_hints = DEFAULT_QR_SIG_HINTS;
+    rr_hints = DEFAULT_RR_HINTS;
+    other_data_hints = DEFAULT_OTHER_DATA_HINTS;
 }
 
 std::size_t CDNS::StorageParameters::write(CdnsEncoder& enc)
@@ -114,6 +169,100 @@ std::size_t CDNS::StorageParameters::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::StorageParameters::read(CdnsDecoder& dec)
+{
+    reset();
+    bool is_ticks_per_second = false;
+    bool is_max_block_items = false;
+    bool is_storage_hints = false;
+    bool is_opcodes = false;
+    bool is_rr_types = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(StorageParametersMapIndex::ticks_per_second):
+                ticks_per_second = dec.read_unsigned();
+                is_ticks_per_second = true;
+                break;
+            case get_map_index(StorageParametersMapIndex::max_block_items):
+                max_block_items = dec.read_unsigned();
+                is_max_block_items = true;
+                break;
+            case get_map_index(StorageParametersMapIndex::storage_hints):
+                storage_hints.read(dec);
+                is_storage_hints = true;
+                break;
+            case get_map_index(StorageParametersMapIndex::opcodes):
+                opcodes.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    opcodes.push_back(static_cast<OpCodes>(dec.read_unsigned()));
+                });
+                is_opcodes = true;
+                break;
+            case get_map_index(StorageParametersMapIndex::rr_types):
+                rr_types.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    rr_types.push_back(static_cast<RrTypes>(dec.read_unsigned()));
+                });
+                is_rr_types = true;
+                break;
+            case get_map_index(StorageParametersMapIndex::storage_flags):
+                storage_flags = static_cast<StorageFlagsMask>(dec.read_unsigned());
+                break;
+            case get_map_index(StorageParametersMapIndex::client_address_prefix_ipv4):
+                client_address_prefix_ipv4 = dec.read_unsigned();
+                break;
+            case get_map_index(StorageParametersMapIndex::client_address_prefix_ipv6):
+                client_address_prefix_ipv6 = dec.read_unsigned();
+                break;
+            case get_map_index(StorageParametersMapIndex::server_address_prefix_ipv4):
+                server_address_prefix_ipv4 = dec.read_unsigned();
+                break;
+            case get_map_index(StorageParametersMapIndex::server_address_prefix_ipv6):
+                server_address_prefix_ipv6 = dec.read_unsigned();
+                break;
+            case get_map_index(StorageParametersMapIndex::sampling_method):
+                sampling_method = dec.read_textstring();
+                break;
+            case get_map_index(StorageParametersMapIndex::anonymization_method):
+                anonymization_method = dec.read_textstring();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_ticks_per_second || !is_max_block_items || !is_storage_hints || !is_opcodes || !is_rr_types)
+        throw CdnsDecoderException("StorageParameters from input stream missing one of mandatory items");
+}
+
+void CDNS::StorageParameters::reset()
+{
+    ticks_per_second = DEFAULT_TICKS_PER_SECOND;
+    max_block_items = DEFAULT_MAX_BLOCK_ITEMS;
+    storage_hints.reset();
+    opcodes = OpCodesDefault;
+    rr_types = RrTypesDefault;
+    storage_flags = boost::none;
+    client_address_prefix_ipv4 = boost::none;
+    client_address_prefix_ipv6 = boost::none;
+    server_address_prefix_ipv4 = boost::none;
+    server_address_prefix_ipv6 = boost::none;
+    sampling_method = boost::none;
+    anonymization_method = boost::none;
 }
 
 std::size_t CDNS::CollectionParameters::write(CdnsEncoder& enc)
@@ -201,6 +350,81 @@ std::size_t CDNS::CollectionParameters::write(CdnsEncoder& enc)
     return written;
 }
 
+void CDNS::CollectionParameters::read(CdnsDecoder& dec)
+{
+    reset();
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(CollectionParametersMapIndex::query_timeout):
+                query_timeout = dec.read_unsigned();
+                break;
+            case get_map_index(CollectionParametersMapIndex::skew_timeout):
+                skew_timeout = dec.read_unsigned();
+                break;
+            case get_map_index(CollectionParametersMapIndex::snaplen):
+                snaplen = dec.read_unsigned();
+                break;
+            case get_map_index(CollectionParametersMapIndex::promisc):
+                promisc = dec.read_bool();
+                break;
+            case get_map_index(CollectionParametersMapIndex::interfaces):
+                interfaces.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    interfaces.push_back(dec.read_textstring());
+                });
+                break;
+            case get_map_index(CollectionParametersMapIndex::server_address):
+                server_address.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    server_address.push_back(dec.read_bytestring());
+                });
+                break;
+            case get_map_index(CollectionParametersMapIndex::vland_ids):
+                vlan_ids.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    vlan_ids.push_back(dec.read_unsigned());
+                });
+                break;
+            case get_map_index(CollectionParametersMapIndex::filter):
+                filter = dec.read_textstring();
+                break;
+            case get_map_index(CollectionParametersMapIndex::generator_id):
+                generator_id = dec.read_textstring();
+                break;
+            case get_map_index(CollectionParametersMapIndex::host_id):
+                host_id = dec.read_textstring();
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+void CDNS::CollectionParameters::reset()
+{
+    query_timeout = boost::none;
+    skew_timeout = boost::none;
+    snaplen = boost::none;
+    promisc = boost::none;
+    interfaces.clear();
+    server_address.clear();
+    vlan_ids.clear();
+    filter = boost::none;
+    generator_id = boost::none;
+    host_id = boost::none;
+}
+
 std::size_t CDNS::BlockParameters::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -220,6 +444,47 @@ std::size_t CDNS::BlockParameters::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::BlockParameters::read(CdnsDecoder& dec)
+{
+    reset();
+    bool is_storage_parameters = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockParametersMapIndex::storage_parameters):
+                storage_parameters.read(dec);
+                is_storage_parameters = true;
+                break;
+            case get_map_index(BlockParametersMapIndex::collection_parameters):
+                collection_parameters = CollectionParameters();
+                collection_parameters->read(dec);
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_storage_parameters)
+        throw CdnsDecoderException("BlockParameters from input stream missing one of mandatory items");
+}
+
+void CDNS::BlockParameters::reset()
+{
+    storage_parameters.reset();
+    collection_parameters = boost::none;
 }
 
 std::size_t CDNS::FilePreamble::write(CdnsEncoder& enc)
@@ -252,4 +517,62 @@ std::size_t CDNS::FilePreamble::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::FilePreamble::read(CdnsDecoder& dec)
+{
+    reset();
+    bool is_m_major_format_version = false;
+    bool is_m_minor_format_version = false;
+    bool is_m_block_parameters = false;
+
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(FilePreambleMapIndex::major_format_version):
+                m_major_format_version = dec.read_unsigned();
+                is_m_major_format_version = true;
+                break;
+            case get_map_index(FilePreambleMapIndex::minor_format_version):
+                m_minor_format_version = dec.read_unsigned();
+                is_m_minor_format_version = true;
+                break;
+            case get_map_index(FilePreambleMapIndex::private_version):
+                m_private_version = dec.read_unsigned();
+                break;
+            case get_map_index(FilePreambleMapIndex::block_parameters):
+                m_block_parameters.clear();
+                dec.read_array([this](CdnsDecoder& dec){
+                    BlockParameters tmp;
+                    tmp.read(dec);
+                    m_block_parameters.push_back(tmp);
+                });
+                is_m_block_parameters = true;
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length --;
+    }
+
+    if (!is_m_major_format_version || !is_m_minor_format_version || !is_m_block_parameters ||
+        m_block_parameters.size() == 0)
+        throw CdnsDecoderException("FilePreamble from input stream missing one of mandatory items");
+}
+
+void CDNS::FilePreamble::reset()
+{
+    m_major_format_version = VERSION_MAJOR;
+    m_minor_format_version = VERSION_MINOR;
+    m_private_version = boost::none;
+    m_block_parameters = {BlockParameters()};
 }
