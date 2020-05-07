@@ -26,6 +26,53 @@ If you don't want to build the test suite with the library, you can omit `-DBUIL
 
 To generate Doxygen documentation run `make doc`.
 
+# Installation from packages
+Packages for Debian 10 and 9 and Ubuntu 20.04, 18.04 and 16.04 are available from
+[OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
+
+First you need to add the OBS repository for given distribution to your system's repository list and download the repository's signing key:
+
+##### Debian 10
+```shell
+sudo echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_10/ /' > /etc/apt/sources.list.d/dns-probe.list
+wget -nv http://download.opensuse.org/repositories/home:CZ-NIC:dns-probe/Debian_10/Release.key -O Release.key
+```
+
+##### Debian 9
+```shell
+sudo echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_9.0/ /' > /etc/apt/sources.list.d/dns-probe.list
+wget -nv http://download.opensuse.org/repositories/home:CZ-NIC:dns-probe/Debian_9.0/Release.key -O Release.key
+```
+
+##### Ubuntu 20.04
+```shell
+sudo echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_20.04/ /' > /etc/apt/sources.list.d/dns-probe.list
+wget -nv http://download.opensuse.org/repositories/home:CZ-NIC:dns-probe/xUbuntu_20.04/Release.key -O Release.key
+```
+
+##### Ubuntu 18.04
+```shell
+sudo echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/dns-probe.list
+wget -nv http://download.opensuse.org/repositories/home:CZ-NIC:dns-probe/xUbuntu_18.04/Release.key -O Release.key
+```
+
+##### Ubuntu 16.04
+```shell
+sudo echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_16.04/ /' > /etc/apt/sources.list.d/dns-probe.list
+wget -nv http://download.opensuse.org/repositories/home:CZ-NIC:dns-probe/xUbuntu_16.04/Release.key -O Release.key
+```
+
+Now you need to add the signing key to your system, update the repository list and then you can finally install the C-DNS library:
+
+```shell
+sudo apt-key add - < Release.key
+sudo apt-get update
+sudo apt-get install libcdns0 libcdns-dev
+```
+
+The C-DNS library is separated into two packages. `libcdns0` package installs the shared library and `libcdns-dev` package installs
+development headers.
+
 ## Basic Usage
 
 To use the C-DNS library you only have to include the `<cdns/cdns.h>` header file.
