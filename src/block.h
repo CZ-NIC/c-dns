@@ -544,7 +544,7 @@ namespace CDNS {
          * @brief Read the QueryResponse from C-DNS CBOR input stream
          * @param dec C-DNS decoder
          */
-        void read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second);
+        void read(CdnsDecoder& dec);
 
         /**
          * @brief Reset QueryResponse to default values.
@@ -660,7 +660,7 @@ namespace CDNS {
          * @brief Read the MalformedMessage from C-DNS CBOR input stream
          * @param dec C-DNS decoder
          */
-        void read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second);
+        void read(CdnsDecoder& dec);
 
         /**
          * @brief Reset MalformedMessage to default values.
@@ -874,6 +874,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the C-DNS block from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters);
 
         /**
          * @brief Get index for Block parameters of this block
@@ -1175,6 +1181,12 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write_blocktables(CdnsEncoder& enc, std::size_t& fields);
+
+        /**
+         * @brief Read the Block tables from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read_blocktables(CdnsDecoder& dec);
 
         BlockPreamble m_block_preamble;
         boost::optional<BlockStatistics> m_block_statistics;

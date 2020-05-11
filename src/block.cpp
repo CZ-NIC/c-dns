@@ -901,7 +901,7 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
     return written;
 }
 
-void CDNS::QueryResponse::read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second)
+void CDNS::QueryResponse::read(CdnsDecoder& dec)
 {
     reset();
     bool indef = false;
@@ -916,9 +916,8 @@ void CDNS::QueryResponse::read(CdnsDecoder& dec, const Timestamp& earliest, cons
 
         switch (dec.read_integer()) {
             case get_map_index(QueryResponseMapIndex::time_offset):
-                offset = dec.read_unsigned();
-                time_offset = earliest;
-                time_offset->add_time_offset(offset, ticks_per_second);
+                time_offset = Timestamp();
+                time_offset->m_secs = dec.read_unsigned();
                 break;
             case get_map_index(QueryResponseMapIndex::client_address_index):
                 client_address_index = dec.read_unsigned();
@@ -1115,7 +1114,7 @@ std::size_t CDNS::MalformedMessage::write(CdnsEncoder& enc, const Timestamp& ear
     return written;
 }
 
-void CDNS::MalformedMessage::read(CdnsDecoder& dec, const Timestamp& earliest, const uint64_t& ticks_per_second)
+void CDNS::MalformedMessage::read(CdnsDecoder& dec)
 {
     reset();
     bool indef = false;
@@ -1130,9 +1129,8 @@ void CDNS::MalformedMessage::read(CdnsDecoder& dec, const Timestamp& earliest, c
 
         switch (dec.read_integer()) {
             case get_map_index(MalformedMessageMapIndex::time_offset):
-                offset = dec.read_unsigned();
-                time_offset = earliest;
-                time_offset->add_time_offset(offset, ticks_per_second);
+                time_offset = Timestamp();
+                time_offset->m_secs = dec.read_unsigned();
                 break;
             case get_map_index(MalformedMessageMapIndex::client_address_index):
                 client_address_index = dec.read_unsigned();
@@ -1308,6 +1306,90 @@ std::size_t CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fi
     return written;
 }
 
+void CDNS::CdnsBlock::read_blocktables(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockTablesMapIndex::ip_address):
+                dec.read_array([this](CdnsDecoder& dec){
+                    StringItem tmp;
+                    tmp.data = dec.read_bytestring();
+                    m_ip_address.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::classtype):
+                dec.read_array([this](CdnsDecoder& dec){
+                    ClassType tmp;
+                    tmp.read(dec);
+                    m_classtype.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::name_rdata):
+                dec.read_array([this](CdnsDecoder& dec){
+                    StringItem tmp;
+                    tmp.data = dec.read_bytestring();
+                    m_name_rdata.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qr_sig):
+                dec.read_array([this](CdnsDecoder& dec){
+                    QueryResponseSignature tmp;
+                    tmp.read(dec);
+                    m_qr_sig.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qlist):
+                dec.read_array([this](CdnsDecoder& dec){
+                    IndexListItem tmp;
+                    tmp.read(dec);
+                    m_qlist.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qrr):
+                dec.read_array([this](CdnsDecoder& dec){
+                    Question tmp;
+                    tmp.read(dec);
+                    m_qrr.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::rrlist):
+                dec.read_array([this](CdnsDecoder& dec){
+                    IndexListItem tmp;
+                    tmp.read(dec);
+                    m_rrlist.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::rr):
+                dec.read_array([this](CdnsDecoder& dec){
+                    RR tmp;
+                    tmp.read(dec);
+                    m_rr.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::malformed_message_data):
+                dec.read_array([this](CdnsDecoder& dec){
+                    MalformedMessageData tmp;
+                    tmp.read(dec);
+                    m_malformed_message_data.add_value(std::move(tmp));
+                });
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
 std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -1367,6 +1449,92 @@ std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
     }
 
     return written;
+}
+
+void CDNS::CdnsBlock::read(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters)
+{
+    if (block_parameters.empty())
+        throw CdnsDecoderException("Given Block parameters array is empty!");
+
+    clear();
+    bool is_m_block_preamble = false;
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockMapIndex::block_preamble):
+                m_block_preamble.read(dec);
+                if (m_block_preamble.block_parameters_index) {
+                    if (*m_block_preamble.block_parameters_index < block_parameters.size())
+                        m_block_parameters = block_parameters[*m_block_preamble.block_parameters_index];
+                    else
+                        throw CdnsDecoderException("Block parameters index for C-DNS block is too high");
+                }
+                is_m_block_preamble = true;
+                break;
+            case get_map_index(BlockMapIndex::block_statistics):
+                m_block_statistics = BlockStatistics();
+                m_block_statistics->read(dec);
+                break;
+            case get_map_index(BlockMapIndex::block_tables):
+                read_blocktables(dec);
+                break;
+            case get_map_index(BlockMapIndex::query_responses):
+                dec.read_array([this](CdnsDecoder& dec){
+                    QueryResponse tmp;
+                    tmp.read(dec);
+                    m_query_responses.push_back(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockMapIndex::address_event_counts):
+                dec.read_array([this](CdnsDecoder& dec){
+                    AddressEventCount tmp;
+                    tmp.read(dec);
+                    m_address_event_counts[tmp] = tmp.ae_count;
+                });
+                break;
+            case get_map_index(BlockMapIndex::malformed_messages):
+                dec.read_array([this](CdnsDecoder& dec){
+                    MalformedMessage tmp;
+                    tmp.read(dec);
+                    m_malformed_messages.push_back(std::move(tmp));
+                });
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_m_block_preamble)
+        throw CdnsDecoderException("CdnsBlock from input stream missing one of mandatory items");
+
+    if (!m_block_preamble.block_parameters_index)
+        m_block_parameters = block_parameters[0];
+
+    for (auto& qr : m_query_responses) {
+        if (qr.time_offset) {
+            uint64_t offset = qr.time_offset->m_secs;
+            qr.time_offset = m_block_preamble.earliest_time;
+            qr.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
+        }
+    }
+
+    for (auto& mm : m_malformed_messages) {
+        if (mm.time_offset) {
+            uint64_t offset = mm.time_offset->m_secs;
+            mm.time_offset = m_block_preamble.earliest_time;
+            mm.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
+        }
+    }
 }
 
 CDNS::index_t CDNS::CdnsBlock::add_generic_qlist(const std::vector<GenericResourceRecord>& glist) {
