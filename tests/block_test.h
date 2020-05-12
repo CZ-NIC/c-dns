@@ -276,15 +276,16 @@ namespace CDNS {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         std::vector<GenericResourceRecord> grr;
-        std::string name = "test_name";
         ClassType classtype;
         classtype.type = 2;
         classtype.class_ = 3;
-        uint8_t ttl = 128;
-        std::string data = "test_data";
 
         for (int i = 0; i < 2; i++) {
-            GenericResourceRecord rr(&name, &classtype, &ttl, &data);
+            GenericResourceRecord rr;
+            rr.name = "test_name";
+            rr.classtype = classtype;
+            rr.ttl = 128;
+            rr.rdata = "test_data";
             grr.push_back(rr);
         }
 
@@ -310,16 +311,14 @@ namespace CDNS {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         GenericQueryResponse qr;
-        Timestamp ts(13, 1234);
         std::string ip = "8.8.8.8";
-        std::string qname = "Test";
         uint16_t port = 53;
-        qr.client_ip = &ip;
-        qr.server_ip = &ip;
-        qr.client_port = &port;
-        qr.server_port = &port;
-        qr.ts = &ts;
-        qr.query_name = &qname;
+        qr.client_ip = ip;
+        qr.server_ip = ip;
+        qr.client_port = port;
+        qr.server_port = port;
+        qr.ts = Timestamp(13, 1234);
+        qr.query_name = "Test";
 
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
@@ -337,10 +336,8 @@ namespace CDNS {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         GenericAddressEventCount aec;
-        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
-        std::string ip = "8.8.8.8";
-        aec.ae_type = &type;
-        aec.ip_address = &ip;
+        aec.ae_type = AddressEventTypeValues::tcp_reset;
+        aec.ip_address = "8.8.8.8";
 
         bool ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
@@ -350,7 +347,7 @@ namespace CDNS {
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
 
-        type = AddressEventTypeValues::icmp_dest_unreachable;
+        aec.ae_type = AddressEventTypeValues::icmp_dest_unreachable;
         ret = block.add_addres_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
@@ -363,14 +360,10 @@ namespace CDNS {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         GenericMalformedMessage mm;
-        Timestamp ts(13, 1234);
-        std::string ip = "8.8.8.8";
-        std::string mdata = "TestMM";
-        uint16_t port = 53;
-        mm.ts = &ts;
-        mm.client_ip = &ip;
-        mm.server_port = &port;
-        mm.mm_payload = &mdata;
+        mm.ts = Timestamp(13, 1234);
+        mm.client_ip = "8.8.8.8";
+        mm.server_port = 53;
+        mm.mm_payload = "TestMM";
 
         bool ret = block.add_malformed_message(mm);
         EXPECT_FALSE(ret);
@@ -392,15 +385,13 @@ namespace CDNS {
         GenericAddressEventCount aec;
         Timestamp ts(13, 1234);
         std::string ip = "8.8.8.8";
-        std::string mdata = "TestMM";
-        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
-        qr.ts = &ts;
-        qr.client_ip = &ip;
-        mm.ts = &ts;
-        mm.server_ip = &ip;
-        mm.mm_payload = &mdata;
-        aec.ae_type = &type;
-        aec.ip_address = &ip;
+        qr.ts = ts;
+        qr.client_ip = ip;
+        mm.ts = ts;
+        mm.server_ip = ip;
+        mm.mm_payload = "TestMM";
+        aec.ae_type = AddressEventTypeValues::tcp_reset;
+        aec.ip_address = ip;
 
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);
@@ -423,8 +414,7 @@ namespace CDNS {
         bp2.storage_parameters.max_block_items = 100;
         CdnsBlock block(bp, 0);
         GenericQueryResponse qr;
-        Timestamp ts(13, 1234);
-        qr.ts = &ts;
+        qr.ts = Timestamp(13, 1234);
 
         bool ret = block.add_question_response_record(qr);
         EXPECT_FALSE(ret);

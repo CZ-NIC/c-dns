@@ -1540,14 +1540,10 @@ void CDNS::CdnsBlock::read(CdnsDecoder& dec, std::vector<BlockParameters>& block
 CDNS::index_t CDNS::CdnsBlock::add_generic_qlist(const std::vector<GenericResourceRecord>& glist) {
     std::vector<index_t> qlist;
 
-    for (auto grr : glist) {
-        // Check for mandatory items in Question
-        if (!grr.name || !grr.classtype)
-            continue;
-
+    for (auto& grr : glist) {
         Question q;
-        q.name_index = add_name_rdata(*grr.name);
-        q.classtype_index = add_classtype(*grr.classtype);
+        q.name_index = add_name_rdata(grr.name);
+        q.classtype_index = add_classtype(grr.classtype);
         qlist.push_back(add_question(q));
     }
 
@@ -1558,14 +1554,10 @@ CDNS::index_t CDNS::CdnsBlock::add_generic_rrlist(const std::vector<GenericResou
     const uint8_t& rr_hints = m_block_parameters.storage_parameters.storage_hints.rr_hints;
     std::vector<index_t> rrlist;
 
-    for (auto grr : glist) {
-        // Check for mandatory items in Resource record
-        if (!grr.name || !grr.classtype)
-            continue;
-
+    for (auto& grr : glist) {
         RR rr;
-        rr.name_index = add_name_rdata(*grr.name);
-        rr.classtype_index = add_classtype(*grr.classtype);
+        rr.name_index = add_name_rdata(grr.name);
+        rr.classtype_index = add_classtype(grr.classtype);
         if ((rr_hints & RrHintsMask::ttl) && grr.ttl)
             rr.ttl = *grr.ttl;
         if ((rr_hints & RrHintsMask::rdata_index) && grr.rdata)
@@ -1716,8 +1708,8 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         }
 
         // EDNS record's rdata
-        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opt_rdata_index) && gr.opt_rdata) {
-            qrs.query_opt_rdata_index = add_name_rdata(*gr.opt_rdata);
+        if ((qr_sig_hints & QueryResponseSignatureHintsMask::query_opt_rdata_index) && gr.query_opt_rdata) {
+            qrs.query_opt_rdata_index = add_name_rdata(*gr.query_opt_rdata);
             qrs_filled = true;
         }
 
@@ -1898,10 +1890,6 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
         return false;
 
-    // Check if mandatory fiels are present
-    if (!gaec.ae_type || !gaec.ip_address)
-        return false;
-
     /**
      * Fill Address Event Count
      */
@@ -1909,8 +1897,7 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
     AddressEventCount aec;
 
     // Address event type
-    if (gaec.ae_type)
-        aec.ae_type = *gaec.ae_type;
+    aec.ae_type = gaec.ae_type;
 
     // Address event code
     if (gaec.ae_code)
@@ -1921,8 +1908,7 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
         aec.ae_transport_flags = *gaec.ae_transport_flags;
 
     // IP address
-    if (gaec.ip_address)
-        aec.ae_address_index = add_ip_address(*gaec.ip_address);
+    aec.ae_address_index = add_ip_address(gaec.ip_address);
 
     /*
      * Count Address Event to the Block

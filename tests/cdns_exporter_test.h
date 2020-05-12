@@ -34,22 +34,23 @@ namespace CDNS {
         GenericQueryResponse gqr;
         Timestamp ts(12, 12543);
         std::vector<GenericResourceRecord> grr;
-        std::string name = "test_name";
         ClassType classtype;
         classtype.type = 2;
         classtype.class_ = 3;
-        uint8_t ttl = 128;
-        std::string data = "test_data";
 
         for (int i = 0; i < 2; i++) {
-            GenericResourceRecord rr(&name, &classtype, &ttl, &data);
+            GenericResourceRecord rr;
+            rr.name = "test_name";
+            rr.classtype = classtype;
+            rr.ttl = 128;
+            rr.rdata = "test_data";
             grr.push_back(rr);
         }
 
-        gqr.ts = &ts;
-        gqr.query_questions = &grr;
-        gqr.query_additional = &grr;
-        gqr.response_answers = &grr;
+        gqr.ts = ts;
+        gqr.query_questions = grr;
+        gqr.query_additional = grr;
+        gqr.response_answers = grr;
 
         std::size_t written = exporter->buffer_qr(gqr);
         EXPECT_EQ(written, 0);
@@ -65,12 +66,9 @@ namespace CDNS {
         FilePreamble fp;
         CdnsExporter* exporter = new CdnsExporter(fp, file, CborOutputCompression::NO_COMPRESSION);
         GenericAddressEventCount aec;
-        AddressEventTypeValues type = AddressEventTypeValues::tcp_reset;
-        QueryResponseTransportFlagsMask tflags = QueryResponseTransportFlagsMask::tcp;
-        std::string ip = "8.8.8.8";
-        aec.ae_type = &type;
-        aec.ae_transport_flags = &tflags;
-        aec.ip_address = &ip;
+        aec.ae_type = AddressEventTypeValues::tcp_reset;
+        aec.ae_transport_flags = QueryResponseTransportFlagsMask::tcp;
+        aec.ip_address = "8.8.8.8";
 
         std::size_t written = exporter->buffer_aec(aec);
         written += exporter->buffer_aec(aec);
@@ -87,12 +85,9 @@ namespace CDNS {
         FilePreamble fp;
         CdnsExporter* exporter = new CdnsExporter(fp, file, CborOutputCompression::NO_COMPRESSION);
         GenericMalformedMessage mm;
-        Timestamp ts(12, 12543);
-        std::string ip = "8.8.8.8";
-        std::string mdata = "TestMM";
-        mm.ts = &ts;
-        mm.client_ip = &ip;
-        mm.mm_payload = &mdata;
+        mm.ts = Timestamp(12, 12543);
+        mm.client_ip = "8.8.8.8";
+        mm.mm_payload = "TestMM";
 
         std::size_t written = exporter->buffer_mm(mm);
         EXPECT_EQ(written, 0);
@@ -112,12 +107,12 @@ namespace CDNS {
         GenericQueryResponse gqr, gqr2, gqr3;
         Timestamp ts(12, 12543), ts2(6, 3020);
         std::string ip("8.8.8.8");
-        gqr.ts = &ts;
-        gqr.client_ip = &ip;
-        gqr2.ts = &ts2;
-        gqr2.server_ip = &ip;
-        gqr3.ts = &ts;
-        gqr3.server_ip = &ip;
+        gqr.ts = ts;
+        gqr.client_ip = ip;
+        gqr2.ts = ts2;
+        gqr2.server_ip = ip;
+        gqr3.ts = ts;
+        gqr3.server_ip = ip;
 
         // Add another Block parameters
         index_t index = exporter->add_block_parameters(bp);
@@ -154,10 +149,10 @@ namespace CDNS {
         GenericQueryResponse gqr, gqr2;
         Timestamp ts(12, 12543), ts2(6, 3020);
         std::string ip("8.8.8.8");
-        gqr.ts = &ts;
-        gqr.client_ip = &ip;
-        gqr2.ts = &ts2;
-        gqr2.server_ip = &ip;
+        gqr.ts = ts;
+        gqr.client_ip = ip;
+        gqr2.ts = ts2;
+        gqr2.server_ip = ip;
 
         exporter->buffer_qr(gqr);
         EXPECT_EQ(exporter->get_block_item_count(), 1);
