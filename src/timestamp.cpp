@@ -24,7 +24,7 @@ void CDNS::Timestamp::add_time_offset(int64_t offset, uint64_t ticks_per_second)
     if (ticks_per_second == 0)
         throw std::runtime_error("Ticks per second resolution is zero!");
 
-    uint64_t ticks = (m_secs * ticks_per_second) + m_ticks;
+    int64_t ticks = (m_secs * ticks_per_second) + m_ticks;
 
     if (-1 * offset > ticks)
         throw std::runtime_error("Adding offset to Timestamp would create invalid Timestamp!");
