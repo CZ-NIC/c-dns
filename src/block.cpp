@@ -1306,90 +1306,6 @@ std::size_t CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fi
     return written;
 }
 
-void CDNS::CdnsBlock::read_blocktables(CdnsDecoder& dec)
-{
-    bool indef = false;
-    uint64_t length = dec.read_map_start(indef);
-
-    while (length > 0 || indef) {
-        if (indef && dec.peek_type() == CborType::BREAK) {
-            dec.read_break();
-            break;
-        }
-
-        switch (dec.read_integer()) {
-            case get_map_index(BlockTablesMapIndex::ip_address):
-                dec.read_array([this](CdnsDecoder& dec){
-                    StringItem tmp;
-                    tmp.data = dec.read_bytestring();
-                    m_ip_address.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::classtype):
-                dec.read_array([this](CdnsDecoder& dec){
-                    ClassType tmp;
-                    tmp.read(dec);
-                    m_classtype.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::name_rdata):
-                dec.read_array([this](CdnsDecoder& dec){
-                    StringItem tmp;
-                    tmp.data = dec.read_bytestring();
-                    m_name_rdata.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::qr_sig):
-                dec.read_array([this](CdnsDecoder& dec){
-                    QueryResponseSignature tmp;
-                    tmp.read(dec);
-                    m_qr_sig.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::qlist):
-                dec.read_array([this](CdnsDecoder& dec){
-                    IndexListItem tmp;
-                    tmp.read(dec);
-                    m_qlist.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::qrr):
-                dec.read_array([this](CdnsDecoder& dec){
-                    Question tmp;
-                    tmp.read(dec);
-                    m_qrr.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::rrlist):
-                dec.read_array([this](CdnsDecoder& dec){
-                    IndexListItem tmp;
-                    tmp.read(dec);
-                    m_rrlist.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::rr):
-                dec.read_array([this](CdnsDecoder& dec){
-                    RR tmp;
-                    tmp.read(dec);
-                    m_rr.add_value(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockTablesMapIndex::malformed_message_data):
-                dec.read_array([this](CdnsDecoder& dec){
-                    MalformedMessageData tmp;
-                    tmp.read(dec);
-                    m_malformed_message_data.add_value(std::move(tmp));
-                });
-                break;
-            default:
-                dec.skip_item();
-                break;
-        }
-
-        length--;
-    }
-}
-
 std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -1449,92 +1365,6 @@ std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
     }
 
     return written;
-}
-
-void CDNS::CdnsBlock::read(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters)
-{
-    if (block_parameters.empty())
-        throw CdnsDecoderException("Given Block parameters array is empty!");
-
-    clear();
-    bool is_m_block_preamble = false;
-    bool indef = false;
-    uint64_t length = dec.read_map_start(indef);
-
-    while (length > 0 || indef) {
-        if (indef && dec.peek_type() == CborType::BREAK) {
-            dec.read_break();
-            break;
-        }
-
-        switch (dec.read_integer()) {
-            case get_map_index(BlockMapIndex::block_preamble):
-                m_block_preamble.read(dec);
-                if (m_block_preamble.block_parameters_index) {
-                    if (*m_block_preamble.block_parameters_index < block_parameters.size())
-                        m_block_parameters = block_parameters[*m_block_preamble.block_parameters_index];
-                    else
-                        throw CdnsDecoderException("Block parameters index for C-DNS block is too high");
-                }
-                is_m_block_preamble = true;
-                break;
-            case get_map_index(BlockMapIndex::block_statistics):
-                m_block_statistics = BlockStatistics();
-                m_block_statistics->read(dec);
-                break;
-            case get_map_index(BlockMapIndex::block_tables):
-                read_blocktables(dec);
-                break;
-            case get_map_index(BlockMapIndex::query_responses):
-                dec.read_array([this](CdnsDecoder& dec){
-                    QueryResponse tmp;
-                    tmp.read(dec);
-                    m_query_responses.push_back(std::move(tmp));
-                });
-                break;
-            case get_map_index(BlockMapIndex::address_event_counts):
-                dec.read_array([this](CdnsDecoder& dec){
-                    AddressEventCount tmp;
-                    tmp.read(dec);
-                    m_address_event_counts[tmp] = tmp.ae_count;
-                });
-                break;
-            case get_map_index(BlockMapIndex::malformed_messages):
-                dec.read_array([this](CdnsDecoder& dec){
-                    MalformedMessage tmp;
-                    tmp.read(dec);
-                    m_malformed_messages.push_back(std::move(tmp));
-                });
-                break;
-            default:
-                dec.skip_item();
-                break;
-        }
-
-        length--;
-    }
-
-    if (!is_m_block_preamble)
-        throw CdnsDecoderException("CdnsBlock from input stream missing one of mandatory items");
-
-    if (!m_block_preamble.block_parameters_index)
-        m_block_parameters = block_parameters[0];
-
-    for (auto& qr : m_query_responses) {
-        if (qr.time_offset) {
-            uint64_t offset = qr.time_offset->m_secs;
-            qr.time_offset = m_block_preamble.earliest_time;
-            qr.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
-        }
-    }
-
-    for (auto& mm : m_malformed_messages) {
-        if (mm.time_offset) {
-            uint64_t offset = mm.time_offset->m_secs;
-            mm.time_offset = m_block_preamble.earliest_time;
-            mm.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
-        }
-    }
 }
 
 CDNS::index_t CDNS::CdnsBlock::add_generic_qlist(const std::vector<GenericResourceRecord>& glist) {
@@ -1883,7 +1713,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
     return full() ? true : false;
 }
 
-bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gaec,
+bool CDNS::CdnsBlock::add_address_event_count(const GenericAddressEventCount& gaec,
                                              const boost::optional<BlockStatistics>& stats)
 {
     // Check if Address Event Counts are buffered in this Block
@@ -1927,7 +1757,7 @@ bool CDNS::CdnsBlock::add_addres_event_count(const GenericAddressEventCount& gae
     return full() ? true : false;
 }
 
-bool CDNS::CdnsBlock::add_addres_event_count(const AddressEventCount& aec,
+bool CDNS::CdnsBlock::add_address_event_count(const AddressEventCount& aec,
                                              const boost::optional<BlockStatistics>& stats)
 {
     if (!(m_block_parameters.storage_parameters.storage_hints.other_data_hints & OtherDataHintsMask::address_event_counts))
@@ -2049,4 +1879,390 @@ bool CDNS::CdnsBlock::add_malformed_message(const MalformedMessage& mm,
         m_block_statistics = stats;
 
     return full() ? true : false;
+}
+
+void CDNS::CdnsBlockRead::read_blocktables(CdnsDecoder& dec)
+{
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockTablesMapIndex::ip_address):
+                dec.read_array([this](CdnsDecoder& dec){
+                    StringItem tmp;
+                    tmp.data = dec.read_bytestring();
+                    m_ip_address.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::classtype):
+                dec.read_array([this](CdnsDecoder& dec){
+                    ClassType tmp;
+                    tmp.read(dec);
+                    m_classtype.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::name_rdata):
+                dec.read_array([this](CdnsDecoder& dec){
+                    StringItem tmp;
+                    tmp.data = dec.read_bytestring();
+                    m_name_rdata.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qr_sig):
+                dec.read_array([this](CdnsDecoder& dec){
+                    QueryResponseSignature tmp;
+                    tmp.read(dec);
+                    m_qr_sig.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qlist):
+                dec.read_array([this](CdnsDecoder& dec){
+                    IndexListItem tmp;
+                    tmp.read(dec);
+                    m_qlist.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::qrr):
+                dec.read_array([this](CdnsDecoder& dec){
+                    Question tmp;
+                    tmp.read(dec);
+                    m_qrr.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::rrlist):
+                dec.read_array([this](CdnsDecoder& dec){
+                    IndexListItem tmp;
+                    tmp.read(dec);
+                    m_rrlist.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::rr):
+                dec.read_array([this](CdnsDecoder& dec){
+                    RR tmp;
+                    tmp.read(dec);
+                    m_rr.add_value(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockTablesMapIndex::malformed_message_data):
+                dec.read_array([this](CdnsDecoder& dec){
+                    MalformedMessageData tmp;
+                    tmp.read(dec);
+                    m_malformed_message_data.add_value(std::move(tmp));
+                });
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+}
+
+std::vector<CDNS::GenericResourceRecord> CDNS::CdnsBlockRead::fill_generic_q_list(std::vector<index_t>& list)
+{
+    std::vector<GenericResourceRecord> gq_list;
+    gq_list.reserve(list.size());
+
+    for (auto qi : list) {
+        GenericResourceRecord gq;
+        Question q = get_question(qi);
+        gq.name = get_name_rdata(q.name_index);
+        gq.classtype = get_classtype(q.classtype_index);
+        gq_list.push_back(gq);
+    }
+
+    return gq_list;
+}
+
+std::vector<CDNS::GenericResourceRecord> CDNS::CdnsBlockRead::fill_generic_rr_list(std::vector<index_t>& list)
+{
+    std::vector<GenericResourceRecord> grr_list;
+    grr_list.reserve(list.size());
+
+    for (auto rri : list) {
+        GenericResourceRecord grr;
+        RR rr = get_rr(rri);
+        grr.name = get_name_rdata(rr.name_index);
+        grr.classtype = get_classtype(rr.classtype_index);
+        grr.ttl = rr.ttl;
+        if (rr.rdata_index)
+            grr.rdata = get_name_rdata(*rr.rdata_index);
+
+        grr_list.push_back(std::move(grr));
+    }
+
+    return grr_list;
+}
+
+void CDNS::CdnsBlockRead::read(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters)
+{
+    if (block_parameters.empty())
+        throw CdnsDecoderException("Given Block parameters array is empty!");
+
+    clear();
+    bool is_m_block_preamble = false;
+    bool indef = false;
+    uint64_t length = dec.read_map_start(indef);
+
+    while (length > 0 || indef) {
+        if (indef && dec.peek_type() == CborType::BREAK) {
+            dec.read_break();
+            break;
+        }
+
+        switch (dec.read_integer()) {
+            case get_map_index(BlockMapIndex::block_preamble):
+                m_block_preamble.read(dec);
+                if (m_block_preamble.block_parameters_index) {
+                    if (*m_block_preamble.block_parameters_index < block_parameters.size())
+                        m_block_parameters = block_parameters[*m_block_preamble.block_parameters_index];
+                    else
+                        throw CdnsDecoderException("Block parameters index for C-DNS block is too high");
+                }
+                is_m_block_preamble = true;
+                break;
+            case get_map_index(BlockMapIndex::block_statistics):
+                m_block_statistics = BlockStatistics();
+                m_block_statistics->read(dec);
+                break;
+            case get_map_index(BlockMapIndex::block_tables):
+                read_blocktables(dec);
+                break;
+            case get_map_index(BlockMapIndex::query_responses):
+                dec.read_array([this](CdnsDecoder& dec){
+                    QueryResponse tmp;
+                    tmp.read(dec);
+                    m_query_responses.push_back(std::move(tmp));
+                });
+                break;
+            case get_map_index(BlockMapIndex::address_event_counts):
+                dec.read_array([this](CdnsDecoder& dec){
+                    AddressEventCount tmp;
+                    tmp.read(dec);
+                    m_address_event_counts[tmp] = tmp.ae_count;
+                });
+                break;
+            case get_map_index(BlockMapIndex::malformed_messages):
+                dec.read_array([this](CdnsDecoder& dec){
+                    MalformedMessage tmp;
+                    tmp.read(dec);
+                    m_malformed_messages.push_back(std::move(tmp));
+                });
+                break;
+            default:
+                dec.skip_item();
+                break;
+        }
+
+        length--;
+    }
+
+    if (!is_m_block_preamble)
+        throw CdnsDecoderException("CdnsBlock from input stream missing one of mandatory items");
+
+    if (!m_block_preamble.block_parameters_index)
+        m_block_parameters = block_parameters[0];
+
+    for (auto& qr : m_query_responses) {
+        if (qr.time_offset) {
+            uint64_t offset = qr.time_offset->m_secs;
+            qr.time_offset = m_block_preamble.earliest_time;
+            qr.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
+        }
+    }
+
+    for (auto& mm : m_malformed_messages) {
+        if (mm.time_offset) {
+            uint64_t offset = mm.time_offset->m_secs;
+            mm.time_offset = m_block_preamble.earliest_time;
+            mm.time_offset->add_time_offset(offset, m_block_parameters.storage_parameters.ticks_per_second);
+        }
+    }
+
+    m_qr_read = 0;
+    m_aec_read = m_address_event_counts.begin();
+    m_mm_read = 0;
+}
+
+CDNS::GenericQueryResponse CDNS::CdnsBlockRead::read_generic_qr(bool& end)
+{
+    // Check if there are unread query responses in this block
+    if (m_qr_read >= m_query_responses.size()) {
+        end = true;
+        return GenericQueryResponse();
+    }
+
+    end = false;
+    GenericQueryResponse gqr;
+    QueryResponse& qr = m_query_responses[m_qr_read];
+
+    gqr.ts = qr.time_offset;
+
+    if (qr.client_address_index)
+        gqr.client_ip = get_ip_address(*qr.client_address_index);
+
+    gqr.client_port = qr.client_port;
+    gqr.transaction_id = qr.transaction_id;
+
+    // Get Query Response Signature if present
+    if (qr.qr_signature_index) {
+        QueryResponseSignature qrs = get_qr_signature(*qr.qr_signature_index);
+
+        if (qrs.server_address_index)
+            gqr.server_ip = get_ip_address(*qrs.server_address_index);
+
+        gqr.server_port = qrs.server_port;
+        gqr.qr_transport_flags = qrs.qr_transport_flags;
+        gqr.qr_type = qrs.qr_type;
+        gqr.qr_sig_flags = qrs.qr_sig_flags;
+        gqr.query_opcode = qrs.query_opcode;
+        gqr.qr_dns_flags = qrs.qr_dns_flags;
+        gqr.query_rcode = qrs.query_rcode;
+
+        if (qrs.query_classtype_index)
+            gqr.query_classtype = get_classtype(*qrs.query_classtype_index);
+
+        gqr.query_qdcount = qrs.query_qdcount;
+        gqr.query_ancount = qrs.query_ancount;
+        gqr.query_nscount = qrs.query_nscount;
+        gqr.query_arcount = qrs.query_arcount;
+        gqr.query_edns_version = qrs.query_edns_version;
+        gqr.query_udp_size = qrs.query_udp_size;
+
+        if (qrs.query_opt_rdata_index)
+            gqr.query_opt_rdata = get_name_rdata(*qrs.query_opt_rdata_index);
+
+        gqr.response_rcode = qrs.response_rcode;
+    }
+
+    gqr.client_hoplimit = qr.client_hoplimit;
+    gqr.response_delay = qr.response_delay;
+
+    if (qr.query_name_index)
+        gqr.query_name = get_name_rdata(*qr.query_name_index);
+
+    gqr.query_size = qr.query_size;
+    gqr.response_size = qr.response_size;
+
+    // Get Response Processing Data if present
+    if (qr.response_processing_data) {
+        if (qr.response_processing_data->bailiwick_index)
+            gqr.bailiwick = get_name_rdata(*qr.response_processing_data->bailiwick_index);
+
+        gqr.processing_flags = qr.response_processing_data->processing_flags;
+    }
+
+    // Get Query Extended if present
+    if (qr.query_extended) {
+        if (qr.query_extended->question_index) {
+            auto qlist = get_question_list(*qr.query_extended->question_index);
+            gqr.query_questions = fill_generic_q_list(qlist);
+        }
+
+        if (qr.query_extended->answer_index) {
+            auto rrlist = get_rr_list(*qr.query_extended->answer_index);
+            gqr.query_answers = fill_generic_rr_list(rrlist);
+        }
+
+        if (qr.query_extended->authority_index) {
+            auto rrlist = get_rr_list(*qr.query_extended->authority_index);
+            gqr.query_authority = fill_generic_rr_list(rrlist);
+        }
+
+        if (qr.query_extended->additional_index) {
+            auto rrlist = get_rr_list(*qr.query_extended->additional_index);
+            gqr.query_additional = fill_generic_rr_list(rrlist);
+        }
+    }
+
+    // Get Response Extended if present
+    if (qr.response_extended) {
+        if (qr.response_extended->question_index) {
+            auto qlist = get_question_list(*qr.response_extended->question_index);
+            gqr.response_questions = fill_generic_q_list(qlist);
+        }
+
+        if (qr.response_extended->answer_index) {
+            auto rrlist = get_rr_list(*qr.response_extended->answer_index);
+            gqr.response_answers = fill_generic_rr_list(rrlist);
+        }
+
+        if (qr.response_extended->authority_index) {
+            auto rrlist = get_rr_list(*qr.response_extended->authority_index);
+            gqr.response_authority = fill_generic_rr_list(rrlist);
+        }
+
+        if (qr.response_extended->additional_index) {
+            auto rrlist = get_rr_list(*qr.response_extended->additional_index);
+            gqr.response_additional = fill_generic_rr_list(rrlist);
+        }
+    }
+
+    m_qr_read++;
+    return gqr;
+}
+
+CDNS::GenericAddressEventCount CDNS::CdnsBlockRead::read_generic_aec(bool& end)
+{
+    // Check if there are unread address event counts in this block
+    if (m_aec_read == m_address_event_counts.end()) {
+        end = true;
+        return GenericAddressEventCount();
+    }
+
+    end = false;
+    GenericAddressEventCount gaec;
+    AddressEventCount aec = m_aec_read->first;
+    aec.ae_count = m_aec_read->second;
+
+    gaec.ae_type = aec.ae_type;
+    gaec.ae_code = aec.ae_code;
+    gaec.ae_transport_flags = aec.ae_transport_flags;
+    gaec.ip_address = get_ip_address(aec.ae_address_index);
+    gaec.ae_count = aec.ae_count;
+
+    m_aec_read++;
+    return gaec;
+}
+
+CDNS::GenericMalformedMessage CDNS::CdnsBlockRead::read_generic_mm(bool& end)
+{
+    // Check if there are unread malformed messages in this block
+    if (m_mm_read >= m_malformed_messages.size()) {
+        end = true;
+        return GenericMalformedMessage();
+    }
+
+    end = false;
+    GenericMalformedMessage gmm;
+    MalformedMessage& mm = m_malformed_messages[m_mm_read];
+
+    gmm.ts = mm.time_offset;
+
+    if (mm.client_address_index)
+        gmm.client_ip = get_ip_address(*mm.client_address_index);
+
+    gmm.client_port = mm.client_port;
+
+    // Get Malformed Message Data if present
+    if (mm.message_data_index) {
+        MalformedMessageData mmd = get_malformed_message_data(*mm.message_data_index);
+
+        if (mmd.server_address_index)
+            gmm.server_ip = get_ip_address(*mmd.server_address_index);
+
+        gmm.server_port = mmd.server_port;
+        gmm.mm_transport_flags = mmd.mm_transport_flags;
+        gmm.mm_payload = mmd.mm_payload;
+    }
+
+    m_mm_read++;
+    return gmm;
 }

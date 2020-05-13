@@ -339,16 +339,16 @@ namespace CDNS {
         aec.ae_type = AddressEventTypeValues::tcp_reset;
         aec.ip_address = "8.8.8.8";
 
-        bool ret = block.add_addres_event_count(aec);
+        bool ret = block.add_address_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
 
-        ret = block.add_addres_event_count(aec);
+        ret = block.add_address_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 1);
 
         aec.ae_type = AddressEventTypeValues::icmp_dest_unreachable;
-        ret = block.add_addres_event_count(aec);
+        ret = block.add_address_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
 
@@ -401,7 +401,7 @@ namespace CDNS {
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 2);
 
-        ret = block.add_addres_event_count(aec);
+        ret = block.add_address_event_count(aec);
         EXPECT_FALSE(ret);
         EXPECT_EQ(block.get_item_count(), 3);
 

@@ -12,6 +12,7 @@
 #include <endian.h>
 #include <string.h>
 #include <stdlib.h>
+#include <istream>
 #include <sys/socket.h>
 
 #include "format_specification.h"
@@ -29,7 +30,7 @@
 namespace CDNS {
 
     /**
-     * @brief Class serving as C-DNS library's main interface with users
+     * @brief Class serving as C-DNS library's main interface for writing C-DNS to output
      *
      * CdnsExporter is initialized with filled File preamble structure, output destination
      * and output compression option. User only needs to call buffer_*() methods, which
@@ -98,7 +99,7 @@ namespace CDNS {
          */
         std::size_t buffer_aec(const GenericAddressEventCount& aec, const boost::optional<BlockStatistics>& stats = boost::none) {
             std::size_t written = 0;
-            if (m_block.add_addres_event_count(aec, stats))
+            if (m_block.add_address_event_count(aec, stats))
                 written = write_block();
 
             return written;
@@ -272,5 +273,53 @@ namespace CDNS {
          * @brief Number of Blocks written to the currently open output (gets reset on output rotation)
          */
         std::size_t m_blocks_written;
+    };
+
+    /**
+     * @brief Class serving as C-DNS library's main interface for reading C-DNS data from
+     * input
+     *
+     * CdnsReader is initialized with valid input stream containing C-DNS data. CdnsReader
+     * constructor automatically reads the beginning of C-DNS file including its file preamble.
+     * User then reads the input by Blocks with the read_block(bool& eof) method. From these
+     * Blocks user can extract Query Response pairs and other data. When CdnsReader reaches
+     * the end of C-DNS data it sets the "eof" parameter in read_block() method to TRUE.
+     * CdnsBlock returned by this call is then empty.
+     */
+    class CdnsReader {
+        public:
+        /**
+         * @brief Construct a new CdnsReader object to read C-DNS data.
+         * The constructor automatically reads the start of C-DNS file and filles
+         * the m_file_preamble item.
+         * @param input Valid input stream to read C-DNS data from
+         */
+        CdnsReader(std::istream& input) : m_file_preamble(),
+                                          m_decoder(input),
+                                          m_blocks_count(0),
+                                          m_blocks_read(0),
+                                          m_indef_blocks(false) { read_file_header(); }
+
+        /**
+         * @brief Read whole C-DNS Block from input stream
+         * @param eof If set by this method to TRUE, then reader has reached the end
+         * of C-DNS file and the returned C-DNS block is empty. Otherwise set to FALSE.
+         * @return New C-DNS Block read from input stream
+         */
+        CdnsBlockRead read_block(bool& eof);
+
+        FilePreamble m_file_preamble; //!< C-DNS file preamble
+
+        private:
+        /**
+         * @brief Reads the start of C-DNS file including file preamble and
+         * start of the block array from input stream
+         */
+        void read_file_header();
+
+        CdnsDecoder m_decoder;
+        uint64_t m_blocks_count;
+        uint64_t m_blocks_read;
+        bool m_indef_blocks;
     };
 }
