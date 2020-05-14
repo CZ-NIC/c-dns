@@ -11,7 +11,7 @@
 CDNS::CborType CDNS::CdnsDecoder::peek_type()
 {
     read_to_buffer();
-    if (m_p[0] == static_cast<uint8_t>(CborType::BREAK))
+    if (static_cast<CborType>(m_p[0]) == CborType::BREAK)
         return CborType::BREAK;
     else
         return static_cast<CborType>(m_p[0] & 0xE0);
