@@ -325,7 +325,7 @@ void CDNS::CdnsDecoder::read_to_buffer()
         if (m_input.eof())
             throw CdnsDecoderEnd("End of input stream");
 
-        m_input.read(m_buffer, BUFFER_SIZE);
+        m_input.read(reinterpret_cast<char*>(m_buffer), BUFFER_SIZE);
         m_p = m_buffer;
         m_end = m_buffer + m_input.gcount();
     }

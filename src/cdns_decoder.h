@@ -207,8 +207,8 @@ namespace CDNS {
         void read_to_buffer();
 
         std::istream& m_input;
-        char m_buffer[BUFFER_SIZE];
-        char* m_p;
-        char* m_end;
+        unsigned char m_buffer[BUFFER_SIZE];
+        unsigned char* m_p;
+        unsigned char* m_end;
     };
 }
