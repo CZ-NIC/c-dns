@@ -56,7 +56,7 @@ void CDNS::CdnsReader::read_file_header()
         throw CdnsDecoderException("Invalid structure of C-DNS file");
 
     // Read File type ID -> "C-DNS" string
-    std::string file_start = m_decoder.read_bytestring();
+    std::string file_start = m_decoder.read_textstring();
     std::transform(file_start.begin(), file_start.end(), file_start.begin(), toupper);
     if (file_start != "C-DNS")
         throw CdnsDecoderException(("Invalid File type ID: " + file_start).c_str());
