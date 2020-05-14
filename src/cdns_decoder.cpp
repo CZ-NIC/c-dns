@@ -134,7 +134,7 @@ uint64_t CDNS::CdnsDecoder::read_array_start(bool& indef)
     uint8_t array_length_value;
     read_cbor_type(cbor_type, array_length_value);
     if (cbor_type != CborType::ARRAY) {
-        throw CdnsDecoderException(("read_array_start() callend on wrong major type " +
+        throw CdnsDecoderException(("read_array_start() called on wrong major type " +
                                     std::to_string(static_cast<uint8_t>(cbor_type) >> 5)).c_str());
     }
     else if (array_length_value >= 28 && array_length_value <= 30) {
@@ -157,7 +157,7 @@ uint64_t CDNS::CdnsDecoder::read_map_start(bool& indef)
     uint8_t map_length_value;
     read_cbor_type(cbor_type, map_length_value);
     if (cbor_type != CborType::MAP) {
-        throw CdnsDecoderException(("read_map_start() callend on wrong major type " +
+        throw CdnsDecoderException(("read_map_start() called on wrong major type " +
                                     std::to_string(static_cast<uint8_t>(cbor_type) >> 5)).c_str());
     }
     else if (map_length_value >= 28 && map_length_value <= 30) {
