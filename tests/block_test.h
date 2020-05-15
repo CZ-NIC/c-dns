@@ -220,7 +220,7 @@ namespace CDNS {
         EXPECT_EQ(block.get_item_count(), 0);
     }
 
-    TEST(BlockTest, BlockAddTest) {
+    TEST(BlockTest, BlockAddGetTest) {
         BlockParameters bp;
         CdnsBlock block(bp, 0);
         std::string ip = "8.8.8.8";
@@ -270,6 +270,15 @@ namespace CDNS {
         EXPECT_EQ(index9, 0);
         EXPECT_EQ(index9, index9_dup);
         EXPECT_EQ(block.get_item_count(), 0);
+        EXPECT_EQ(ip, block.get_ip_address(index));
+        EXPECT_EQ(ct, block.get_classtype(index2));
+        EXPECT_EQ(rdata, block.get_name_rdata(index3));
+        EXPECT_EQ(qrs, block.get_qr_signature(index4));
+        EXPECT_EQ(list, block.get_question_list(index5));
+        EXPECT_EQ(q, block.get_question(index6));
+        EXPECT_EQ(list, block.get_rr_list(index7));
+        EXPECT_EQ(rr, block.get_rr(index8));
+        EXPECT_EQ(mmd, block.get_malformed_message_data(index9));
     }
 
     TEST(BlockTest, BlockAddGListTest) {
