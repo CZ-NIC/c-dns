@@ -1288,23 +1288,23 @@ namespace CDNS {
             m_malformed_messages.clear();
         }
 
-        BlockPreamble m_block_preamble;
-        boost::optional<BlockStatistics> m_block_statistics;
+        BlockPreamble m_block_preamble; //!< C-DNS block preamble
+        boost::optional<BlockStatistics> m_block_statistics; //!< C-DNS block statistics
 
         // Block Tables
-        BlockTable<StringItem> m_ip_address;
-        BlockTable<ClassType> m_classtype;
-        BlockTable<StringItem> m_name_rdata;
-        BlockTable<QueryResponseSignature> m_qr_sig;
-        BlockTable<IndexListItem> m_qlist;
-        BlockTable<Question> m_qrr;
-        BlockTable<IndexListItem> m_rrlist;
-        BlockTable<RR> m_rr;
-        BlockTable<MalformedMessageData> m_malformed_message_data;
+        BlockTable<StringItem> m_ip_address; //!< IP addresses Block table
+        BlockTable<ClassType> m_classtype; //!< ClassTypes Block table
+        BlockTable<StringItem> m_name_rdata; //!< NAME or RDATA Block table
+        BlockTable<QueryResponseSignature> m_qr_sig; //!< QueryResponseSignatures Block table
+        BlockTable<IndexListItem> m_qlist; //!< Question lists Block table
+        BlockTable<Question> m_qrr; //!< Questions Block table
+        BlockTable<IndexListItem> m_rrlist; //!< Resource record lists Block table
+        BlockTable<RR> m_rr; //!< Resource records Block table
+        BlockTable<MalformedMessageData> m_malformed_message_data; //!< MalformedMessageData Block table
 
-        std::vector<QueryResponse> m_query_responses;
-        std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts;
-        std::vector<MalformedMessage> m_malformed_messages;
+        std::vector<QueryResponse> m_query_responses; //!< Array of QueryResponse records
+        std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts; //!< Array of Address events
+        std::vector<MalformedMessage> m_malformed_messages; // !< Array of Malformed messages
 
         protected:
 
