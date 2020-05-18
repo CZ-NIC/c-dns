@@ -436,4 +436,123 @@ namespace CDNS {
         ret = block.set_block_parameters(bp2, 1);
         EXPECT_TRUE(ret);
     }
+
+    TEST(BlockReadTest, BlockReadGenericQRTest) {
+        CdnsBlockRead block;
+        QueryResponse qr;
+        qr.client_port = 1234;
+        qr.time_offset = Timestamp(5, 170);
+
+        block.add_question_response_record(qr);
+        EXPECT_EQ(block.get_item_count(), 1);
+
+        qr.query_size = 150;
+        block.add_question_response_record(qr);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        bool end = false;
+        GenericQueryResponse gqr = block.read_generic_qr(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(*gqr.client_port, 1234);
+        EXPECT_EQ(gqr.ts->m_secs, 5);
+        EXPECT_EQ(gqr.ts->m_ticks, 170);
+        EXPECT_FALSE(gqr.query_size);
+
+        gqr = block.read_generic_qr(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(*gqr.client_port, 1234);
+        EXPECT_EQ(gqr.ts->m_secs, 5);
+        EXPECT_EQ(gqr.ts->m_ticks, 170);
+        EXPECT_EQ(*gqr.query_size, 150);
+
+        gqr = block.read_generic_qr(end);
+        EXPECT_TRUE(end);
+        EXPECT_FALSE(gqr.client_port);
+        EXPECT_FALSE(gqr.ts);
+        EXPECT_FALSE(gqr.query_size);
+    }
+
+    TEST(BlockReadTest, BlockReadGenericAECTest) {
+        CdnsBlock block;
+        AddressEventCount aec;
+        aec.ae_type = AddressEventTypeValues::icmp_dest_unreachable;
+        aec.ae_count = 1;
+        std::string ip = "8.8.8.8";
+        aec.ae_address_index = block.add_ip_address(ip);
+
+        block.add_address_event_count(aec);
+        EXPECT_EQ(block.get_item_count(), 1);
+        block.add_address_event_count(aec);
+        EXPECT_EQ(block.get_item_count(), 1);
+        aec.ae_type = AddressEventTypeValues::icmpv6_packet_too_big;
+        block.add_address_event_count(aec);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        CdnsEncoder* enc = new CdnsEncoder(file, CborOutputCompression::NO_COMPRESSION);
+        block.write(*enc);
+        delete enc;
+        std::ifstream ifs;
+        ifs.open(file, std::ifstream::binary);
+        std::istream& is = ifs;
+        CdnsDecoder dec(is);
+        std::vector<BlockParameters> bps = {BlockParameters()};
+        CdnsBlockRead block_read(dec, bps);
+
+        bool end = false;
+        GenericAddressEventCount gaec = block_read.read_generic_aec(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(gaec.ae_type, AddressEventTypeValues::icmp_dest_unreachable);
+        EXPECT_EQ(gaec.ae_count, 2);
+        EXPECT_EQ(gaec.ip_address, "8.8.8.8");
+
+        gaec = block_read.read_generic_aec(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(gaec.ae_type, AddressEventTypeValues::icmpv6_packet_too_big);
+        EXPECT_EQ(gaec.ae_count, 1);
+        EXPECT_EQ(gaec.ip_address, "8.8.8.8");
+
+        gaec = block_read.read_generic_aec(end);
+        EXPECT_TRUE(end);
+        EXPECT_EQ(gaec.ae_type, AddressEventTypeValues::tcp_reset);
+        EXPECT_EQ(gaec.ae_count, 0);
+        EXPECT_EQ(gaec.ip_address, "");
+
+        remove_file(file);
+    }
+
+    TEST(BlockReadTest, BlockReadGenericMMTest) {
+        CdnsBlockRead block;
+        MalformedMessage mm;
+        mm.client_port = 1234;
+        mm.time_offset = Timestamp(5, 170);
+
+        block.add_malformed_message(mm);
+        EXPECT_EQ(block.get_item_count(), 1);
+
+        std::string ip("8.8.8.8");
+        mm.client_address_index = block.add_ip_address(ip);
+        block.add_malformed_message(mm);
+        EXPECT_EQ(block.get_item_count(), 2);
+
+        bool end = false;
+        GenericMalformedMessage gmm = block.read_generic_mm(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(*gmm.client_port, 1234);
+        EXPECT_EQ(gmm.ts->m_secs, 5);
+        EXPECT_EQ(gmm.ts->m_ticks, 170);
+        EXPECT_FALSE(gmm.client_ip);
+
+        gmm = block.read_generic_mm(end);
+        EXPECT_FALSE(end);
+        EXPECT_EQ(*gmm.client_port, 1234);
+        EXPECT_EQ(gmm.ts->m_secs, 5);
+        EXPECT_EQ(gmm.ts->m_ticks, 170);
+        EXPECT_EQ(*gmm.client_ip, ip);
+
+        gmm = block.read_generic_mm(end);
+        EXPECT_TRUE(end);
+        EXPECT_FALSE(gmm.client_port);
+        EXPECT_FALSE(gmm.ts);
+        EXPECT_FALSE(gmm.client_ip);
+    }
 }
