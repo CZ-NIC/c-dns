@@ -76,6 +76,8 @@ CDNS::CdnsBlockRead CDNS::CdnsReader::read_block(bool& eof)
     if (m_indef_blocks && m_decoder.peek_type() == CborType::BREAK) {
         m_decoder.read_break();
         eof = true;
+        m_indef_blocks = false;
+        m_blocks_count = m_blocks_read;
         return block;
     }
     else if (!m_indef_blocks && m_blocks_read == m_blocks_count) {
