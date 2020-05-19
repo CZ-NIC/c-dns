@@ -1043,12 +1043,12 @@ void CDNS::AddressEventCount::read(CdnsDecoder& dec)
             case get_map_index(AddressEventCountMapIndex::ae_code):
                 ae_code = dec.read_unsigned();
                 break;
-            case get_map_index(AddressEventCountMapIndex::ae_transport_flags):
-                ae_transport_flags = static_cast<QueryResponseTransportFlagsMask>(dec.read_unsigned());
-                break;
             case get_map_index(AddressEventCountMapIndex::ae_address_index):
                 ae_address_index = dec.read_unsigned();
                 is_ae_address_index = true;
+                break;
+            case get_map_index(AddressEventCountMapIndex::ae_transport_flags):
+                ae_transport_flags = static_cast<QueryResponseTransportFlagsMask>(dec.read_unsigned());
                 break;
             case get_map_index(AddressEventCountMapIndex::ae_count):
                 ae_count = dec.read_unsigned();

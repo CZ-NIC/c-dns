@@ -830,14 +830,14 @@ namespace CDNS {
         /**
          * @brief Copy constructor
          */
-        CdnsBlock(CdnsBlock& copy) : m_block_parameters(copy.m_block_parameters) {
+        CdnsBlock(CdnsBlock& copy) {
             *this = copy;
         }
 
         /**
          * @brief Move constructor
          */
-        CdnsBlock(CdnsBlock&& copy) : m_block_parameters(copy.m_block_parameters) {
+        CdnsBlock(CdnsBlock&& copy) {
             *this = copy;
         }
 
@@ -1342,7 +1342,46 @@ namespace CDNS {
          * @param block_parameters Array of Block parameters retreived from C-DNS file preamble
          */
         CdnsBlockRead(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters)
-            : CdnsBlock(), m_qr_read(0), m_aec_read(0), m_mm_read(0) { read(dec, block_parameters); }
+            : CdnsBlock(), m_qr_read(0), m_aec_read(), m_mm_read(0) { read(dec, block_parameters); }
+
+        /**
+         * @brief Copy constructor
+         */
+        CdnsBlockRead(CdnsBlockRead& copy) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Move constructor
+         */
+        CdnsBlockRead(CdnsBlockRead&& copy) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Assignment operator
+         */
+        CdnsBlockRead& operator=(CdnsBlockRead& rhs) {
+            if (this != &rhs) {
+                CdnsBlock::operator=(rhs);
+
+                this->m_qr_read = 0;
+                this->m_aec_read = this->m_address_event_counts.begin();
+                this->m_mm_read = 0;
+            }
+
+            return *this;
+        }
+
+        /**
+         * @brief Move assignment operator
+         */
+        CdnsBlockRead& operator=(CdnsBlockRead&& rhs) {
+            if (this != &rhs) {
+                *this = rhs;
+            }
+            return *this;
+        }
 
         /**
          * @brief Read the C-DNS block from C-DNS CBOR input stream
