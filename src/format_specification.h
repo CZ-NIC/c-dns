@@ -320,8 +320,8 @@ namespace CDNS {
     enum class AddressEventCountMapIndex : uint8_t {
         ae_type = 0,
         ae_code = 1,
-        ae_transport_flags = 2,
-        ae_address_index = 3,
+        ae_address_index = 2,
+        ae_transport_flags = 3,
         ae_count = 4,
 
         address_event_count_size

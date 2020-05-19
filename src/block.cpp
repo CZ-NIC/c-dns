@@ -994,7 +994,7 @@ std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
 
     // Write Ae type
     written += enc.write(get_map_index(CDNS::AddressEventCountMapIndex::ae_type));
-    written += enc.write(get_map_index(ae_type));
+    written += enc.write(static_cast<uint8_t>(ae_type));
 
     // Write Ae code
     if (ae_code) {
@@ -1002,15 +1002,15 @@ std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
         written += enc.write(ae_code.value());
     }
 
-    // Write Ae tranport flags
-    if (ae_transport_flags) {
-        written += enc.write(get_map_index(CDNS::AddressEventCountMapIndex::ae_transport_flags));
-        written += enc.write(ae_transport_flags.value());
-    }
-
     // Write Ae address index
     written += enc.write(get_map_index(CDNS::AddressEventCountMapIndex::ae_address_index));
     written += enc.write(ae_address_index);
+
+    // Write Ae tranport flags
+    if (ae_transport_flags) {
+        written += enc.write(get_map_index(CDNS::AddressEventCountMapIndex::ae_transport_flags));
+        written += enc.write(static_cast<uint8_t>(ae_transport_flags.value()));
+    }
 
     // Write Ae count
     written += enc.write(get_map_index(CDNS::AddressEventCountMapIndex::ae_count));
@@ -1070,8 +1070,8 @@ void CDNS::AddressEventCount::reset()
 {
     ae_type = AddressEventTypeValues::tcp_reset;
     ae_code = boost::none;
-    ae_transport_flags = boost::none;
     ae_address_index = 0;
+    ae_transport_flags = boost::none;
     ae_count = 0;
 }
 
@@ -1295,7 +1295,7 @@ std::size_t CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fi
     }
 
     // Write Malformed messsage data
-    if (!!m_malformed_messages.size()) {
+    if (!!m_malformed_message_data.size()) {
         written += enc.write(get_map_index(CDNS::BlockTablesMapIndex::malformed_message_data));
         written += enc.write_array_start(m_malformed_message_data.size());
         for (auto& mmd : m_malformed_message_data) {
@@ -1311,7 +1311,7 @@ std::size_t CDNS::CdnsBlock::write(CdnsEncoder& enc)
     std::size_t written = 0;
     std::size_t blocktable_fields = !!m_ip_address.size() + !!m_classtype.size() + !!m_name_rdata.size()
                          + !!m_qr_sig.size() + !!m_qlist.size() + !!m_qrr.size() + !!m_rrlist.size()
-                         + !!m_rr.size() + !!m_malformed_messages.size();
+                         + !!m_rr.size() + !!m_malformed_message_data.size();
 
     std::size_t fields = 1 + !!m_block_statistics + !!blocktable_fields + !!m_query_responses.size()
                          + !!m_address_event_counts.size() + !!m_malformed_messages.size();

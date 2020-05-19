@@ -610,10 +610,12 @@ namespace CDNS {
             std::size_t hash = hash_value(aec.ae_type);
             if (aec.ae_code)
                 hash = hash_value(aec.ae_code.value(), hash);
+
+            hash = hash_value(aec.ae_address_index, hash);
+
             if (aec.ae_transport_flags)
                 hash = hash_value(aec.ae_transport_flags.value(), hash);
 
-            hash = hash_value(aec.ae_address_index, hash);
             return hash;
         }
 
@@ -638,8 +640,8 @@ namespace CDNS {
 
         AddressEventTypeValues ae_type;
         boost::optional<uint8_t> ae_code;
-        boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         index_t ae_address_index;
+        boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         uint64_t ae_count;
     };
 
