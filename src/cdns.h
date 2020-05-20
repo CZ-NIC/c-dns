@@ -279,17 +279,17 @@ namespace CDNS {
      * @brief Class serving as C-DNS library's main interface for reading C-DNS data from
      * input
      *
-     * CdnsReader is initialized with valid input stream containing C-DNS data. CdnsReader
-     * constructor automatically reads the beginning of C-DNS file including its file preamble.
-     * User then reads the input by Blocks with the read_block(bool& eof) method. From these
-     * Blocks user can extract Query Response pairs and other data. When CdnsReader reaches
-     * the end of C-DNS data it sets the "eof" parameter in read_block() method to TRUE.
-     * CdnsBlock returned by this call is then empty.
+     * CdnsReader is initialized with valid input stream containing uncompressed C-DNS data.
+     * CdnsReader constructor automatically reads the beginning of C-DNS file including its
+     * file preamble. User then reads the input by Blocks with the read_block(bool& eof) method.
+     * From these Blocks user can extract Query Response pairs and other data. When CdnsReader
+     * reaches the end of C-DNS data it sets the "eof" parameter in read_block() method to TRUE.
+     * CdnsBlockRead returned by this call is then empty.
      */
     class CdnsReader {
         public:
         /**
-         * @brief Construct a new CdnsReader object to read C-DNS data.
+         * @brief Construct a new CdnsReader object to read uncompressed C-DNS data.
          * The constructor automatically reads the start of C-DNS file and filles
          * the m_file_preamble item.
          * @param input Valid input stream to read C-DNS data from
