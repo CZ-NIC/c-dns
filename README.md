@@ -31,16 +31,32 @@ To use the C-DNS library you only have to include the `<cdns/cdns.h>` header fil
 ```cpp
 #include <cdns/cdns.h>
 ...
+// Create C-DNS file
 CDNS::FilePreamble fp;
-CDNS::CdnsExporter exporter(fp, "output.out", CDNS::CborOutputCompression::XZ);
-CDNS::QueryResponse qr;
+CDNS::CdnsExporter* exporter = new CDNS::CdnsExporter(fp, "output.out", CDNS::CborOutputCompression::NO_COMPRESSION);
+CDNS::GenericQueryResponse qr;
 
 qr.client_port = 1234;
-exporter.buffer_qr(qr);
-exporter.write_block();
+exporter->buffer_qr(qr);
+exporter->write_block();
+delete exporter;
+
+// Read C-DNS file
+std::ifstream ifs("output.out", std::ifstream::binary);
+CDNS::CdnsReader reader = new CDNS::CdnsReader(ifs);
+
+bool end = false;
+while (true) {
+    CDNS::CdnsBlockRead block = reader->read_block(end);
+    if (end)
+        break;
+
+    while (true) {
+        CDNS::GenericQueryResponse gqr = block.read_generic_qr(end);
+        if (end)
+            break;
+        ...
+    }
+}
+delete reader;
 ```
-
-## TODO-List
-
-* [ ] Implement C-DNS decoder
-* [ ] Enhance library interface
