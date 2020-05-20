@@ -59,9 +59,8 @@ namespace CDNS {
 
     TEST(CdnsReaderTest, CRCTest) {
         create_test_file();
-        std::ifstream ifs(file);
-        std::istream& is = ifs;
-        CdnsReader reader(is);
+        std::ifstream ifs(file, std::ifstream::binary);
+        CdnsReader reader(ifs);
 
         EXPECT_EQ(reader.m_file_preamble.block_parameters_size(), 1);
         EXPECT_EQ(reader.m_file_preamble.m_block_parameters[0].storage_parameters.max_block_items, 10000);
@@ -72,9 +71,8 @@ namespace CDNS {
 
     TEST(CdnsReaderTest, CRReadBlockTest) {
         create_test_file();
-        std::ifstream ifs(file);
-        std::istream& is = ifs;
-        CdnsReader reader(is);
+        std::ifstream ifs(file, std::ifstream::binary);
+        CdnsReader reader(ifs);
 
         // Read first block
         bool eof = false;

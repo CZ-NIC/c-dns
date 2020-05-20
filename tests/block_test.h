@@ -491,10 +491,8 @@ namespace CDNS {
         CdnsEncoder* enc = new CdnsEncoder(file, CborOutputCompression::NO_COMPRESSION);
         block.write(*enc);
         delete enc;
-        std::ifstream ifs;
-        ifs.open(file, std::ifstream::binary);
-        std::istream& is = ifs;
-        CdnsDecoder dec(is);
+        std::ifstream ifs(file, std::ifstream::binary);
+        CdnsDecoder dec(ifs);
         std::vector<BlockParameters> bps = {BlockParameters()};
         CdnsBlockRead block_read(dec, bps);
 
