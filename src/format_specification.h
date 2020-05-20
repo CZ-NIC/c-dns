@@ -16,6 +16,22 @@ namespace CDNS {
     using index_t = uint32_t;
 
     /**
+     * @enum CborType
+     * @brief Cbor data types (highest 3 bits of type byte)
+     */
+    enum class CborType : uint8_t {
+        UNSIGNED = 0x00,
+        NEGATIVE = 0x20,
+        BYTE_STRING = 0x40,
+        TEXT_STRING = 0x60,
+        ARRAY = 0x80,
+        MAP = 0xA0,
+        TAG = 0xC0,
+        SIMPLE = 0xE0,
+        BREAK = 0xFF
+    };
+
+    /**
      * @brief Get C-DNS field's map index from its enum class
      * @param t C-DNS field enumerator
      * @return C-DNS field enumerator cast to its underlying type
@@ -304,8 +320,8 @@ namespace CDNS {
     enum class AddressEventCountMapIndex : uint8_t {
         ae_type = 0,
         ae_code = 1,
-        ae_transport_flags = 2,
-        ae_address_index = 3,
+        ae_address_index = 2,
+        ae_transport_flags = 3,
         ae_count = 4,
 
         address_event_count_size

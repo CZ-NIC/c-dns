@@ -21,6 +21,7 @@
 #include "file_preamble.h"
 #include "timestamp.h"
 #include "cdns_encoder.h"
+#include "cdns_decoder.h"
 
 namespace CDNS {
     struct GenericResourceRecord;
@@ -65,6 +66,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the ClassType from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset ClassType to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         uint16_t type;
         uint16_t class_;
@@ -164,6 +177,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the QueryResponseSignature from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset QueryResponseSignature to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> qr_transport_flags;
@@ -220,6 +245,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the Question from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset Question to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         index_t name_index;
         index_t classtype_index;
@@ -279,6 +316,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the RR from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset RR to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         index_t name_index;
         index_t classtype_index;
@@ -345,6 +394,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the MalformedMessageData from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset MalformedMessageData to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> server_address_index;
         boost::optional<uint16_t> server_port;
         boost::optional<QueryResponseTransportFlagsMask> mm_transport_flags;
@@ -362,6 +423,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the ResponseProcessingData from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset ResponseProcessingData to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<index_t> bailiwick_index;
         boost::optional<ResponseProcessingFlagsMask> processing_flags;
     };
@@ -376,6 +449,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the QueryResponseExtended from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset QueryResponseExtended to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<index_t> question_index;
         boost::optional<index_t> answer_index;
@@ -395,6 +480,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the BlockPreamble from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset BlockPreamble to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         Timestamp earliest_time;
         boost::optional<index_t> block_parameters_index;
     };
@@ -409,6 +506,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the BlockStatistics from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset BlockStatistics to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<unsigned> processed_messages;
         boost::optional<unsigned> qr_data_items;
@@ -430,6 +539,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Read the QueryResponse from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset QueryResponse to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<Timestamp> time_offset;
         boost::optional<index_t> client_address_index;
@@ -489,10 +610,12 @@ namespace CDNS {
             std::size_t hash = hash_value(aec.ae_type);
             if (aec.ae_code)
                 hash = hash_value(aec.ae_code.value(), hash);
+
+            hash = hash_value(aec.ae_address_index, hash);
+
             if (aec.ae_transport_flags)
                 hash = hash_value(aec.ae_transport_flags.value(), hash);
 
-            hash = hash_value(aec.ae_address_index, hash);
             return hash;
         }
 
@@ -503,10 +626,22 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the AddressEventCount from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset AddressEventCount to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         AddressEventTypeValues ae_type;
         boost::optional<uint8_t> ae_code;
-        boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         index_t ae_address_index;
+        boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
         uint64_t ae_count;
     };
 
@@ -522,6 +657,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second);
+
+        /**
+         * @brief Read the MalformedMessage from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset MalformedMessage to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         boost::optional<Timestamp> time_offset;
         boost::optional<index_t> client_address_index;
@@ -577,6 +724,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the StringItem from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset StringItem to empty string.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         std::string data;
     };
 
@@ -628,6 +787,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the IndexListItem from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset IndexListItem to default value.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         std::vector<index_t> list;
     };
 
@@ -636,6 +807,11 @@ namespace CDNS {
      */
     class CdnsBlock {
         public:
+
+        /**
+         * @brief Default CdnsBlock constructor. Uses BlockParameters initialized with default values.
+         */
+        CdnsBlock() : m_block_preamble(), m_block_parameters() {}
 
         /**
          * @brief Construct a new CdnsBlock object
@@ -654,14 +830,14 @@ namespace CDNS {
         /**
          * @brief Copy constructor
          */
-        CdnsBlock(CdnsBlock& copy) : m_block_parameters(copy.m_block_parameters) {
+        CdnsBlock(CdnsBlock& copy) {
             *this = copy;
         }
 
         /**
          * @brief Move constructor
          */
-        CdnsBlock(CdnsBlock&& copy) : m_block_parameters(copy.m_block_parameters) {
+        CdnsBlock(CdnsBlock&& copy) {
             *this = copy;
         }
 
@@ -735,12 +911,38 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get IP address from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return IP address from Block table
+         */
+        std::string get_ip_address(index_t index) {
+            if (index >= m_ip_address.size())
+                throw std::runtime_error("IP address block table index out of bounds");
+
+            return m_ip_address[index].data;
+        }
+
+        /**
          * @brief Add Classtype structure to Classtype Block table
          * @param classtype Classtype structure to add to the Block table
          * @return Index of the Classtype in Block table
          */
         index_t add_classtype(const ClassType& classtype) {
             return m_classtype.add(classtype);
+        }
+
+        /**
+         * @brief Get Classtype from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return ClassType from Block table
+         */
+        ClassType get_classtype(index_t index) {
+            if (index >= m_classtype.size())
+                throw std::runtime_error("Classtype block table index out of bounds");
+
+            return m_classtype[index];
         }
 
         /**
@@ -761,12 +963,38 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get NAME or RDATA from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return NAME or RDATA from Block table
+         */
+        std::string get_name_rdata(index_t index) {
+            if (index >= m_name_rdata.size())
+                throw std::runtime_error("Name_rdata block table index out of bounds");
+
+            return m_name_rdata[index].data;
+        }
+
+        /**
          * @brief Add Query Response Signature to QR Signature Block table
          * @param qr_sig Query Response Signature to add to Block table
          * @return Index of the Query Response Signature in Block table
          */
         index_t add_qr_signature(const QueryResponseSignature& qr_sig) {
             return m_qr_sig.add(qr_sig);
+        }
+
+        /**
+         * @brief Get Query Response Signature from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return QueryResponseSignature from Block table
+         */
+        QueryResponseSignature get_qr_signature(index_t index) {
+            if (index >= m_qr_sig.size())
+                throw std::runtime_error("QueryResponseSignature block table index out of bounds");
+
+            return m_qr_sig[index];
         }
 
         /**
@@ -787,12 +1015,38 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get Question List from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return QuestionList from Block table
+         */
+        std::vector<index_t> get_question_list(index_t index) {
+            if (index >= m_qlist.size())
+                throw std::runtime_error("QuestionList block table index out of bounds");
+
+            return m_qlist[index].list;
+        }
+
+        /**
          * @brief Add Question record to Question record Block table
          * @param qrr Question record to add to Block table
          * @return Index of the Question record in Block table
          */
         index_t add_question(const Question& qrr) {
             return m_qrr.add(qrr);
+        }
+
+        /**
+         * @brief Get Question from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return Question from Block table
+         */
+        Question get_question(index_t index) {
+            if (index >= m_qrr.size())
+                throw std::runtime_error("Question block table index out of bounds");
+
+            return m_qrr[index];
         }
 
         /**
@@ -813,6 +1067,19 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get Resource record list from given index in Block table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return Resource record list from Block table
+         */
+        std::vector<index_t> get_rr_list(index_t index) {
+            if (index >= m_rrlist.size())
+                throw std::runtime_error("RRlist block table index out of bounds");
+
+            return m_rrlist[index].list;
+        }
+
+        /**
          * @brief Add Resource record to Resource record Block table
          * @param rr Resource record to add to Block table
          * @return Index of the Resource record in Block table
@@ -822,12 +1089,38 @@ namespace CDNS {
         }
 
         /**
+         * @brief Get Resource record from given index in Block Table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return Resource record from Block table
+         */
+        RR get_rr(index_t index) {
+            if (index >= m_rr.size())
+                throw std::runtime_error("Resource record block table index out of bounds");
+
+            return m_rr[index];
+        }
+
+        /**
          * @brief Add Malformed message data to Malformed message data Block table
          * @param mmd Malformed message data to add to Block table
          * @return Index of the Malformed message data in Block table
          */
         index_t add_malformed_message_data(const MalformedMessageData& mmd) {
             return m_malformed_message_data.add(mmd);
+        }
+
+        /**
+         * @brief Get Malformed Message Data from given index in Block Table
+         * @param index Index to the Block table
+         * @throw std::runtime_error if given index is out of Block table's bounds
+         * @return Malformed Message Data from Block table
+         */
+        MalformedMessageData get_malformed_message_data(index_t index) {
+            if (index >= m_malformed_message_data.size())
+                throw std::runtime_error("Malformed message data block table index out of bounds");
+
+            return m_malformed_message_data[index];
         }
 
         /**
@@ -877,7 +1170,7 @@ namespace CDNS {
          * @throw std::exception if inserting Address Event to the Block fails
          * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
-        bool add_addres_event_count(const GenericAddressEventCount& gaec,
+        bool add_address_event_count(const GenericAddressEventCount& gaec,
                                     const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
@@ -887,7 +1180,7 @@ namespace CDNS {
          * them in the Block. User also has to start counting statistics from 0 if Block is cleared)
          * @return 'true' if the Block is full (Address Event is still inserted), 'false' otherwise
          */
-        bool add_addres_event_count(const AddressEventCount& aec,
+        bool add_address_event_count(const AddressEventCount& aec,
                                     const boost::optional<BlockStatistics>& stats = boost::none);
 
         /**
@@ -997,7 +1290,25 @@ namespace CDNS {
             m_malformed_messages.clear();
         }
 
-        private:
+        BlockPreamble m_block_preamble; //!< C-DNS block preamble
+        boost::optional<BlockStatistics> m_block_statistics; //!< C-DNS block statistics
+
+        // Block Tables
+        BlockTable<StringItem> m_ip_address; //!< IP addresses Block table
+        BlockTable<ClassType> m_classtype; //!< ClassTypes Block table
+        BlockTable<StringItem> m_name_rdata; //!< NAME or RDATA Block table
+        BlockTable<QueryResponseSignature> m_qr_sig; //!< QueryResponseSignatures Block table
+        BlockTable<IndexListItem> m_qlist; //!< Question lists Block table
+        BlockTable<Question> m_qrr; //!< Questions Block table
+        BlockTable<IndexListItem> m_rrlist; //!< Resource record lists Block table
+        BlockTable<RR> m_rr; //!< Resource records Block table
+        BlockTable<MalformedMessageData> m_malformed_message_data; //!< MalformedMessageData Block table
+
+        std::vector<QueryResponse> m_query_responses; //!< Array of QueryResponse records
+        std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts; //!< Array of Address events
+        std::vector<MalformedMessage> m_malformed_messages; // !< Array of Malformed messages
+
+        protected:
 
         /**
          * @brief Serialize Block tables to C-DNS CBOR representation
@@ -1007,24 +1318,134 @@ namespace CDNS {
          */
         std::size_t write_blocktables(CdnsEncoder& enc, std::size_t& fields);
 
-        BlockPreamble m_block_preamble;
-        boost::optional<BlockStatistics> m_block_statistics;
-
-        // Block Tables
-        BlockTable<StringItem> m_ip_address;
-        BlockTable<ClassType> m_classtype;
-        BlockTable<StringItem> m_name_rdata;
-        BlockTable<QueryResponseSignature> m_qr_sig;
-        BlockTable<IndexListItem> m_qlist;
-        BlockTable<Question> m_qrr;
-        BlockTable<IndexListItem> m_rrlist;
-        BlockTable<RR> m_rr;
-        BlockTable<MalformedMessageData> m_malformed_message_data;
-
-        std::vector<QueryResponse> m_query_responses;
-        std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>> m_address_event_counts;
-        std::vector<MalformedMessage> m_malformed_messages;
-
         BlockParameters m_block_parameters;
+    };
+
+    /**
+     * @brief Class representing C-DNS block read from input stream.
+     *
+     * This class is used for reading QueryResponses, AddressEventCounts and MalformedMessages
+     * from the block in the form of generic interface structures. If the user wants to access
+     * block's data directly the block object can be cast to the base class CdnsBlock.
+     */
+    class CdnsBlockRead : public CdnsBlock {
+        public:
+        /**
+         * @brief Default constructor
+         */
+        CdnsBlockRead() : CdnsBlock(), m_qr_read(0), m_aec_read(), m_mm_read(0) {}
+
+        /**
+         * @brief Construct a new CdnsBlockRead object. Automatically reads a C-DNS block
+         * from given decoder.
+         * @param dec C-DNS decoder
+         * @param block_parameters Array of Block parameters retreived from C-DNS file preamble
+         */
+        CdnsBlockRead(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters)
+            : CdnsBlock(), m_qr_read(0), m_aec_read(), m_mm_read(0) { read(dec, block_parameters); }
+
+        /**
+         * @brief Copy constructor
+         */
+        CdnsBlockRead(CdnsBlockRead& copy) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Move constructor
+         */
+        CdnsBlockRead(CdnsBlockRead&& copy) {
+            *this = copy;
+        }
+
+        /**
+         * @brief Assignment operator
+         */
+        CdnsBlockRead& operator=(CdnsBlockRead& rhs) {
+            if (this != &rhs) {
+                CdnsBlock::operator=(rhs);
+
+                this->m_qr_read = 0;
+                this->m_aec_read = this->m_address_event_counts.begin();
+                this->m_mm_read = 0;
+            }
+
+            return *this;
+        }
+
+        /**
+         * @brief Move assignment operator
+         */
+        CdnsBlockRead& operator=(CdnsBlockRead&& rhs) {
+            if (this != &rhs) {
+                *this = rhs;
+            }
+            return *this;
+        }
+
+        /**
+         * @brief Read the C-DNS block from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec, std::vector<BlockParameters>& block_parameters);
+
+        /**
+         * @brief Read next generic QueryResponse from the block.
+         *
+         * Once this method is first called on the block DO NOT modify the block anymore by adding
+         * or removing QueryResponses.
+         * @param end If set by this method to TRUE, then the block has read all QueryResponses it
+         * contains and the returned GenericQueryResponse is empty. Otherwise set to FALSE.
+         * @return Next QueryResponse read from input stream
+         */
+        GenericQueryResponse read_generic_qr(bool& end);
+
+        /**
+         * @brief Read next generic AddressEventCount from the block.
+         *
+         * Once this method is first called on the block DO NOT modify the block anymore by adding
+         * or removing AddressEventCounts. It may invalidate the AddressEventCount iterator used by
+         * this method and can lead to crash from reading invalid memory.
+         * @param end If set by this method to TRUE, then the block has read all AddressEventCounts it
+         * contains and the returned GenericAddressEventCount is empty. Otherwise set to FALSE.
+         * @return Next AddressEventCount read from input stream
+         */
+        GenericAddressEventCount read_generic_aec(bool& end);
+
+        /**
+         * @brief Read next generic MalformedMessage from the block.
+         *
+         * Once this method is first called on the block DO NOT modify the block anymore by adding
+         * or removing MalformedMessages.
+         * @param end If set by this method to TRUE, then the block has read all MalformedMessages it
+         * contains and the returned GenericMalformedMessage is empty. Otherwise set to FALSE.
+         * @return Next MalformedMessage read from input stream
+         */
+        GenericMalformedMessage read_generic_mm(bool& end);
+
+        private:
+        /**
+         * @brief Read the Block tables from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read_blocktables(CdnsDecoder& dec);
+
+        /**
+         * @brief Fill GenericResourceRecord list with questions from given list
+         * @param list List with indexes to Question Block table
+         * @return Vector of Generic Resource Records
+         */
+        std::vector<GenericResourceRecord> fill_generic_q_list(std::vector<index_t>& list);
+
+        /**
+         * @brief Fill GenericResourceRecord list with resource records from given list
+         * @param list List with indexes to RR Block table
+         * @return Vector of Generic Resource Records
+         */
+        std::vector<GenericResourceRecord> fill_generic_rr_list(std::vector<index_t>& list);
+
+        uint64_t m_qr_read;
+        std::unordered_map<AddressEventCount, uint64_t, CDNS::hash<AddressEventCount>>::iterator m_aec_read;
+        uint64_t m_mm_read;
     };
 }
