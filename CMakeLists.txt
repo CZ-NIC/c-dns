@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.5)
-project(cdns VERSION 0.3.0)
+project(cdns VERSION 0.4.0)
 
 include(GNUInstallDirs)
 
@@ -18,7 +18,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Boost REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibLZMA REQUIRED)
-find_package(CBOR REQUIRED)
 find_package(Doxygen)
 
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
@@ -30,7 +29,7 @@ add_library(cdns SHARED
     ${sources}
 )
 
-target_link_libraries(cdns ${Boost_LIBRARIES} CBOR::CBOR ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
+target_link_libraries(cdns ${Boost_LIBRARIES} ZLIB::ZLIB ${LIBLZMA_LIBRARIES})
 target_include_directories(cdns PUBLIC ${Boost_INCLUDE_DIRS} ${LIBLZMA_INCLUDE_DIRS})
 
 include(CheckCCompilerFlag)

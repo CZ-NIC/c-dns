@@ -18,6 +18,7 @@
 
 namespace CDNS {
     class CdnsEncoder;
+    class CdnsDecoder;
 
     static constexpr uint8_t VERSION_MAJOR = 1;
     static constexpr uint8_t VERSION_MINOR = 0;
@@ -84,6 +85,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the StorageHints from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset StorageHints to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         uint32_t query_response_hints;
         uint32_t query_response_signature_hints;
         uint8_t rr_hints;
@@ -103,6 +116,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the StorageParameters from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset StorageParameters to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         uint64_t ticks_per_second;
         uint64_t max_block_items;
@@ -131,6 +156,18 @@ namespace CDNS {
          */
         std::size_t write(CdnsEncoder& enc);
 
+        /**
+         * @brief Read the CollectionParameters from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset CollectionParameters to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
+
         boost::optional<uint64_t> query_timeout;
         boost::optional<uint64_t> skew_timeout;
         boost::optional<uint64_t> snaplen;
@@ -155,6 +192,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the BlockParameters from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset BlockParameters to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         StorageParameters storage_parameters;
         boost::optional<CollectionParameters> collection_parameters;
@@ -216,6 +265,18 @@ namespace CDNS {
          * @return Number of uncompressed bytes written
          */
         std::size_t write(CdnsEncoder& enc);
+
+        /**
+         * @brief Read the FilePreamble from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
+
+        /**
+         * @brief Reset FilePreamble to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;

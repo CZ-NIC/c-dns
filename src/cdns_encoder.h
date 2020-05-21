@@ -12,8 +12,8 @@
 #include <cstring>
 #include <cstdint>
 #include <stdexcept>
-#include <cbor.h>
 
+#include "format_specification.h"
 #include "writer.h"
 
 namespace CDNS {
@@ -28,8 +28,7 @@ namespace CDNS {
     };
 
     /**
-     * @brief Main C-DNS library class. Buffers DNS records, Address events and Malformed messages
-     * to internal C-DNS memory representation and then writes them to output file.
+     * @brief Writes given data to output in CBOR format.
      */
     class CdnsEncoder {
         public:
@@ -223,6 +222,15 @@ namespace CDNS {
          * @brief Write contents of internal buffer to ouptut C-DNS file
          */
         void flush_buffer();
+
+        /**
+         * @brief Write integer in CBOR to output buffer
+         * @param value Value to write to the buffer
+         * @param major CBOR data type of the value. Doesn't have to be just unsigned or negative number.
+         * It can also be a map, array, string. etc. and the value is its length.
+         * @return Number of uncompressed bytes written
+         */
+        std::size_t write_int(uint64_t value, CborType major);
 
         /**
          * @brief Write string to CBOR

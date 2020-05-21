@@ -36,7 +36,7 @@ namespace CDNS {
         EXPECT_TRUE(ts2 <= ts);
     }
 
-    TEST(TimestampTest, TimestampOffsetTest) {
+    TEST(TimestampTest, TimestampGetOffsetTest) {
         Timestamp ts = {2, 700};
         Timestamp ts2 = {5, 300};
 
@@ -44,11 +44,29 @@ namespace CDNS {
         EXPECT_EQ(ts.get_time_offset(ts2, 1000), -2600);
     }
 
-    TEST(TimestampTest, TimestampOffset2Test) {
+    TEST(TimestampTest, TimestampGetOffset2Test) {
         Timestamp ts = {2, 100};
         Timestamp ts2 = {5, 400};
 
         EXPECT_EQ(ts2.get_time_offset(ts, 1000), 3300);
         EXPECT_EQ(ts.get_time_offset(ts2, 1000), -3300);
+    }
+
+    TEST(TimestampTest, TimestampAddOffsetTest) {
+        Timestamp ts = {2, 700};
+        int offset = 2600;
+        ts.add_time_offset(offset, 1000);
+
+        EXPECT_EQ(ts.m_secs, 5);
+        EXPECT_EQ(ts.m_ticks, 300);
+    }
+
+    TEST(TimestampTest, TimestampAddOffset2Test) {
+        Timestamp ts = {5, 300};
+        int offset = -2600;
+        ts.add_time_offset(offset, 1000);
+
+        EXPECT_EQ(ts.m_secs, 2);
+        EXPECT_EQ(ts.m_ticks, 700);
     }
 }

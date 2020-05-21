@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 #include "cdns_encoder.h"
+#include "cdns_decoder.h"
 
 namespace CDNS {
     
@@ -66,64 +67,41 @@ namespace CDNS {
         }
 
         /**
-         * @brief Calculate time difference againt given Timestamp
+         * @brief Calculate time difference against given Timestamp
          * @param reference Timestamp to calculate the difference against
          * @param ticks_per_second Subsecond resolution
          * @throw std::runtime_error if ticks_per_second is 0 (prevents division by 0)
          * @return Difference between the two timestamps in ticks per second
          */
-        int64_t get_time_offset(const Timestamp& reference, uint64_t ticks_per_second) {
-            if (ticks_per_second == 0)
-                throw std::runtime_error("Ticks per second resolution is zero!");
+        int64_t get_time_offset(const Timestamp& reference, uint64_t ticks_per_second);
 
-            int64_t secs, ticks, overflow;
-
-            // Substract seconds part of timestamp
-            if (reference.m_secs <= m_secs) {
-                secs = m_secs - reference.m_secs;
-            }
-            else {
-                secs = -1 * (reference.m_secs - m_secs);
-            }
-
-            // Substract subseconds part of timestamp
-            if (reference.m_ticks <= m_ticks) {
-                ticks = m_ticks - reference.m_ticks;
-                overflow = ticks / ticks_per_second;
-            }
-            else {
-                ticks = -1 * (reference.m_ticks - m_ticks);
-                overflow = -1 * (std::abs(ticks) / ticks_per_second);
-            }
-
-            // Calculate timestamp offset
-            int64_t diff_secs = (secs + overflow) * ticks_per_second;
-            int64_t diff_ticks = std::abs(ticks) % ticks_per_second;
-            if (ticks < 0)
-                diff_ticks *= -1;
-
-            return diff_secs + diff_ticks;
-        }
+        /**
+         * @brief Add given time offset to the Timestamp
+         * @param offset Time offset to be added
+         * @param ticks_per_second Subsecond resolution
+         * @throw std::runtime_error if ticks_per_second is 0 or if adding the offset would result
+         * in invalid Timestamp (e.g. Timestamp would be smaller than the start of POSIX epoch)
+         */
+        void add_time_offset(int64_t offset, uint64_t ticks_per_second);
 
         /**
          * @brief Serialize the Timestamp to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
          */
-        std::size_t write(CdnsEncoder& enc) {
-            std::size_t written = 0;
+        std::size_t write(CdnsEncoder& enc);
 
-            // Start Timestamp array
-            written += enc.write_array_start(2);
+        /**
+         * @brief Read the Timestamp from C-DNS CBOR input stream
+         * @param dec C-DNS decoder
+         */
+        void read(CdnsDecoder& dec);
 
-            // Write Seconds
-            written += enc.write(m_secs);
-
-            // Write Ticks
-            written += enc.write(m_ticks);
-
-            return written;
-        }
+        /**
+         * @brief Reset Timestamp to default values.
+         * Is applied in every call of read() method.
+         */
+        void reset();
 
         uint64_t m_secs;
         uint64_t m_ticks;
