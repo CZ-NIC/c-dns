@@ -23,7 +23,7 @@ make install
 ```
 If you don't want to build the test suite with the library, you can omit `-DBUILD_TESTS` option.
 
-To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.labs.nic.cz/c-dns/).
+To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
 
 # Installation from packages
 Packages for Debian 10 and 9 and Ubuntu 20.04, 18.04 and 16.04 are available from
