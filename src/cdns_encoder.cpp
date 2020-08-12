@@ -273,14 +273,9 @@ std::size_t CDNS::CdnsEncoder::write(int64_t value)
 void CDNS::CdnsEncoder::flush_buffer()
 {
     if (m_p != m_buffer) {
-        try {
-            m_cos->write(reinterpret_cast<const char*>(m_buffer), m_p - m_buffer);
-            m_p = m_buffer;
-            m_avail = BUFFER_SIZE;
-        }
-        catch (CborOutputException& e) {
-            std::cerr << e.what() << std::endl;
-        }
+        m_cos->write(reinterpret_cast<const char*>(m_buffer), m_p - m_buffer);
+        m_p = m_buffer;
+        m_avail = BUFFER_SIZE;
     }
 }
 

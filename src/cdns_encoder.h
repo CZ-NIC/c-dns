@@ -67,7 +67,13 @@ namespace CDNS {
          * @brief Destroy the CdnsEncoder object and properly close the C-DNS output
          */
         ~CdnsEncoder() {
-            flush_buffer();
+            try {
+                flush_buffer();
+            }
+            catch (std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
+
             if(m_cos)
                 delete m_cos;
         }
