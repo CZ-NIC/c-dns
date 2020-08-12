@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.5)
-project(cdns VERSION 0.4.0)
+project(cdns VERSION 0.4.1)
 
 include(GNUInstallDirs)
 
