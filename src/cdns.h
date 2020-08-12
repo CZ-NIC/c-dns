@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <istream>
+#include <iostream>
 #include <sys/socket.h>
 
 #include "format_specification.h"
@@ -61,8 +62,13 @@ namespace CDNS {
          * if any output is currently open
          */
         ~CdnsExporter() {
-            if (m_blocks_written > 0)
-                m_encoder.write_break();
+            try {
+                if (m_blocks_written > 0)
+                    m_encoder.write_break();
+            }
+            catch (std::exception& e) {
+                std::cerr << "Couldn't write end break to output: " << e.what() << std::endl;
+            }
         }
 
         /** Delete [move] copy constructors and assignment operators */
