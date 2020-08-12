@@ -125,12 +125,16 @@ namespace CDNS {
         /**
          * @brief Write the given C-DNS block to output
          * @param block C-DNS block to output
+         * @throw std::exception if writing Block to output fails.
+         * User should try to rotate output after this exception is thrown.
          * @return Number of uncompressed bytes written
          */
         std::size_t write_block(CdnsBlock& block);
 
         /**
          * @brief Write the internally buffered C-DNS block to output
+         * @throw std::exception if writing Block to output fails.
+         * User should try to rotate output after this exception is thrown.
          * @return Number of uncompressed bytes written
          */
         std::size_t write_block() {
