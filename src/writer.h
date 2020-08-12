@@ -11,6 +11,7 @@
 #define ZLIB_CONST
 
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <cstdint>
 #include <boost/any.hpp>
@@ -175,11 +176,16 @@ namespace CDNS {
          * @brief Close the opened output file with given name
          */
         void close() override {
-            if (m_out.is_open()) {
-                m_out.flush();
-                m_out.close();
-                if (std::rename((m_value + m_extension + ".part").c_str(), (m_value + m_extension).c_str()))
-                    throw CborOutputException("Couldn't rename the output file!");
+            try {
+                if (m_out.is_open()) {
+                    m_out.flush();
+                    m_out.close();
+                    if (std::rename((m_value + m_extension + ".part").c_str(), (m_value + m_extension).c_str()))
+                        std::cerr << "Couldn't rename the output file!" << std::endl;
+                }
+            }
+            catch (std::exception& e) {
+                std::cerr << e.what() << std::endl;
             }
         }
 
