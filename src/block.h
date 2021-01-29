@@ -565,6 +565,9 @@ namespace CDNS {
         boost::optional<ResponseProcessingData> response_processing_data;
         boost::optional<QueryResponseExtended> query_extended;
         boost::optional<QueryResponseExtended> response_extended;
+        boost::optional<std::string> asn; // ASN for client IP address, implementation specific item
+        boost::optional<std::string> country_code; // Country code for client IP address, implementation specific item
+        boost::optional<int64_t> round_trip_time; //!< Estimated RTT of TCP connection, implementation specific item
     };
 
     /**

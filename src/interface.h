@@ -81,6 +81,11 @@ namespace CDNS {
         boost::optional<std::vector<GenericResourceRecord>> response_answers;
         boost::optional<std::vector<GenericResourceRecord>> response_authority;
         boost::optional<std::vector<GenericResourceRecord>> response_additional;
+
+        // Implementation specific fields
+        boost::optional<std::string> asn; //!< Autonomous system number for client IP address
+        boost::optional<std::string> country_code; //!< Country code for client IP address
+        boost::optional<int64_t> round_trip_time; //!< Estimated RTT of TCP connection
     };
 
     /**

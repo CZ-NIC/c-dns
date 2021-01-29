@@ -271,7 +271,7 @@ namespace CDNS {
      * @enum QueryResponseMapIndex
      * @brief Query Response map indexes
      */
-    enum class QueryResponseMapIndex : uint8_t {
+    enum class QueryResponseMapIndex : int8_t {
         time_offset = 0,
         client_address_index = 1,
         client_port = 2,
@@ -285,8 +285,11 @@ namespace CDNS {
         response_processing_data = 10,
         query_extended = 11,
         response_extended = 12,
+        asn = -1, //!< Autonomous system number for client IP address
+        country_code = -2, //!< Country code for client IP address
+        round_trip_time = -3, //!< Estimated RTT of TCP connection
 
-        query_response_size
+        query_response_size = 16
     };
 
     /**
