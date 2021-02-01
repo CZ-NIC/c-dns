@@ -143,6 +143,9 @@ namespace CDNS {
         EXPECT_FALSE(qr.response_processing_data);
         EXPECT_FALSE(qr.query_extended);
         EXPECT_FALSE(qr.response_extended);
+        EXPECT_FALSE(qr.asn);
+        EXPECT_FALSE(qr.country_code);
+        EXPECT_FALSE(qr.round_trip_time);
     }
 
     TEST(AddressEventCountTest, AECCTest) {
@@ -442,6 +445,8 @@ namespace CDNS {
         QueryResponse qr;
         qr.client_port = 1234;
         qr.time_offset = Timestamp(5, 170);
+        qr.asn = "1234";
+        qr.round_trip_time = 1234;
 
         block.add_question_response_record(qr);
         EXPECT_EQ(block.get_item_count(), 1);
@@ -456,6 +461,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.client_port, 1234);
         EXPECT_EQ(gqr.ts->m_secs, 5);
         EXPECT_EQ(gqr.ts->m_ticks, 170);
+        EXPECT_EQ(*gqr.asn, "1234");
+        EXPECT_EQ(*gqr.round_trip_time, 1234);
         EXPECT_FALSE(gqr.query_size);
 
         gqr = block.read_generic_qr(end);
@@ -464,12 +471,16 @@ namespace CDNS {
         EXPECT_EQ(gqr.ts->m_secs, 5);
         EXPECT_EQ(gqr.ts->m_ticks, 170);
         EXPECT_EQ(*gqr.query_size, 150);
+        EXPECT_EQ(*gqr.asn, "1234");
+        EXPECT_EQ(*gqr.round_trip_time, 1234);
 
         gqr = block.read_generic_qr(end);
         EXPECT_TRUE(end);
         EXPECT_FALSE(gqr.client_port);
         EXPECT_FALSE(gqr.ts);
         EXPECT_FALSE(gqr.query_size);
+        EXPECT_FALSE(gqr.asn);
+        EXPECT_FALSE(gqr.round_trip_time);
     }
 
     TEST(BlockReadTest, BlockReadGenericAECTest) {
