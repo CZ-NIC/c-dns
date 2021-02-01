@@ -23,13 +23,20 @@ namespace CDNS {
         CdnsExporter* exporter = new CdnsExporter(fp, file, CborOutputCompression::NO_COMPRESSION);
         Timestamp ts(12, 1234), ts2(13, 321);
         std::string ip("8.8.8.8");
+        std::string cc("CZ");
+        std::string asn("1234"), asn2("5678");
+        int64_t rtt = 42;
 
         GenericQueryResponse gqr;
         gqr.ts = ts;
         gqr.client_ip = ip;
         gqr.query_ancount = 42;
+        gqr.asn = asn;
+        gqr.country_code = cc;
         exporter->buffer_qr(gqr);
         gqr.ts = ts2;
+        gqr.asn = asn2;
+        gqr.round_trip_time = rtt;
         exporter->buffer_qr(gqr);
 
         GenericMalformedMessage gmm;
@@ -73,6 +80,9 @@ namespace CDNS {
         create_test_file();
         std::ifstream ifs(file, std::ifstream::binary);
         CdnsReader reader(ifs);
+        EXPECT_EQ(reader.m_file_preamble.m_major_format_version, VERSION_MAJOR);
+        EXPECT_EQ(reader.m_file_preamble.m_minor_format_version, VERSION_MINOR);
+        EXPECT_EQ(*reader.m_file_preamble.m_private_version, VERSION_PRIVATE);
 
         // Read first block
         bool eof = false;
@@ -86,6 +96,8 @@ namespace CDNS {
         EXPECT_EQ(gqr.ts->m_ticks, 1234);
         EXPECT_EQ(*gqr.client_ip, "8.8.8.8");
         EXPECT_EQ(*gqr.query_ancount, 42);
+        EXPECT_EQ(*gqr.asn, "1234");
+        EXPECT_EQ(*gqr.country_code, "CZ");
 
         gqr = block.read_generic_qr(eof);
         ASSERT_FALSE(eof);
@@ -93,6 +105,9 @@ namespace CDNS {
         EXPECT_EQ(gqr.ts->m_ticks, 321);
         EXPECT_EQ(*gqr.client_ip, "8.8.8.8");
         EXPECT_EQ(*gqr.query_ancount, 42);
+        EXPECT_EQ(*gqr.asn, "5678");
+        EXPECT_EQ(*gqr.country_code, "CZ");
+        EXPECT_EQ(*gqr.round_trip_time, 42);
 
         gqr = block.read_generic_qr(eof);
         ASSERT_TRUE(eof);
@@ -140,6 +155,9 @@ namespace CDNS {
         EXPECT_EQ(gqr.ts->m_ticks, 321);
         EXPECT_EQ(*gqr.client_ip, "8.8.8.8");
         EXPECT_EQ(*gqr.query_ancount, 42);
+        EXPECT_EQ(*gqr.asn, "5678");
+        EXPECT_EQ(*gqr.country_code, "CZ");
+        EXPECT_EQ(*gqr.round_trip_time, 42);
 
         gqr = block.read_generic_qr(eof);
         ASSERT_TRUE(eof);

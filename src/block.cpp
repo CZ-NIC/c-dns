@@ -810,7 +810,7 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
     std::size_t fields = !!time_offset + !!client_address_index + !!client_port + !!transaction_id
                          + !!qr_signature_index + !!client_hoplimit + !!response_delay + !! query_name_index
                          + !!query_size + !!response_size + !!response_processing_data + !!query_extended
-                         + !!response_extended;
+                         + !!response_extended + !!asn + !!country_code + !!round_trip_time;
 
     if (fields == 0)
         return 0;
@@ -898,6 +898,24 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
         written += response_extended.value().write(enc);
     }
 
+    // Write ASN (implementation specific field)
+    if (asn) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::asn));
+        written += enc.write_textstring(asn.value());
+    }
+
+    // Write Country Code (implementation specific field)
+    if (country_code) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::country_code));
+        written += enc.write_textstring(country_code.value());
+    }
+
+    // Write Round Trip Time (implementation specific field)
+    if (round_trip_time) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::round_trip_time));
+        written += enc.write(round_trip_time.value());
+    }
+
     return written;
 }
 
@@ -958,6 +976,15 @@ void CDNS::QueryResponse::read(CdnsDecoder& dec)
                 response_extended = QueryResponseExtended();
                 response_extended->read(dec);
                 break;
+            case get_map_index(QueryResponseMapIndex::asn):
+                asn = dec.read_textstring();
+                break;
+            case get_map_index(QueryResponseMapIndex::country_code):
+                country_code = dec.read_textstring();
+                break;
+            case get_map_index(QueryResponseMapIndex::round_trip_time):
+                round_trip_time = dec.read_integer();
+                break;
             default:
                 dec.skip_item();
                 break;
@@ -982,6 +1009,9 @@ void CDNS::QueryResponse::reset()
     response_processing_data = boost::none;
     query_extended = boost::none;
     response_extended = boost::none;
+    asn = boost::none;
+    country_code = boost::none;
+    round_trip_time = boost::none;
 }
 
 std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
@@ -1675,6 +1705,26 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         qr_filled = true;
     }
 
+    // Fill implementation specific fields
+
+    // ASN
+    if (gr.asn) {
+        qr.asn = *gr.asn;
+        qr_filled = true;
+    }
+
+    // Country Code
+    if (gr.country_code) {
+        qr.country_code = *gr.country_code;
+        qr_filled = true;
+    }
+
+    // TCP Round Trip Time
+    if (gr.round_trip_time) {
+        qr.round_trip_time = *gr.round_trip_time;
+        qr_filled = true;
+    }
+
     /**
      * Add Query Response to the Block
      */
@@ -1696,7 +1746,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
                             + !!qr.transaction_id + !!qr.qr_signature_index + !!qr.client_hoplimit
                             + !!qr.response_delay + !!qr.query_name_index + !!qr.query_size
                             + !!qr.response_size + !!qr.response_processing_data + !!qr.query_extended
-                            + !!qr.response_extended;
+                            + !!qr.response_extended + !!qr.asn + !!qr.country_code + !!qr.round_trip_time;
 
     if (fields == 0)
         return full() ? true : false;
@@ -2204,6 +2254,11 @@ CDNS::GenericQueryResponse CDNS::CdnsBlockRead::read_generic_qr(bool& end)
             gqr.response_additional = fill_generic_rr_list(rrlist);
         }
     }
+
+    // Get implementation specific fields
+    gqr.asn = qr.asn;
+    gqr.country_code = qr.country_code;
+    gqr.round_trip_time = qr.round_trip_time;
 
     m_qr_read++;
     return gqr;

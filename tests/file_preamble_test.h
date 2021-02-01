@@ -17,9 +17,9 @@ namespace CDNS {
     TEST(FilePreambleTest, FilePreambleCTest) {
         FilePreamble fp;
 
-        EXPECT_EQ(fp.m_major_format_version, 1);
-        EXPECT_EQ(fp.m_minor_format_version, 0);
-        EXPECT_FALSE(fp.m_private_version);
+        EXPECT_EQ(fp.m_major_format_version, VERSION_MAJOR);
+        EXPECT_EQ(fp.m_minor_format_version, VERSION_MINOR);
+        EXPECT_EQ(*fp.m_private_version, VERSION_PRIVATE);
         ASSERT_EQ(fp.m_block_parameters.size(), 1);
 
         EXPECT_FALSE(fp.m_block_parameters[0].collection_parameters);
