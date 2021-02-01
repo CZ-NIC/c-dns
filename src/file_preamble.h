@@ -22,7 +22,7 @@ namespace CDNS {
 
     static constexpr uint8_t VERSION_MAJOR = 1;
     static constexpr uint8_t VERSION_MINOR = 0;
-    static constexpr uint8_t VERSION_PRIVATE = 0;
+    static constexpr uint8_t VERSION_PRIVATE = 1;
 
     static constexpr uint64_t DEFAULT_TICKS_PER_SECOND = 1000000;
     static constexpr uint64_t DEFAULT_MAX_BLOCK_ITEMS = 10000;
@@ -225,7 +225,7 @@ namespace CDNS {
          * @param bps Vector of Block parameters to be used in the C-DNS file
          * @param private_version Optional private version of C-DNS file standard
          */
-        FilePreamble(std::vector<BlockParameters>& bps, boost::optional<uint8_t> private_version = boost::none)
+        FilePreamble(std::vector<BlockParameters>& bps, boost::optional<uint8_t> private_version = VERSION_PRIVATE)
             : m_block_parameters(bps) {}
 
         /**
@@ -280,7 +280,7 @@ namespace CDNS {
 
         uint8_t m_major_format_version = VERSION_MAJOR;
         uint8_t m_minor_format_version = VERSION_MINOR;
-        boost::optional<uint8_t> m_private_version;
+        boost::optional<uint8_t> m_private_version = VERSION_PRIVATE;
         std::vector<BlockParameters> m_block_parameters;
     };
 }

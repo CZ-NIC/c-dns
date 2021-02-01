@@ -573,6 +573,6 @@ void CDNS::FilePreamble::reset()
 {
     m_major_format_version = VERSION_MAJOR;
     m_minor_format_version = VERSION_MINOR;
-    m_private_version = boost::none;
+    m_private_version = VERSION_PRIVATE;
     m_block_parameters = {BlockParameters()};
 }
