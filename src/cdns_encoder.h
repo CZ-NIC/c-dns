@@ -12,6 +12,7 @@
 #include <cstring>
 #include <cstdint>
 #include <stdexcept>
+#include <memory>
 
 #include "format_specification.h"
 #include "writer.h"
@@ -47,13 +48,13 @@ namespace CDNS {
                                                                           m_avail(BUFFER_SIZE) {
             switch (compression) {
                 case CborOutputCompression::NO_COMPRESSION:
-                    m_cos = new CborOutputWriter(output);
+                    m_cos = std::make_unique<CborOutputWriter>(output);
                     break;
                 case CborOutputCompression::GZIP:
-                    m_cos = new GzipCborOutputWriter(output);
+                    m_cos = std::make_unique<GzipCborOutputWriter>(output);
                     break;
                 case CborOutputCompression::XZ:
-                    m_cos = new XzCborOutputWriter(output);
+                    m_cos = std::make_unique<XzCborOutputWriter>(output);
                     break;
                 default:
                     throw CdnsEncoderException("Unknown type of compression");
@@ -73,9 +74,6 @@ namespace CDNS {
             catch (std::exception& e) {
                 std::cerr << e.what() << std::endl;
             }
-
-            if(m_cos)
-                delete m_cos;
         }
 
         /** Delete [move] copy constructors and assignment operators */
@@ -254,7 +252,7 @@ namespace CDNS {
             m_avail -= bytes;
         }
 
-        BaseCborOutputWriter* m_cos;
+        std::unique_ptr<BaseCborOutputWriter> m_cos;
         unsigned char m_buffer[BUFFER_SIZE];
         unsigned char *m_p;
         std::size_t m_avail;
