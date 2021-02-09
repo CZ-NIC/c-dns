@@ -99,6 +99,18 @@ namespace CDNS {
         EXPECT_FALSE(rpd.processing_flags);
     }
 
+    TEST(ResponseProcessingDataTest, RPDWriteTest) {
+        ResponseProcessingData rpd;
+        rpd.bailiwick_index = 1234;
+        rpd.processing_flags = ResponseProcessingFlagsMask::from_cache;
+        CdnsEncoder* enc = new CdnsEncoder(file, CborOutputCompression::NO_COMPRESSION);
+
+        auto written = rpd.write(*enc);
+        delete enc;
+
+        test_size_and_remove_file(file, written);
+    }
+
     TEST(QueryResponseExtendedTest, QRECTest) {
         QueryResponseExtended qre;
 
