@@ -322,7 +322,7 @@ std::size_t CDNS::CollectionParameters::write(CdnsEncoder& enc)
 
     // Write VLAN IDs
     if (!!vlan_ids.size()) {
-        written += enc.write(get_map_index(CDNS::CollectionParametersMapIndex::vland_ids));
+        written += enc.write(get_map_index(CDNS::CollectionParametersMapIndex::vlan_ids));
         written += enc.write_array_start(vlan_ids.size());
         for (auto& id : vlan_ids) {
             written += enc.write(id);
@@ -387,7 +387,7 @@ void CDNS::CollectionParameters::read(CdnsDecoder& dec)
                     server_address.push_back(dec.read_bytestring());
                 });
                 break;
-            case get_map_index(CollectionParametersMapIndex::vland_ids):
+            case get_map_index(CollectionParametersMapIndex::vlan_ids):
                 vlan_ids.clear();
                 dec.read_array([this](CdnsDecoder& dec){
                     vlan_ids.push_back(dec.read_unsigned());
