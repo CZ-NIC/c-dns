@@ -113,7 +113,7 @@ namespace CDNS {
         promisc = 3,
         interfaces = 4,
         server_address = 5,
-        vland_ids = 6,
+        vlan_ids = 6,
         filter = 7,
         generator_id = 8,
         host_id = 9,

@@ -11,6 +11,10 @@
 #include <cstdint>
 #include <vector>
 
+/**
+ * @brief IANA assignments
+ * https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
+ */
 namespace CDNS {
 
     /**
@@ -83,7 +87,7 @@ namespace CDNS {
         KX,
         CERTIFICATE,
         A6,
-        DNAM,
+        DNAME,
         SINK,
         OPT,
         APL,
@@ -97,11 +101,18 @@ namespace CDNS {
         NSEC3,
         NSEC3PARAM,
         TLSA,
+        SMIMEA,
         HIP = 55,
         NINFO,
         RKEY,
         TALINK,
         CDS,
+        CDNSKEY,
+        OPENPGPKEY,
+        CSYNC,
+        ZONEMD,
+        SVCB,
+        HTTPS,
         SPF = 99,
         UINFO,
         UID,
@@ -111,7 +122,7 @@ namespace CDNS {
         L32,
         L64,
         LP,
-        EU148,
+        EUI48,
         EUI64,
         TKEY = 249,
         TSIG,
@@ -122,6 +133,9 @@ namespace CDNS {
         TYPE_ANY,
         URI,
         CAA,
+        AVC,
+        DOA,
+        AMTRELAY,
         TA = 32768,
         DLV,
 
@@ -168,7 +182,7 @@ namespace CDNS {
         RrTypes::KX,
         RrTypes::CERTIFICATE,
         RrTypes::A6,
-        RrTypes::DNAM,
+        RrTypes::DNAME,
         RrTypes::SINK,
         RrTypes::OPT,
         RrTypes::APL,
@@ -182,11 +196,18 @@ namespace CDNS {
         RrTypes::NSEC3,
         RrTypes::NSEC3PARAM,
         RrTypes::TLSA,
+        RrTypes::SMIMEA,
         RrTypes::HIP,
         RrTypes::NINFO,
         RrTypes::RKEY,
         RrTypes::TALINK,
         RrTypes::CDS,
+        RrTypes::CDNSKEY,
+        RrTypes::OPENPGPKEY,
+        RrTypes::CSYNC,
+        RrTypes::ZONEMD,
+        RrTypes::SVCB,
+        RrTypes::HTTPS,
         RrTypes::SPF,
         RrTypes::UINFO,
         RrTypes::UID,
@@ -196,7 +217,7 @@ namespace CDNS {
         RrTypes::L32,
         RrTypes::L64,
         RrTypes::LP,
-        RrTypes::EU148,
+        RrTypes::EUI48,
         RrTypes::EUI64,
         RrTypes::TKEY,
         RrTypes::TSIG,
@@ -207,6 +228,9 @@ namespace CDNS {
         RrTypes::TYPE_ANY,
         RrTypes::URI,
         RrTypes::CAA,
+        RrTypes::AVC,
+        RrTypes::DOA,
+        RrTypes::AMTRELAY,
         RrTypes::TA,
         RrTypes::DLV
     };
