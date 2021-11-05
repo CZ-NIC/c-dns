@@ -185,4 +185,52 @@ namespace CDNS {
         ifs.close();
         remove_file(file);
     }
+
+    TEST(CdnsReaderTest, CRReadHugeTimestampOffsetTest) {
+        FilePreamble fp;
+        CdnsExporter* exporter = new CdnsExporter(fp, file, CborOutputCompression::NO_COMPRESSION);
+        Timestamp ts1(1636068056, 971687);
+        Timestamp ts2(1636070675, 31614);
+        std::string ip1("8.8.8.8");
+        std::string ip2("1.1.1.1");
+
+        GenericQueryResponse gqr;
+        gqr.ts = ts1;
+        gqr.client_ip = ip1;
+        exporter->buffer_qr(gqr);
+        gqr.ts = ts2;
+        gqr.client_ip = ip2;
+        exporter->buffer_qr(gqr);
+
+        EXPECT_EQ(exporter->get_block_item_count(), 2);
+        exporter->write_block();
+        delete exporter;
+
+        std::ifstream ifs(file, std::ifstream::binary);
+        CdnsReader reader(ifs);
+
+        bool eof = false;
+        CdnsBlockRead block = reader.read_block(eof);
+        ASSERT_FALSE(eof);
+        GenericQueryResponse res = block.read_generic_qr(eof);
+        ASSERT_FALSE(eof);
+        EXPECT_EQ(res.ts->m_secs, 1636068056);
+        EXPECT_EQ(res.ts->m_ticks, 971687);
+        EXPECT_EQ(*res.client_ip, "8.8.8.8");
+
+        res = block.read_generic_qr(eof);
+        ASSERT_FALSE(eof);
+        EXPECT_EQ(res.ts->m_secs, 1636070675);
+        EXPECT_EQ(res.ts->m_ticks, 31614);
+        EXPECT_EQ(*res.client_ip, "1.1.1.1");
+
+        res = block.read_generic_qr(eof);
+        ASSERT_TRUE(eof);
+
+        block = reader.read_block(eof);
+        ASSERT_TRUE(eof);
+
+        ifs.close();
+        remove_file(file);
+    }
 }
