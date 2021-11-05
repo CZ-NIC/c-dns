@@ -26,11 +26,16 @@ If you don't want to build the test suite with the library, you can omit `-DBUIL
 To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
 
 # Installation from packages
-Packages for Debian 10 and 9 and Ubuntu 20.04, 18.04 and 16.04 are available from
+Packages for Debian 11, 10 and 9 and Ubuntu 20.04, 18.04 and 16.04 are available from
 [OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
 
 First you need to add the OBS repository for given distribution to your system's repository list and download the repository's signing key:
 
+##### Debian 11
+```shell
+echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_11/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
+curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/Debian_11/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
+```
 ##### Debian 10
 ```shell
 echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_10/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
