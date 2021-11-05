@@ -271,7 +271,7 @@ uint64_t CDNS::CdnsDecoder::read_int(uint8_t item_length)
     else if (item_length >= 24 && item_length <= 27) {
         for (int i = 1 << (item_length - 24); i > 0; i--) {
             read_to_buffer();
-            value += (m_p[0] << ((i - 1) * 8));
+            value += (static_cast<uint64_t>(m_p[0]) << ((i - 1) * 8));
             m_p++;
         }
     }
