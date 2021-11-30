@@ -1,0 +1,3 @@
+usr/lib/*/*.so
+usr/lib/*/pkgconfig/cdns.pc
+usr/include/cdns/*.h

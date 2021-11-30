@@ -1,0 +1,27 @@
+Source: c-dns
+Maintainer: Pavel Dolezal <pavel.dolezal@nic.cz>
+Section: misc
+Priority: optional
+Standards-Version: 4.3.0
+Build-Depends: debhelper (>= 9),
+               cmake (>= 3.5),
+               pkg-config,
+               libboost-all-dev,
+               zlib1g-dev,
+               liblzma-dev,
+
+Package: libcdns0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Exporter of the C-DNS format
+ Library for export of the C-DNS format.
+ This package contains the runtime library.
+
+Package: libcdns-dev
+Architecture: any
+Section: libdevel
+Depends: libcdns0 (= ${binary:Version}), libboost-all-dev, liblzma-dev,
+         zlib1g-dev, ${misc:Depends}
+Description: Exporter of the C-DNS format (development headers)
+ Library for export of the C-DNS format.
+ This package contains the development headers.

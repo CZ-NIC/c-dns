@@ -1,0 +1,6 @@
+[project]
+name = "c-dns"
+make_archive_script = "distro/scripts/make-archive.sh"
+
+[apkg]
+compat = 2
