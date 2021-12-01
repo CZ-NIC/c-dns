@@ -2,5 +2,9 @@
 name = "c-dns"
 make_archive_script = "distro/scripts/make-archive.sh"
 
+[upstream]
+archive_url = "https://gitlab.nic.cz/knot/c-dns/-/archive/{{ version }}/c-dns-{{ version }}.tar.gz"
+version_script = "distro/scripts/upstream-version.py"
+
 [apkg]
 compat = 2
