@@ -1,0 +1,31 @@
+pkgname=c-dns
+pkgver='{{ version }}'
+pkgrel='{{ release }}'
+pkgdesc='Library for exporting C-DNS format'
+arch=('x86_64')
+url='https://gitlab.nic.cz/knot/c-dns'
+license=('MPL2')
+makedepends=('make' 'cmake' 'boost' 'zlib' 'xz')
+source=('https://gitlab.nic.cz/knot/c-dns/-/archive/{{ version }}/c-dns-{{ version }}.tar.gz')
+sha256sums=('SKIP')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+    mkdir build
+    cd build
+
+    cmake \
+        -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+        -DBUILD_TESTS=ON \
+        ..
+	make
+}
+
+check() {
+    echo "TODO: how do we properly run tests?"
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}/build"
+	make DESTDIR="${pkgdir}" install
+}
