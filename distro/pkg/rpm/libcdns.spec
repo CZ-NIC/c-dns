@@ -7,6 +7,7 @@ Source: c-dns-%{version}.tar.gz
 License: MPLv2.0
 
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  boost-devel
