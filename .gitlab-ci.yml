@@ -8,7 +8,7 @@ build_and_test:
   stage: build_and_test
   before_script:
     - apt update
-    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev
+    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git libgtest-dev doxygen libboost-all-dev zlib1g-dev liblzma-dev
   script:
     - cmake -DBUILD_TESTS=ON .
     - make
