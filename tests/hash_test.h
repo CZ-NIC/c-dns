@@ -9,7 +9,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "../src/cdns.h"
 

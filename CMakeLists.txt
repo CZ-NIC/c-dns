@@ -58,7 +58,9 @@ install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc
 )
 
 if(BUILD_TESTS)
+    enable_testing()
     add_subdirectory(tests)
+    add_test(NAME UnitTests COMMAND tests)
 endif(BUILD_TESTS)
 
 if (BUILD_DOC)

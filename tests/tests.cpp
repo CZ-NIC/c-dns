@@ -6,6 +6,7 @@
  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <gtest/gtest.h>
 #include "file_preamble_test.h"
 #include "hash_test.h"
 #include "timestamp_test.h"

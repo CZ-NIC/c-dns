@@ -14,7 +14,7 @@
 #include <fstream>
 #include <zlib.h>
 #include <lzma.h>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "../src/cdns.h"
 #include "common.h"

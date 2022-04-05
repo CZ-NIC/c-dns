@@ -11,7 +11,7 @@
 #include <fstream>
 #include <istream>
 #include <sstream>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "../src/cdns.h"
 #include "common.h"

@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <fstream>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "../src/cdns.h"
 
