@@ -10,6 +10,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  cmake
+BuildRequires:  gtest
 BuildRequires:  boost-devel
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(liblzma)
@@ -41,6 +42,10 @@ make
 %install
 cd build
 make DESTDIR=%{buildroot} install
+
+%check
+cd build
+ctest
 
 %files
 %license LICENSE
