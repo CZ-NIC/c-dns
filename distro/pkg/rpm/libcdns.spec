@@ -10,7 +10,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  cmake
-BuildRequires:  gtest
+BuildRequires:  gtest-devel
 BuildRequires:  boost-devel
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(liblzma)
