@@ -12,12 +12,14 @@ BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  gtest-devel
 BuildRequires:  boost-devel
-BuildRequires:  pkgconfig(zlib)
-BuildRequires:  pkgconfig(liblzma)
+BuildRequires:  zlib-devel
+BuildRequires:  xz-devel
 
 %package devel
 Summary:    Exporter of the C-DNS format (development headers)
 Requires:   %{name}%{?_isa} = %{version}-%{release}
+Requires:   zlib-devel
+Requires:   xz-devel
 
 %description devel
 Headers of C-DNS library.
