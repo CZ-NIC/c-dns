@@ -51,8 +51,8 @@ ctest
 
 %files
 %license LICENSE
-%{_libdir}/libcdns.so.0
-%{_libdir}/libcdns.so.0.*
+%{_libdir}/libcdns.so.1
+%{_libdir}/libcdns.so.1.*
 
 
 %files devel

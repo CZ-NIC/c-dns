@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9),
                zlib1g-dev,
                liblzma-dev,
 
-Package: libcdns0
+Package: libcdns1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Exporter of the C-DNS format
@@ -20,7 +20,7 @@ Description: Exporter of the C-DNS format
 Package: libcdns-dev
 Architecture: any
 Section: libdevel
-Depends: libcdns0 (= ${binary:Version}), libboost-all-dev, liblzma-dev,
+Depends: libcdns1 (= ${binary:Version}), libboost-all-dev, liblzma-dev,
          zlib1g-dev, ${misc:Depends}
 Description: Exporter of the C-DNS format (development headers)
  Library for export of the C-DNS format.

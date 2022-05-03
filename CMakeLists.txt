@@ -7,7 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.5)
-project(cdns VERSION 0.6.0)
+project(cdns VERSION 1.0.0)
 
 include(GNUInstallDirs)
 
@@ -41,7 +41,7 @@ else()
 endif()
 
 set_target_properties(cdns PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(cdns PROPERTIES SOVERSION 0)
+set_target_properties(cdns PROPERTIES SOVERSION 1)
 set_target_properties(cdns PROPERTIES PUBLIC_HEADER "${headers}")
 
 configure_file(src/cdns.pc.in src/cdns.pc @ONLY)

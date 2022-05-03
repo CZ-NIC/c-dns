@@ -70,10 +70,10 @@ Now you need to update the repository list and then you can finally install the 
 
 ```shell
 sudo apt-get update
-sudo apt-get install libcdns0 libcdns-dev
+sudo apt-get install libcdns1 libcdns-dev
 ```
 
-The C-DNS library is separated into two packages. `libcdns0` package installs the shared library and `libcdns-dev` package installs
+The C-DNS library is separated into two packages. `libcdns1` package installs the shared library and `libcdns-dev` package installs
 development headers.
 
 ## Basic Usage
