@@ -1,4 +1,7 @@
-image: ubuntu
+variables:
+  DEBIAN_FRONTEND: noninteractive
+
+image: debian
 
 stages:
   - build_and_test
@@ -8,7 +11,7 @@ build_and_test:
   stage: build_and_test
   before_script:
     - apt update
-    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git libgtest-dev doxygen libboost-all-dev zlib1g-dev liblzma-dev
+    - apt -y install cmake g++ pkg-config git libgtest-dev doxygen libboost-all-dev zlib1g-dev liblzma-dev
   script:
     - cmake -DBUILD_TESTS=ON .
     - make
@@ -20,7 +23,7 @@ pages:
     - build_and_test
   before_script:
     - apt update
-    - DEBIAN_FRONTEND=noninteractive apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev
+    - apt -y install cmake g++ pkg-config git doxygen libboost-all-dev zlib1g-dev liblzma-dev
   script:
     - cmake .
     - make doc
@@ -28,5 +31,19 @@ pages:
   artifacts:
     paths:
       - public
+  only:
+    - tags
+
+obs:
+  stage: deploy
+  dependencies:
+    - build_and_test
+  before_script:
+    - apt update
+    - apt -y install build-essential devscripts debhelper git osc python3-pip python3-setuptools
+    - pip3 install apkg
+  script:
+    - scripts/prepare_obs.sh
+    - scripts/build_obs.sh
   only:
     - tags
