@@ -11,6 +11,9 @@ This project has the following dependencies:
 * [zlib] (https://www.zlib.net/)
 * [XZ Utils] (https://tukaani.org/xz/)
 
+Optional:
+* [GoogleTest] (https://github.com/google/googletest)
+
 ## Build
 
 Basic build instructions using CMake.
@@ -26,55 +29,58 @@ If you don't want to build the test suite with the library, you can omit `-DBUIL
 To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
 
 # Installation from packages
-Packages for Debian 11, 10 and 9 and Ubuntu 20.04, 18.04 and 16.04 are available from
-[OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
+Packages for Debian 11, 10, 9; Ubuntu 22.04, 20.04, 18.04, 16.04; Fedora 36, 35, 34, Rawhide;
+EPEL 8 and Arch are available from [OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
 
-First you need to add the OBS repository for given distribution to your system's repository list and download the repository's signing key:
-
-##### Debian 11
+#### Debian/Ubuntu
 ```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_11/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/Debian_11/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
-##### Debian 10
-```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_10/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/Debian_10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
+sudo apt-get update
+sudo apt-get install -y lsb-release curl gpg
 
-##### Debian 9
-```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Debian_9.0/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/Debian_9.0/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
+DISTRO=$(lsb_release -i -s)
+RELEASE=$(lsb_release -r -s)
+if [[ $DISTRO == "Ubuntu" ]]; then DISTRO="xUbuntu"; fi
+if [[ $DISTRO == "Debian" && "$RELEASE" =~ ^9\..*$ ]]; then RELEASE="9.0"; fi
 
-##### Ubuntu 20.04
-```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
-
-##### Ubuntu 18.04
-```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_18.04/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/xUbuntu_18.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
-
-##### Ubuntu 16.04
-```shell
-echo 'deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/xUbuntu_16.04/ /' | sudo tee /etc/apt/sources.list.d/dns-probe.list
-curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/xUbuntu_16.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
-```
-
-Now you need to update the repository list and then you can finally install the C-DNS library:
-
-```shell
+echo "deb http://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/${DISTRO}_${RELEASE}/ /" | sudo tee /etc/apt/sources.list.d/dns-probe.list
+curl -fsSL https://download.opensuse.org/repositories/home:CZ-NIC:/dns-probe/${DISTRO}_${RELEASE}/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/dns-probe.gpg > /dev/null
 sudo apt-get update
 sudo apt-get install libcdns1 libcdns-dev
 ```
 
-The C-DNS library is separated into two packages. `libcdns1` package installs the shared library and `libcdns-dev` package installs
-development headers.
+#### Fedora
+```shell
+sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Fedora_$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/home:CZ-NIC:dns-probe.repo
+sudo dnf install libcdns libcdns-devel
+```
+
+#### Fedora Rawhide
+```shell
+sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Fedora_Rawhide/home:CZ-NIC:dns-probe.repo
+sudo dnf install libcdns libcdns-devel
+```
+
+#### EPEL 8
+```shell
+cd /etc/yum.repos.d/
+sudo wget https://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Fedora_EPEL_8_CentOS/home:CZ-NIC:dns-probe.repo
+sudo yum install libcdns libcdns-devel
+```
+
+#### Arch
+```shell
+echo "[home_CZ-NIC_dns-probe_Arch]" | sudo tee -a /etc/pacman.conf
+echo "Server = https://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Arch/$(uname -m)" | sudo tee -a /etc/pacman.conf
+
+key=$(curl -fsSL https://download.opensuse.org/repositories/home:/CZ-NIC:/dns-probe/Arch/$(uname -m)/home_CZ-NIC_dns-probe_Arch.key)
+fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }')
+
+sudo pacman-key --init
+sudo pacman-key --add - <<< "${key}"
+sudo pacman-key --lsign-key "${fingerprint}"
+
+sudo pacman -Sy home_CZ-NIC_dns-probe_Arch/c-dns
+```
 
 ## Basic Usage
 
