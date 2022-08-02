@@ -7,4 +7,4 @@ archive_url = "https://gitlab.nic.cz/knot/c-dns/-/archive/{{ version }}/c-dns-{{
 version_script = "distro/scripts/upstream-version.py"
 
 [apkg]
-compat = 2
+compat = 3
