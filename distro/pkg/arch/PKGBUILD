@@ -5,7 +5,8 @@ pkgdesc='Library for exporting C-DNS format'
 arch=('x86_64')
 url='https://gitlab.nic.cz/knot/c-dns'
 license=('MPL2')
-depends=('make' 'cmake' 'gtest' 'boost' 'zlib' 'xz')
+makedepends=('make' 'cmake')
+depends=('gtest' 'boost' 'zlib' 'xz')
 source=('https://gitlab.nic.cz/knot/c-dns/-/archive/{{ version }}/c-dns-{{ version }}.tar.gz')
 sha256sums=('SKIP')
 
