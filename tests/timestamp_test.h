@@ -14,10 +14,17 @@
 #include "../src/cdns.h"
 
 namespace CDNS {
-    TEST(TimestampTest, TimestampCtest) {
+    TEST(TimestampTest, TimestampDefCtest) {
         Timestamp ts;
         EXPECT_EQ(ts.m_secs, 0);
         EXPECT_EQ(ts.m_ticks, 0);
+    }
+
+    TEST(TimestampTest, TimestampCtest) {
+        Timestamp ts = {42, 170};
+
+        EXPECT_EQ(ts.m_secs, 42);
+        EXPECT_EQ(ts.m_ticks, 170);
     }
 
     TEST(TimestampTest, TimestampCompareTest) {
