@@ -22,6 +22,7 @@ find_package(Doxygen)
 
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
 option(BUILD_DOC "Generate Doxygen documentation" ON)
+option(BUILD_PYTHON_BINDINGS "Generate Python bindings" OFF)
 
 file(GLOB sources "src/*.cpp")
 file(GLOB headers "src/*.h")
@@ -56,6 +57,16 @@ install(TARGETS cdns
 install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc 
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
+
+if (BUILD_PYTHON_BINDINGS)
+    find_package(pybind11 REQUIRED)
+    include_directories("${CMAKE_SOURCE_DIR}/python")
+    file(GLOB pythons "python/*.cpp" "python/*.h")
+    pybind11_add_module(pycdns ${pythons})
+    target_link_libraries(pycdns PUBLIC cdns)
+    target_include_directories(pycdns PRIVATE "src/")
+    install(TARGETS pycdns LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif(BUILD_PYTHON_BINDINGS)
 
 if(BUILD_TESTS)
     enable_testing()
