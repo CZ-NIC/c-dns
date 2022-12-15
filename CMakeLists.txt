@@ -72,7 +72,7 @@ if (BUILD_PYTHON_BINDINGS)
     add_custom_target(pycdns ALL COMMAND pip3 wheel ${CMAKE_CURRENT_BINARY_DIR})
     add_dependencies(pycdns cdns)
 
-    install(CODE "execute_process(COMMAND pip3 install ${CMAKE_CURRENT_BINARY_DIR})")
+    install(CODE "execute_process(COMMAND pip3 install --prefix=${CMAKE_INSTALL_PREFIX} ${CMAKE_CURRENT_BINARY_DIR})")
 endif(BUILD_PYTHON_BINDINGS)
 
 if(BUILD_TESTS)
