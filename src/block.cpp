@@ -923,7 +923,6 @@ void CDNS::QueryResponse::read(CdnsDecoder& dec)
 {
     reset();
     bool indef = false;
-    uint64_t offset;
     uint64_t length = dec.read_map_start(indef);
 
     while (length > 0 || indef) {
@@ -1148,7 +1147,6 @@ void CDNS::MalformedMessage::read(CdnsDecoder& dec)
 {
     reset();
     bool indef = false;
-    uint64_t offset;
     uint64_t length = dec.read_map_start(indef);
 
     while (length > 0 || indef) {
