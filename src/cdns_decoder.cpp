@@ -238,7 +238,7 @@ void CDNS::CdnsDecoder::skip_item()
             }
             else {
                 uint64_t item_count = read_int(item_length);
-                for (int i = 0; i < item_count; i++) {
+                for (unsigned i = 0; i < item_count; i++) {
                     skip_item();
                     if (cbor_type == CborType::MAP)
                         skip_item();
@@ -285,7 +285,7 @@ std::string CDNS::CdnsDecoder::read_string(CborType cbor_type, uint64_t length, 
 
     if (!indef) {
         ret.reserve(length);
-        for (int i = 0; i < length; i++) {
+        for (unsigned i = 0; i < length; i++) {
             read_to_buffer();
             ret.push_back(m_p[0]);
             m_p++;
@@ -306,7 +306,7 @@ std::string CDNS::CdnsDecoder::read_string(CborType cbor_type, uint64_t length, 
 
             uint64_t chunk_length = read_int(chunk_length_value);
             ret.reserve(ret.size() + chunk_length);
-            for (int i = 0; i < chunk_length; i++) {
+            for (unsigned i = 0; i < chunk_length; i++) {
                 read_to_buffer();
                 ret.push_back(m_p[0]);
                 m_p++;
