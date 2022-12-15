@@ -227,7 +227,7 @@ namespace CDNS {
          */
         void write(const char* p, std::size_t size) override {
             int ret = ::write(m_value, p, size);
-            if (ret != size) {
+            if (ret != static_cast<int>(size)) {
                 throw CborOutputException("Given " + std::to_string(size) + " bytes to write, but "
                                         "only " + std::to_string(ret) + " bytes were written!");
             }
