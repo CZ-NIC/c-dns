@@ -1,0 +1,37 @@
+from glob import glob
+
+from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import setup
+
+__version__ = "@PROJECT_VERSION@"
+
+ext_modules = [
+    Pybind11Extension(
+        "pycdns",
+        sources=(
+            sorted(glob("@CMAKE_CURRENT_SOURCE_DIR@/python/*.cpp"))
+        ),
+        depends=[
+            "setup.py",
+        ],
+        libraries=["cdns"],
+        library_dirs=["@CMAKE_CURRENT_BINARY_DIR@"],
+        runtime_library_dirs=["@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@"],
+        extra_compile_args=['-msse4'],
+        define_macros=[('VERSION_INFO', __version__)],
+        cxx_std=14,
+        include_dirs=["@CMAKE_CURRENT_SOURCE_DIR@/src"]
+    ),
+]
+
+setup(
+    name="pycdns",
+    version=__version__,
+    author="Pavel Dolezal",
+    author_email="pavel.dolezal@nic.cz",
+    url="https://gitlab.nic.cz/knot/c-dns",
+    description="Python bindings for C++ C-DNS library",
+    ext_modules=ext_modules,
+    cmdclass={"build_ext": build_ext},
+    python_requires=">=3.5",
+)
