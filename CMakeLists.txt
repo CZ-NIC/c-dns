@@ -69,10 +69,16 @@ if (BUILD_PYTHON_BINDINGS)
     file(COPY ${PYPROJECT} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
-    add_custom_target(pycdns ALL COMMAND pip3 wheel ${CMAKE_CURRENT_BINARY_DIR})
+    add_custom_target(pycdns ALL
+        COMMAND pip3 install --prefix=${CMAKE_CURRENT_BINARY_DIR}/build_python/ ${CMAKE_CURRENT_BINARY_DIR}
+    )
     add_dependencies(pycdns cdns)
 
-    install(CODE "execute_process(COMMAND pip3 install --prefix=${CMAKE_INSTALL_PREFIX} ${CMAKE_CURRENT_BINARY_DIR})")
+    install(
+        DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_python/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        PATTERN "*"
+    )
 endif(BUILD_PYTHON_BINDINGS)
 
 if(BUILD_TESTS)
