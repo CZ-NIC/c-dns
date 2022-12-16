@@ -16,7 +16,6 @@ ext_modules = [
         ],
         libraries=["cdns"],
         library_dirs=["@CMAKE_CURRENT_BINARY_DIR@"],
-        runtime_library_dirs=["@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@"],
         extra_compile_args=['-msse4'],
         define_macros=[('VERSION_INFO', __version__)],
         cxx_std=14,
