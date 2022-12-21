@@ -11,9 +11,9 @@ build_and_test:
   stage: build_and_test
   before_script:
     - apt update
-    - apt -y install cmake g++ pkg-config git libgtest-dev doxygen libboost-all-dev zlib1g-dev liblzma-dev
+    - apt -y install cmake g++ pkg-config git libgtest-dev doxygen libboost-all-dev zlib1g-dev liblzma-dev python3-all python3-pip python3-setuptools pybind11-dev python3-pybind11
   script:
-    - cmake -DBUILD_TESTS=ON .
+    - cmake -DBUILD_TESTS=ON -DBUILD_PYTHON_BINDINGS=ON .
     - make
     - ./tests/tests
 
