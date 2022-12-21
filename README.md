@@ -13,6 +13,7 @@ This project has the following dependencies:
 
 Optional:
 * [GoogleTest] (https://github.com/google/googletest)
+* [pybind11] (https://github.com/pybind/pybind11)
 
 ## Build
 
@@ -20,10 +21,11 @@ Basic build instructions using CMake.
 ```shell
 mkdir build
 cd build
-cmake -DBUILD_TESTS=ON ..
+cmake -DBUILD_PYTHON_BINDINGS=ON -DBUILD_TESTS=ON ..
 make
 make install
 ```
+If you don't want to build the Python bindings, you can omit `-DBUILD_PYTHON_BINDINGS` option.
 If you don't want to build the test suite with the library, you can omit `-DBUILD_TESTS` option.
 
 To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
@@ -31,6 +33,8 @@ To generate Doxygen documentation run `make doc`. Doxygen documentation for curr
 # Installation from packages
 Packages for Debian 11, 10, 9; Ubuntu 22.04, 20.04, 18.04, 16.04; Fedora 36, 35, 34, Rawhide;
 EPEL 8 and Arch are available from [OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
+
+Python bindings are, for the moment, available only when building the library from sources. Linux packages for Python bindings will be available soon.
 
 #### Debian/Ubuntu
 ```shell

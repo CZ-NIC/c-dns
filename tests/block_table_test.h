@@ -88,8 +88,9 @@ namespace CDNS {
         AddressEventCount aec, aec2, aec3;
         BlockTable<AddressEventCount> bt;
 
-        aec2.ae_code = 4;
+        aec.ae_code = 4;
         aec2.ae_code = 7;
+        aec3.ae_code = 4;
 
         index_t index = bt.add(aec);
         index_t index2 = bt.add(aec2);

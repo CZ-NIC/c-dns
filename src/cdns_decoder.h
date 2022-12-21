@@ -11,6 +11,7 @@
 #include <string>
 #include <istream>
 #include <stdexcept>
+#include <functional>
 
 #include "format_specification.h"
 
@@ -121,14 +122,12 @@ namespace CDNS {
 
         /**
          * @brief Read an array from input stream
-         * @tparam CB Callback type
          * @param cb Callback that has to contain the reading of one item from array. It takes one parameter
          * which is a reference to the CdnsDecoder itself.
          * @throw CdnsDecoderEnd if the end of input stream is reached
          * @throw CdnsDecoderException if an error is encountered decoding CBOR data
          */
-        template<typename CB>
-        void read_array(CB cb) {
+        void read_array(std::function<void(CdnsDecoder&)> cb) {
             bool indef = false;
             uint64_t length = read_array_start(indef);
 

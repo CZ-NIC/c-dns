@@ -59,7 +59,7 @@ void CDNS::Timestamp::read(CdnsDecoder& dec)
     bool indef = false;
     uint64_t length = dec.read_array_start(indef);
 
-    for (int i = 0; (i < length) || indef; i++) {
+    for (unsigned i = 0; (i < length) || indef; i++) {
         if (indef && dec.peek_type() == CborType::BREAK) {
             dec.read_break();
             break;

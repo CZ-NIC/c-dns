@@ -153,7 +153,6 @@ namespace CDNS {
 
     TEST(XzCborOutputWriterTest, XCOWWriteTest) {
         XzCborOutputWriter* cow = new XzCborOutputWriter(file);
-        struct stat buff;
         std::string out("test");
         std::string result;
 
@@ -198,7 +197,6 @@ namespace CDNS {
     TEST(XzCborOutputWriterTest, XCOWFDWriteTest) {
         int fd = open((file + ".xz").c_str(), O_CREAT | O_RDWR, 0644);
         XzCborOutputWriter* cow = new XzCborOutputWriter(fd);
-        struct stat buff;
         std::string out("test");
         std::string result;
 

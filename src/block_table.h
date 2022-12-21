@@ -18,6 +18,7 @@
 #include <stdexcept>
 
 #include "hash.h"
+#include "format_specification.h"
 
 namespace CDNS {
 
@@ -117,7 +118,7 @@ namespace CDNS {
          * @param val the value to add.
          * @returns index reference to the value.
          */
-        index_t add_value(const T& val)
+        CDNS::index_t add_value(const T& val)
         {
             items_.push_back(val);
             return record_last_key();
@@ -132,7 +133,7 @@ namespace CDNS {
          * @param val the value to add.
          * @returns index reference to the value.
          */
-        index_t add_value(T&& val)
+        CDNS::index_t add_value(T&& val)
         {
             items_.push_back(val);
             return record_last_key();
@@ -147,10 +148,10 @@ namespace CDNS {
          * @param val the value to add.
          * @returns index reference to the value.
          */
-        index_t add(const T& val)
+        CDNS::index_t add(const T& val)
         {
             const K& key = val.key();
-            index_t res;
+            CDNS::index_t res;
             if ( !find(key, res) )
                 res = add_value(val);
             return res;
@@ -171,7 +172,7 @@ namespace CDNS {
          * @param pos the index.
          * @throw std::runtime_error if given index is out of range
          */
-        const T& operator[](index_t pos) const
+        const T& operator[](CDNS::index_t pos) const
         {
             if ( pos < items_.size() )
                 return items_[pos];
@@ -213,15 +214,15 @@ namespace CDNS {
          * 
          * @returns index reference to the value.
          */
-        index_t record_last_key()
+        CDNS::index_t record_last_key()
         {
-            index_t res = items_.size();
+            CDNS::index_t res = items_.size();
             res -= 1;
             indexes_[KeyRef<K>(items_.back().key())] = res;
             return res;
         }
 
         std::deque<T> items_;
-        std::unordered_map<KeyRef<K>, index_t, CDNS::hash<KeyRef<K>>> indexes_;
+        std::unordered_map<KeyRef<K>, CDNS::index_t, CDNS::hash<KeyRef<K>>> indexes_;
     };
 }
