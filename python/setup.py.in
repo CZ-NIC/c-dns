@@ -1,6 +1,12 @@
+import os
+import sys
 from glob import glob
 
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+DIR = "@CMAKE_CURRENT_SOURCE_DIR@"
+sys.path.append(os.path.join(DIR, "extern", "pybind11"))
+from pybind11.setup_helpers import Pybind11Extension, build_ext  # noqa: E402f
+del sys.path[-1]
+
 from setuptools import setup
 
 __version__ = "@PROJECT_VERSION@"
@@ -16,8 +22,8 @@ ext_modules = [
         ],
         libraries=["cdns"],
         library_dirs=["@CMAKE_CURRENT_BINARY_DIR@"],
-        extra_compile_args=['-msse4'],
-        define_macros=[('VERSION_INFO', __version__)],
+        extra_compile_args=["-msse4"],
+        define_macros=[("VERSION_INFO", __version__)],
         cxx_std=14,
         include_dirs=["@CMAKE_CURRENT_SOURCE_DIR@/src"]
     ),
@@ -32,5 +38,10 @@ setup(
     description="Python bindings for C++ C-DNS library",
     ext_modules=ext_modules,
     cmdclass={"build_ext": build_ext},
+    setup_requires=[
+        "setuptools>=33",
+        "wheel",
+        "pybind11>=2.9.0",
+    ],
     python_requires=">=3.5",
 )

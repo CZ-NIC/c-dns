@@ -59,18 +59,13 @@ install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc
 )
 
 if (BUILD_PYTHON_BINDINGS)
-    find_package(Python3 REQUIRED)
-    find_package(pybind11 REQUIRED)
-
     set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/python/setup.py.in")
     set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-    set(PYPROJECT   "${CMAKE_CURRENT_SOURCE_DIR}/python/pyproject.toml")
 
-    file(COPY ${PYPROJECT} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
     add_custom_target(pycdns ALL
-        COMMAND pip3 install --prefix=${CMAKE_CURRENT_BINARY_DIR}/build_python/ ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND pip3 install --no-index --prefix=${CMAKE_CURRENT_BINARY_DIR}/build_python/ ${CMAKE_CURRENT_BINARY_DIR}
     )
     add_dependencies(pycdns cdns)
 
