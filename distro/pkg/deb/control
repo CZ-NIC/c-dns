@@ -14,8 +14,9 @@ Package: libcdns1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Exporter of the C-DNS format
- Library for export of the C-DNS format.
- This package contains the runtime library.
+ Library and command line tools for export and inspection of
+ the C-DNS format.
+ This package contains the runtime library and binaries of cmd tools.
 
 Package: libcdns-dev
 Architecture: any
