@@ -6,9 +6,25 @@
  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <sstream>
+#include <bitset>
+#include <type_traits>
+
 #include "file_preamble.h"
 #include "cdns_encoder.h"
 #include "cdns_decoder.h"
+
+std::string CDNS::StorageHints::string()
+{
+    std::stringstream ss;
+
+    ss << "Query response hints: " << std::bitset<32>(query_response_hints) << std::endl;
+    ss << "Query response signature hints: " << std::bitset<32>(query_response_signature_hints) << std::endl;
+    ss << "RR hints: " << std::bitset<8>(rr_hints) << std::endl;
+    ss << "Other data hints: " << std::bitset<8>(other_data_hints) << std::endl;
+
+    return ss.str();
+}
 
 std::size_t CDNS::StorageHints::write(CdnsEncoder& enc)
 {
@@ -88,6 +104,62 @@ void CDNS::StorageHints::reset()
     query_response_signature_hints = DEFAULT_QR_SIG_HINTS;
     rr_hints = DEFAULT_RR_HINTS;
     other_data_hints = DEFAULT_OTHER_DATA_HINTS;
+}
+
+std::string CDNS::StorageParameters::string()
+{
+    std::stringstream ss;
+
+    ss << "Ticks per second: " << std::to_string(ticks_per_second) << std::endl;
+    ss << "Max block items: " << std::to_string(max_block_items) << std::endl;
+    ss << storage_hints.string();
+
+    bool first = true;
+    ss << "OPCODES: ";
+    for (auto opcode : opcodes) {
+        if (first)
+            first = false;
+        else
+            ss << ", ";
+
+        ss << std::to_string(static_cast<std::underlying_type<CDNS::OpCodes>::type>(opcode));
+    }
+    ss << std::endl;
+
+    ss << "RR types: ";
+    first = true;
+    for (auto rrtype : rr_types) {
+        if (first)
+            first = false;
+        else
+            ss << ", ";
+
+        ss << std::to_string(static_cast<std::underlying_type<CDNS::RrTypes>::type>(rrtype));
+    }
+    ss << std::endl;
+
+    if (storage_flags)
+        ss << "Storage flags: " << std::bitset<8>(storage_flags.value()) << std::endl;
+
+    if (client_address_prefix_ipv4)
+        ss << "Client address prefix IPv4: " << std::to_string(client_address_prefix_ipv4.value()) << std::endl;
+
+    if (client_address_prefix_ipv6)
+        ss << "Client address prefix IPv6: " << std::to_string(client_address_prefix_ipv6.value()) << std::endl;
+
+    if (server_address_prefix_ipv4)
+        ss << "Server address prefix IPv4: " << std::to_string(server_address_prefix_ipv4.value()) << std::endl;
+
+    if (server_address_prefix_ipv6)
+        ss << "Server address prefix IPv6: " << std::to_string(server_address_prefix_ipv6.value()) << std::endl;
+
+    if (sampling_method)
+        ss << "Sampling method: " << sampling_method.value() << std::endl;
+
+    if (anonymization_method)
+        ss << "Anonymization method: " << anonymization_method.value() << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::StorageParameters::write(CdnsEncoder& enc)
@@ -265,6 +337,73 @@ void CDNS::StorageParameters::reset()
     anonymization_method = boost::none;
 }
 
+std::string CDNS::CollectionParameters::string()
+{
+    std::stringstream ss;
+
+    if (query_timeout)
+        ss << "Query timeout: " << std::to_string(query_timeout.value()) << std::endl;
+
+    if (skew_timeout)
+        ss << "Skew timeout: " << std::to_string(skew_timeout.value()) << std::endl;
+
+    if (snaplen)
+        ss << "Snaplen: " << std::to_string(snaplen.value()) << std::endl;
+
+    if (promisc)
+        ss << "Promisc: " << (promisc.value() ? "True" : "False") << std::endl;
+
+    // interfaces vector
+    bool first = true;
+    ss << "Interfaces: ";
+    for (auto& intf : interfaces) {
+        if (first)
+            first = false;
+        else
+            ss << ", ";
+
+        ss << intf;
+    }
+    ss << std::endl;
+
+    // server_address vector
+    first = true;
+    ss << "Server addresses: ";
+    for (auto& addr : server_address) {
+        if (first)
+            first = false;
+        else
+            ss << ", ";
+
+        ss << addr;
+    }
+    ss << std::endl;
+
+    // vland ids vector
+    first = true;
+    ss << "VLAN IDs: ";
+    for (auto id : vlan_ids) {
+        if (first)
+            first = false;
+        else
+            ss << ", ";
+
+        ss << std::to_string(id);
+    }
+    ss << std::endl;
+
+    if (filter)
+        ss << "Filter: " << filter.value() << std::endl;
+
+    if (generator_id)
+        ss << "Generator ID: " << generator_id.value() << std::endl;
+
+    if (host_id)
+        ss << "Host ID: " << host_id.value() << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::CollectionParameters::write(CdnsEncoder& enc)
 {
     std::size_t fields = !!query_timeout + !!skew_timeout + !!snaplen + !!promisc + !!interfaces.size()
@@ -425,6 +564,18 @@ void CDNS::CollectionParameters::reset()
     host_id = boost::none;
 }
 
+std::string CDNS::BlockParameters::string()
+{
+    std::stringstream ss;
+
+    ss << storage_parameters.string();
+
+    if (collection_parameters)
+        ss << collection_parameters.value().string();
+
+    return ss.str();
+}
+
 std::size_t CDNS::BlockParameters::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -485,6 +636,26 @@ void CDNS::BlockParameters::reset()
 {
     storage_parameters.reset();
     collection_parameters = boost::none;
+}
+
+std::string CDNS::FilePreamble::string()
+{
+    std::stringstream ss;
+
+    ss << "Major format version: " << std::to_string(m_major_format_version) << std::endl;
+    ss << "Minor format version: " << std::to_string(m_minor_format_version) << std::endl;
+
+    if (m_private_version)
+        ss << "Private version: " << std::to_string(m_private_version.value()) << std::endl;
+
+    for (unsigned i = 0; i < m_block_parameters.size(); i++) {
+        // Start by printing a new line to separate individual block parameters from each other in output
+        ss << std::endl;
+        ss << "Block parameters " << std::to_string(i) << ":" << std::endl;
+        ss << m_block_parameters[i].string();
+    }
+
+    return ss.str();
 }
 
 std::size_t CDNS::FilePreamble::write(CdnsEncoder& enc)

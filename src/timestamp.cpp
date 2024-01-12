@@ -6,6 +6,8 @@
  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <sstream>
+
 #include "timestamp.h"
 
 int64_t CDNS::Timestamp::get_time_offset(const Timestamp& reference, uint64_t ticks_per_second)
@@ -32,6 +34,17 @@ void CDNS::Timestamp::add_time_offset(int64_t offset, uint64_t ticks_per_second)
     ticks += offset;
     m_secs = ticks / ticks_per_second;
     m_ticks = ticks % ticks_per_second;
+}
+
+std::string CDNS::Timestamp::string()
+{
+    std::stringstream ss;
+
+    ss << "Timestamp:" << std::endl;
+    ss << "\tSeconds: " << std::to_string(m_secs) << std::endl;
+    ss << "\tTicks: " << std::to_string(m_ticks) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::Timestamp::write(CdnsEncoder& enc)

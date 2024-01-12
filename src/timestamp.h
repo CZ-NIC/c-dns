@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 
 #include "cdns_encoder.h"
 #include "cdns_decoder.h"
@@ -83,6 +84,12 @@ namespace CDNS {
          * in invalid Timestamp (e.g. Timestamp would be smaller than the start of POSIX epoch)
          */
         void add_time_offset(int64_t offset, uint64_t ticks_per_second);
+
+        /**
+         * @brief Creates string representation of Timestamp
+         * @return String representation of Timestamp
+         */
+        std::string string();
 
         /**
          * @brief Serialize the Timestamp to C-DNS CBOR representation

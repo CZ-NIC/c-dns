@@ -6,9 +6,23 @@
  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <sstream>
+#include <bitset>
+#include <type_traits>
+
 #include "block.h"
 #include "cdns_encoder.h"
 #include "interface.h"
+
+std::string CDNS::ClassType::string()
+{
+    std::stringstream ss;
+
+    ss << "Type: " << std::to_string(type) << std::endl;
+    ss << "Class: " << std::to_string(class_) << std::endl;
+
+    return ss.str();
+}
 
 std::size_t CDNS::ClassType::write(CdnsEncoder& enc)
 {
@@ -68,6 +82,64 @@ void CDNS::ClassType::reset()
 {
     type = 0;
     class_ = 0;
+}
+
+std::string CDNS::QueryResponseSignature::string()
+{
+    std::stringstream ss;
+
+    if (server_address_index)
+        ss << "Server address index: " << std::to_string(server_address_index.value()) << std::endl;
+
+    if (server_port)
+        ss << "Server port: " << std::to_string(server_port.value()) << std::endl;
+
+    if (qr_transport_flags)
+        ss << "Query transport flags: " << std::bitset<8>(qr_transport_flags.value()) << std::endl;
+
+    if (qr_type)
+        ss << "Type of query: " << std::to_string(static_cast<std::underlying_type<CDNS::QueryResponseTypeValues>::type>(qr_type.value())) << std::endl;
+
+    if (qr_sig_flags)
+        ss << "Query signagure flags: " << std::bitset<8>(qr_sig_flags.value()) << std::endl;
+
+    if (query_opcode)
+        ss << "Query OPCODE: " << std::to_string(query_opcode.value()) << std::endl;
+
+    if (qr_dns_flags)
+        ss << "Query DNS flags: " << std::bitset<16>(qr_dns_flags.value()) << std::endl;
+
+    if (query_rcode)
+        ss << "Query RCODE: " << std::to_string(query_rcode.value()) << std::endl;
+
+    if (query_classtype_index)
+        ss << "Query classtype index: " << std::to_string(query_classtype_index.value()) << std::endl;
+
+    if (query_qdcount)
+        ss << "Query QDCOUNT: " << std::to_string(query_qdcount.value()) << std::endl;
+
+    if (query_ancount)
+        ss << "Query ANCOUNT: " << std::to_string(query_ancount.value()) << std::endl;
+
+    if (query_nscount)
+        ss << "Query NSCOUNT: " << std::to_string(query_nscount.value()) << std::endl;
+
+    if (query_arcount)
+        ss << "Query ARCOUNT: " << std::to_string(query_arcount.value()) << std::endl;
+
+    if (query_edns_version)
+        ss << "Query EDNS version: " << std::to_string(query_edns_version.value()) << std::endl;
+
+    if (query_udp_size)
+        ss << "Query EDNS UDP payload size: " << std::to_string(query_udp_size.value()) << std::endl;
+
+    if (query_opt_rdata_index)
+        ss << "Query OPT RDATA index: " << std::to_string(query_opt_rdata_index.value()) << std::endl;
+
+    if (response_rcode)
+        ss << "Response RCODE: " << std::to_string(response_rcode.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::QueryResponseSignature::write(CdnsEncoder& enc)
@@ -285,6 +357,16 @@ void CDNS::QueryResponseSignature::reset()
     response_rcode = boost::none;
 }
 
+std::string CDNS::Question::string()
+{
+    std::stringstream ss;
+
+    ss << "Name index: " << std::to_string(name_index) << std::endl;
+    ss << "Classtype index: " << std::to_string(classtype_index) << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::Question::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -342,6 +424,22 @@ void CDNS::Question::reset()
 {
     name_index = 0;
     classtype_index = 0;
+}
+
+std::string CDNS::RR::string()
+{
+    std::stringstream ss;
+
+    ss << "Name index: " << std::to_string(name_index) << std::endl;
+    ss << "Classtype index: " << std::to_string(classtype_index) << std::endl;
+
+    if (ttl)
+        ss << "TTL: " << std::to_string(ttl.value()) << std::endl;
+
+    if (rdata_index)
+        ss << "RDATA index: " << std::to_string(rdata_index.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::RR::write(CdnsEncoder& enc)
@@ -425,6 +523,25 @@ void CDNS::RR::reset()
     rdata_index = boost::none;
 }
 
+std::string CDNS::MalformedMessageData::string()
+{
+    std::stringstream ss;
+
+    if (server_address_index)
+        ss << "Server address index: " << std::to_string(server_address_index.value()) << std::endl;
+
+    if (server_port)
+        ss << "Server port: " << std::to_string(server_port.value()) << std::endl;
+
+    if (mm_transport_flags)
+        ss << "MM transport flags: " << std::bitset<8>(mm_transport_flags.value()) << std::endl;
+
+    if (mm_payload)
+        ss << "MM payload: " << mm_payload.value() << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::MalformedMessageData::write(CdnsEncoder& enc)
 {
     std::size_t fields = !!server_address_index + !!server_port + !!mm_transport_flags + !!mm_payload;
@@ -506,6 +623,19 @@ void CDNS::MalformedMessageData::reset()
     mm_payload = boost::none;
 }
 
+std::string CDNS::ResponseProcessingData::string()
+{
+    std::stringstream ss;
+
+    if (bailiwick_index)
+        ss << "Bailiwick index: " << std::to_string(bailiwick_index.value()) << std::endl;
+
+    if (processing_flags)
+        ss << "Processing flags: " << std::bitset<8>(processing_flags.value()) << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::ResponseProcessingData::write(CdnsEncoder& enc)
 {
     std::size_t fields = !!bailiwick_index + !!processing_flags;
@@ -565,6 +695,25 @@ void CDNS::ResponseProcessingData::reset()
 {
     bailiwick_index = boost::none;
     processing_flags = boost::none;
+}
+
+std::string CDNS::QueryResponseExtended::string()
+{
+    std::stringstream ss;
+
+    if (question_index)
+        ss << "Question index: " << std::to_string(question_index.value()) << std::endl;
+
+    if (answer_index)
+        ss << "Answer index: " << std::to_string(answer_index.value()) << std::endl;
+
+    if (authority_index)
+        ss << "Authority index: " << std::to_string(authority_index.value()) << std::endl;
+
+    if (additional_index)
+        ss << "Additional index: " << std::to_string(additional_index.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::QueryResponseExtended::write(CdnsEncoder& enc)
@@ -648,6 +797,20 @@ void CDNS::QueryResponseExtended::reset()
     additional_index = boost::none;
 }
 
+std::string CDNS::BlockPreamble::string()
+{
+    std::stringstream ss;
+
+    ss << "Earliest time:" << std::endl;
+    ss << "\tSeconds: " << std::to_string(earliest_time.m_secs) << std::endl;
+    ss << "\tTicks: " << std::to_string(earliest_time.m_ticks) << std::endl;
+
+    if (block_parameters_index)
+        ss << "Block parameters index: " << std::to_string(block_parameters_index.value()) << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::BlockPreamble::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -701,6 +864,31 @@ void CDNS::BlockPreamble::reset()
 {
     earliest_time.reset();
     block_parameters_index = boost::none;
+}
+
+std::string CDNS::BlockStatistics::string()
+{
+    std::stringstream ss;
+
+    if (processed_messages)
+        ss << "Processed messages: " << std::to_string(processed_messages.value()) << std::endl;
+
+    if (qr_data_items)
+        ss << "Q/R data items: " << std::to_string(qr_data_items.value()) << std::endl;
+
+    if (unmatched_queries)
+        ss << "Unmatched queries: " << std::to_string(unmatched_queries.value()) << std::endl;
+
+    if (unmatched_responses)
+        ss << "Unmatched responses: " << std::to_string(unmatched_responses.value()) << std::endl;
+
+    if (discarded_opcode)
+        ss << "Discarded OPCODEs: " << std::to_string(discarded_opcode.value()) << std::endl;
+
+    if (malformed_items)
+        ss << "Malformed items: " << std::to_string(malformed_items.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::BlockStatistics::write(CdnsEncoder& enc)
@@ -803,6 +991,65 @@ void CDNS::BlockStatistics::reset()
     unmatched_responses = boost::none;
     discarded_opcode = boost::none;
     malformed_items = boost::none;
+}
+
+std::string CDNS::QueryResponse::string()
+{
+    std::stringstream ss;
+
+    if (time_offset)
+        ss << time_offset.value().string();
+
+    if (client_address_index)
+        ss << "Client address index: " << std::to_string(client_address_index.value()) << std::endl;
+
+    if (client_port)
+        ss << "Client port: " << std::to_string(client_port.value()) << std::endl;
+
+    if (transaction_id)
+        ss << "Transaction ID: " << std::to_string(transaction_id.value()) << std::endl;
+
+    if (qr_signature_index)
+        ss << "Query response signature index: " << std::to_string(qr_signature_index.value()) << std::endl;
+
+    if (client_hoplimit)
+        ss << "Client hoplimit: " << std::to_string(client_hoplimit.value()) << std::endl;
+
+    if (response_delay)
+        ss << "Response delay: " << std::to_string(response_delay.value()) << std::endl;
+
+    if (query_name_index)
+        ss << "QNAME index: " << std::to_string(query_name_index.value()) << std::endl;
+
+    if (query_size)
+        ss << "Query size: " << std::to_string(query_size.value()) << std::endl;
+
+    if (response_size)
+        ss << "Response size: " << std::to_string(response_size.value()) << std::endl;
+
+    if (response_processing_data)
+        ss << response_processing_data.value().string();
+
+    if (query_extended) {
+        ss << "Query extended data:" << std::endl;
+        ss << query_extended.value().string();
+    }
+
+    if (response_extended) {
+        ss << "Response extended data:" << std::endl;
+        ss << response_extended.value().string();
+    }
+
+    if (asn)
+        ss << "ASN: " << asn.value() << std::endl;
+
+    if (country_code)
+        ss << "Country code: " << country_code.value() << std::endl;
+
+    if (round_trip_time)
+        ss << "RTT: " << std::to_string(round_trip_time.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
@@ -1013,6 +1260,24 @@ void CDNS::QueryResponse::reset()
     round_trip_time = boost::none;
 }
 
+std::string CDNS::AddressEventCount::string()
+{
+    std::stringstream ss;
+
+    ss << "Address event type: " << std::to_string(static_cast<std::underlying_type<AddressEventTypeValues>::type>(ae_type)) << std::endl;
+
+    if (ae_code)
+        ss << "Address event code: " << std::to_string(ae_code.value()) << std::endl;
+
+    if (ae_transport_flags)
+        ss << "Address event transport flags: " << std::bitset<8>(ae_transport_flags.value()) << std::endl;
+
+    ss << "Address index: " << std::to_string(ae_address_index) << std::endl;
+    ss << "Address event count: " << std::to_string(ae_count) << std::endl;
+
+    return ss.str();
+}
+
 std::size_t CDNS::AddressEventCount::write(CdnsEncoder& enc)
 {
     std::size_t written = 0;
@@ -1102,6 +1367,25 @@ void CDNS::AddressEventCount::reset()
     ae_address_index = 0;
     ae_transport_flags = boost::none;
     ae_count = 0;
+}
+
+std::string CDNS::MalformedMessage::string()
+{
+    std::stringstream ss;
+
+    if (time_offset)
+        ss << time_offset.value().string();
+
+    if (client_address_index)
+        ss << "Client address index: " << std::to_string(client_address_index.value()) << std::endl;
+
+    if (client_port)
+        ss << "Client port: " << std::to_string(client_port.value()) << std::endl;
+
+    if (message_data_index)
+        ss << "Message data index: " << std::to_string(message_data_index.value()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::MalformedMessage::write(CdnsEncoder& enc, const Timestamp& earliest, const uint64_t& ticks_per_second)
@@ -1238,6 +1522,32 @@ void CDNS::IndexListItem::read(CdnsDecoder& dec)
 void CDNS::IndexListItem::reset()
 {
     list.clear();
+}
+
+std::string CDNS::CdnsBlock::string()
+{
+    std::stringstream ss;
+
+    ss << m_block_preamble.string();
+
+    if (m_block_statistics)
+        ss << m_block_statistics.value().string();
+
+    ss << "IP address BlockTable items: " << std::to_string(m_ip_address.size()) << std::endl;
+    ss << "ClassType BlockTable items: " << std::to_string(m_classtype.size()) << std::endl;
+    ss << "NAME/RDATA BlockTable items: " << std::to_string(m_name_rdata.size()) << std::endl;
+    ss << "Q/R signature BlockTable items: " << std::to_string(m_qr_sig.size()) << std::endl;
+    ss << "QuestionList BlockTable items: " << std::to_string(m_qlist.size()) << std::endl;
+    ss << "Question BlockTable items: " << std::to_string(m_qrr.size()) << std::endl;
+    ss << "RRList BlockTable items: " << std::to_string(m_rrlist.size()) << std::endl;
+    ss << "RR BlockTable items: " << std::to_string(m_rr.size()) << std::endl;
+    ss << "MalformedMessageData BlockTable items: " << std::to_string(m_malformed_message_data.size()) << std::endl;
+
+    ss << "Query/Response items: " << std::to_string(m_query_responses.size()) << std::endl;
+    ss << "Address event count items: " << std::to_string(m_address_event_counts.size()) << std::endl;
+    ss << "Malformed message items: " << std::to_string(m_malformed_messages.size()) << std::endl;
+
+    return ss.str();
 }
 
 std::size_t CDNS::CdnsBlock::write_blocktables(CdnsEncoder& enc, std::size_t& fields)
