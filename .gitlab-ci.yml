@@ -40,10 +40,13 @@ obs:
     - build_and_test
   before_script:
     - apt update
-    - apt -y install build-essential devscripts debhelper git osc python3-pip python3-setuptools
-    - pip3 install apkg
+    - apt -y install build-essential devscripts debhelper git osc python3-pip python3-setuptools python3-venv
+    - python3 -m venv venv
+    - venv/bin/python3 -m pip install apkg
   script:
+    - source venv/bin/activate
     - scripts/prepare_obs.sh
     - scripts/build_obs.sh
+    - deactivate
   only:
     - tags
