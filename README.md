@@ -27,6 +27,7 @@ make install
 ```
 If you don't want to build the Python bindings, you can omit `-DBUILD_PYTHON_BINDINGS` option.
 If you don't want to build the test suite with the library, you can omit `-DBUILD_TESTS` option.
+You can disable building of CLI tools with `-DBUILD_CLI_TOOLS=OFF` option.
 
 To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
 
@@ -121,3 +122,17 @@ while (true) {
 }
 delete reader;
 ```
+
+## CLI tools
+
+The C-DNS library comes with a set of CLI tools for easy inspection and merging of C-DNS files.
+
+**cdns-blocks** - Prints summary information about individual Blocks in C-DNS file.
+
+**cdns-itemcount** - Prints the counts of Query/Response, Address Event Count and Malformed Message items in a C-DNS file.
+
+**cdns-items** - Prints full contents of individual Query/Response, Address Event Count and Malformed Message items in a C-DNS file.
+
+**cdns-merge** - Merges multiple C-DNS files into one. Can only merge files with compatible *major.minor.private* version.
+
+**cdns-preamble** - Prints human readable contents of C-DNS file preamble.

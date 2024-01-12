@@ -21,7 +21,7 @@
  * @brief Implementation of cdns-merge command line tool.
  *
  * cdns-merge command line tool merges multiple C-DNS files into one. Can only merge files with compatible
- * major.minor.private' version. \n
+ * 'major.minor.private' version. \n
  * Usage: cdns-merge -o <OUTPUT_FILE> [-h] <INPUT_FILE> [<INPUT_FILE> ...] \n
  * Options: \n
  *      -o <OUTPUT_FILE>    : Output C-DNS file \n
