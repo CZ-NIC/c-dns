@@ -78,6 +78,13 @@ namespace CDNS {
                          query_response_signature_hints(DEFAULT_QR_SIG_HINTS),
                          rr_hints(DEFAULT_RR_HINTS),
                          other_data_hints(DEFAULT_OTHER_DATA_HINTS) {}
+
+        /**
+         * @brief Creates string representation of Storage Hints
+         * @return String representation of Storage Hints
+         */
+        std::string string();
+
         /**
          * @brief Serialize the Storage hints to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -110,6 +117,13 @@ namespace CDNS {
         StorageParameters() : ticks_per_second(DEFAULT_TICKS_PER_SECOND),
                               max_block_items(DEFAULT_MAX_BLOCK_ITEMS), storage_hints(),
                               opcodes(OpCodesDefault), rr_types(RrTypesDefault) {}
+
+        /**
+         * @brief Creates string representation of Storage Parameters
+         * @return String representation of Storage Parameters
+         */
+        std::string string();
+
         /**
          * @brief Serialize the Storage parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -150,6 +164,12 @@ namespace CDNS {
         CollectionParameters() : interfaces(), server_address(), vlan_ids() {}
 
         /**
+         * @brief Creates string representation of Collection Parameters
+         * @return String representation of Collection Parameters
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the Collection parameters to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -185,6 +205,12 @@ namespace CDNS {
      */
     struct BlockParameters {
         BlockParameters() : storage_parameters() {}
+
+        /**
+         * @brief Creates string representation of Block Parameters
+         * @return String representation of Block Parameters
+         */
+        std::string string();
 
         /**
          * @brief Serialize the Block parameters to C-DNS CBOR representation
@@ -258,6 +284,12 @@ namespace CDNS {
 
             throw std::runtime_error("Block parameters index out of range.");
         }
+
+        /**
+         * @brief Creates string representation of File Preamble
+         * @return String representation of File Preamble
+         */
+        std::string string();
 
         /**
          * @brief Serialize the File preamble to C-DNS CBOR representation

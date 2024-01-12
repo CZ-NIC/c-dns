@@ -25,7 +25,7 @@ Requires:   xz-devel
 Headers of C-DNS library.
 
 %description
-Library for export of the C-DNS format.
+Library and command line tools for export and inspection of the C-DNS format.
 
 %prep
 %autosetup -p1 -n c-dns-%{version}
@@ -53,6 +53,7 @@ ctest
 %license LICENSE
 %{_libdir}/libcdns.so.1
 %{_libdir}/libcdns.so.1.*
+%{_bindir}/cdns-*
 
 
 %files devel

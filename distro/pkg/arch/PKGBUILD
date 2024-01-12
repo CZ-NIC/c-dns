@@ -1,7 +1,7 @@
 pkgname=c-dns
 pkgver='{{ version }}'
 pkgrel='{{ release }}'
-pkgdesc='Library for exporting C-DNS format'
+pkgdesc='Library and command line tools for exporting and inspecting C-DNS format'
 arch=('x86_64')
 url='https://gitlab.nic.cz/knot/c-dns'
 license=('MPL2')

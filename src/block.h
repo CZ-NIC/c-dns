@@ -61,6 +61,12 @@ namespace CDNS {
         }
 
         /**
+         * @brief Creates string representation of ClassType
+         * @return String representation of ClassType
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the ClassType to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -171,6 +177,12 @@ namespace CDNS {
         }
 
         /**
+         * @brief Creates string representation of QueryResponseSignature
+         * @return String representation of QueryResponseSignature
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the QueryResponseSignature to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -238,6 +250,12 @@ namespace CDNS {
         const Question& key() const {
             return *this;
         }
+
+        /**
+         * @brief Creates string representation of Question
+         * @return String representation of Question
+         */
+        std::string string();
 
         /**
          * @brief Serialize the Question to C-DNS CBOR representation
@@ -309,6 +327,12 @@ namespace CDNS {
         const RR& key() const {
             return *this;
         }
+
+        /**
+         * @brief Creates string representation of RR
+         * @return String representation of RR
+         */
+        std::string string();
 
         /**
          * @brief Serialize the RR to C-DNS CBOR representation
@@ -388,6 +412,12 @@ namespace CDNS {
         }
 
         /**
+         * @brief Creates string representation of MalformedMessageData
+         * @return String representation of MalformedMessageData
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the MalformedMessageData to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -417,6 +447,12 @@ namespace CDNS {
      */
     struct ResponseProcessingData {
         /**
+         * @brief Creates string representation of ResponseProcessingData
+         * @return String representation of ResponseProcessingData
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the ResponseProcessingData to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -443,6 +479,12 @@ namespace CDNS {
      * @brief Block table's Query Response Extended structure
      */
     struct QueryResponseExtended {
+        /**
+         * @brief Creates string representation of QueryResponseExtended
+         * @return String representation of QueryResponseExtended
+         */
+        std::string string();
+
         /**
          * @brief Serialize the QueryResponseExtended to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -473,6 +515,13 @@ namespace CDNS {
      */
     struct BlockPreamble {
         BlockPreamble() : earliest_time() {}
+
+        /**
+         * @brief Creates string representation of Block Preamble
+         * @return String representation of Block Preamble
+         */
+        std::string string();
+
         /**
          * @brief Serialize the BlockPreamble to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -500,6 +549,12 @@ namespace CDNS {
      * @brief Block statistics structure
      */
     struct BlockStatistics {
+        /**
+         * @brief Creates string representation of Block Statistics
+         * @return String representation of Block Statistics
+         */
+        std::string string();
+
         /**
          * @brief Serialize the BlockStatistics to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -531,6 +586,12 @@ namespace CDNS {
      * @brief QueryResponse item structure
      */
     struct QueryResponse {
+        /**
+         * @brief Creates string representation of QueryResponse
+         * @return String representation of QueryResponse
+         */
+        std::string string();
+
         /**
          * @brief Serialize the QueryResponse to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -623,6 +684,12 @@ namespace CDNS {
         }
 
         /**
+         * @brief Creates string representation of Address Event Count
+         * @return String representation of Address Event Count
+         */
+        std::string string();
+
+        /**
          * @brief Serialize the AddressEventCount to C-DNS CBOR representation
          * @param enc C-DNS encoder
          * @return Number of uncompressed bytes written
@@ -652,6 +719,12 @@ namespace CDNS {
      * @brief Malformed Message item structure
      */
     struct MalformedMessage {
+        /**
+         * @brief Creates string representation of Malformed Message
+         * @return String representation of Malformed Message
+         */
+        std::string string();
+
         /**
          * @brief Serialize the MalformedMessage to C-DNS CBOR representation
          * @param enc C-DNS encoder
@@ -877,6 +950,12 @@ namespace CDNS {
             }
             return *this;
         }
+
+        /**
+         * @brief Creates string representation of Block
+         * @return String representation of Block
+         */
+        std::string string();
 
         /**
          * @brief Serialize Block to C-DNS CBOR representation

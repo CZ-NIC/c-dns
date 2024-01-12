@@ -26,6 +26,12 @@ namespace CDNS {
     struct GenericResourceRecord {
         GenericResourceRecord() : name(), classtype() {}
 
+        /**
+         * @brief Creates string representation of Resource record
+         * @return String representation of Resource record
+         */
+        std::string string();
+
         std::string name;
         ClassType classtype;
         boost::optional<uint8_t> ttl; // Not used in Question records
@@ -38,6 +44,12 @@ namespace CDNS {
      * Serves as "interface" between the C-DNS library and its user
      */
     struct GenericQueryResponse {
+        /**
+         * @brief Creates string representation of Query/Response
+         * @return String representation of Query/Response
+         */
+        std::string string();
+
         boost::optional<Timestamp> ts;
         boost::optional<std::string> client_ip;
         boost::optional<uint16_t> client_port;
@@ -98,6 +110,12 @@ namespace CDNS {
                                      ip_address(),
                                      ae_count(0) {}
 
+        /**
+         * @brief Creates string representation of Address event count
+         * @return String representation of Address event count
+         */
+        std::string string();
+
         AddressEventTypeValues ae_type;
         boost::optional<uint8_t> ae_code;
         boost::optional<QueryResponseTransportFlagsMask> ae_transport_flags;
@@ -111,6 +129,12 @@ namespace CDNS {
      * Serves as "interface" between the C-DNS library and its user
      */
     struct GenericMalformedMessage {
+        /**
+         * @brief Creates string representation of Malformed message
+         * @return String representation of Malformed message
+         */
+        std::string string();
+
         boost::optional<Timestamp> ts;
         boost::optional<std::string> client_ip;
         boost::optional<uint16_t> client_port;
