@@ -68,7 +68,11 @@ if (BUILD_CLI_TOOLS)
     add_executable(cdns-itemcount src/bin/cdns_itemcount.cpp)
     target_link_libraries(cdns-itemcount PUBLIC cdns)
 
-    install(TARGETS cdns-merge cdns-itemcount RUNTIME)
+    # cdns-preamble cli tool
+    add_executable(cdns-preamble src/bin/cdns_preamble.cpp)
+    target_link_libraries(cdns-preamble PUBLIC cdns)
+
+    install(TARGETS cdns-merge cdns-itemcount cdns-preamble RUNTIME)
 endif(BUILD_CLI_TOOLS)
 
 if (BUILD_PYTHON_BINDINGS)
