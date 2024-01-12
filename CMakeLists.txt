@@ -22,6 +22,7 @@ find_package(Doxygen)
 
 option(BUILD_TESTS "Set to ON to build tests that use Google Test framework" OFF)
 option(BUILD_DOC "Generate Doxygen documentation" ON)
+option(BUILD_CLI_TOOLS "Build a set of command line tools to inspect C-DNS files" ON)
 option(BUILD_PYTHON_BINDINGS "Generate Python bindings" OFF)
 
 file(GLOB sources "src/*.cpp")
@@ -57,6 +58,14 @@ install(TARGETS cdns
 install(FILES ${CMAKE_BINARY_DIR}/src/cdns.pc 
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
+
+if (BUILD_CLI_TOOLS)
+    # cdns-merge cli tool
+    add_executable(cdns-merge src/bin/cdns_merge.cpp)
+    target_link_libraries(cdns-merge PUBLIC cdns)
+
+    install(TARGETS cdns-merge RUNTIME)
+endif(BUILD_CLI_TOOLS)
 
 if (BUILD_PYTHON_BINDINGS)
     find_package(Python3 REQUIRED)
