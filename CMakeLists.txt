@@ -64,7 +64,11 @@ if (BUILD_CLI_TOOLS)
     add_executable(cdns-merge src/bin/cdns_merge.cpp)
     target_link_libraries(cdns-merge PUBLIC cdns)
 
-    install(TARGETS cdns-merge RUNTIME)
+    # cdns-itemcount cli tool
+    add_executable(cdns-itemcount src/bin/cdns_itemcount.cpp)
+    target_link_libraries(cdns-itemcount PUBLIC cdns)
+
+    install(TARGETS cdns-merge cdns-itemcount RUNTIME)
 endif(BUILD_CLI_TOOLS)
 
 if (BUILD_PYTHON_BINDINGS)
