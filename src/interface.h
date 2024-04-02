@@ -34,7 +34,7 @@ namespace CDNS {
 
         std::string name;
         ClassType classtype;
-        boost::optional<uint8_t> ttl; // Not used in Question records
+        boost::optional<uint32_t> ttl; // Not used in Question records
         boost::optional<std::string> rdata; // Not used in Question records
     };
 
