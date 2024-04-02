@@ -355,7 +355,7 @@ namespace CDNS {
 
         index_t name_index;
         index_t classtype_index;
-        boost::optional<uint8_t> ttl;
+        boost::optional<uint32_t> ttl;
         boost::optional<index_t> rdata_index;
     };
 
