@@ -22,7 +22,7 @@ namespace CDNS {
 
     static constexpr uint8_t VERSION_MAJOR = 1;
     static constexpr uint8_t VERSION_MINOR = 0;
-    static constexpr uint8_t VERSION_PRIVATE = 1;
+    static constexpr uint8_t VERSION_PRIVATE = 2;
 
     static constexpr uint64_t DEFAULT_TICKS_PER_SECOND = 1000000;
     static constexpr uint64_t DEFAULT_MAX_BLOCK_ITEMS = 10000;

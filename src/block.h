@@ -629,6 +629,7 @@ namespace CDNS {
         boost::optional<std::string> asn; // ASN for client IP address, implementation specific item
         boost::optional<std::string> country_code; // Country code for client IP address, implementation specific item
         boost::optional<int64_t> round_trip_time; //!< Estimated RTT of TCP connection in ticks, implementation specific item
+        boost::optional<std::string> user_id; //!< Unique user ID
     };
 
     /**
