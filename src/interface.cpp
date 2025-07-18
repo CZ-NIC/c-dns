@@ -196,6 +196,9 @@ std::string CDNS::GenericQueryResponse::string()
     if (round_trip_time)
         ss << "RTT: " << std::to_string(round_trip_time.value()) << std::endl;
 
+    if (user_id)
+        ss << "User ID: " << user_id.value() << std::endl;
+
     if (query_questions) {
         for (unsigned i = 0; i < query_questions.value().size(); i++) {
             ss << "Query question RR " << std::to_string(i) << ":" << std::endl;

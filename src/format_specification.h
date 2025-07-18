@@ -288,8 +288,9 @@ namespace CDNS {
         asn = -1, //!< Autonomous system number for client IP address
         country_code = -2, //!< Country code for client IP address
         round_trip_time = -3, //!< Estimated RTT of TCP connection in ticks
+        user_id = -4, //!<< Unique user ID
 
-        query_response_size = 16
+        query_response_size = 17
     };
 
     /**

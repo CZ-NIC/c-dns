@@ -52,6 +52,7 @@ namespace CDNS {
         gqr.query_additional = grr;
         gqr.response_answers = grr;
         gqr.country_code = "CZ";
+        gqr.user_id = "291a2403-735f-4c94-917a-d9eeadb374a4";
 
         std::size_t written = exporter->buffer_qr(gqr);
         EXPECT_EQ(written, 0);

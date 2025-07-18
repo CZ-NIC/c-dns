@@ -191,6 +191,7 @@ void init_format_specification(py::module& m)
         .value("asn", CDNS::QueryResponseMapIndex::asn)
         .value("country_code", CDNS::QueryResponseMapIndex::country_code)
         .value("round_trip_time", CDNS::QueryResponseMapIndex::round_trip_time)
+        .value("user_id", CDNS::QueryResponseMapIndex::user_id)
         .value("query_response_size", CDNS::QueryResponseMapIndex::query_response_size)
         .export_values();
 

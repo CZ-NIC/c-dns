@@ -1049,6 +1049,9 @@ std::string CDNS::QueryResponse::string()
     if (round_trip_time)
         ss << "RTT: " << std::to_string(round_trip_time.value()) << std::endl;
 
+    if (user_id)
+        ss << "User ID: " << user_id.value() << std::endl;
+
     return ss.str();
 }
 
@@ -1057,7 +1060,7 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
     std::size_t fields = !!time_offset + !!client_address_index + !!client_port + !!transaction_id
                          + !!qr_signature_index + !!client_hoplimit + !!response_delay + !! query_name_index
                          + !!query_size + !!response_size + !!response_processing_data + !!query_extended
-                         + !!response_extended + !!asn + !!country_code + !!round_trip_time;
+                         + !!response_extended + !!asn + !!country_code + !!round_trip_time + !!user_id;
 
     if (fields == 0)
         return 0;
@@ -1163,6 +1166,11 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
         written += enc.write(round_trip_time.value());
     }
 
+    if (user_id) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::user_id));
+        written += enc.write_textstring(user_id.value());
+    }
+
     return written;
 }
 
@@ -1231,6 +1239,9 @@ void CDNS::QueryResponse::read(CdnsDecoder& dec)
             case get_map_index(QueryResponseMapIndex::round_trip_time):
                 round_trip_time = dec.read_integer();
                 break;
+            case get_map_index(QueryResponseMapIndex::user_id):
+                user_id = dec.read_textstring();
+                break;
             default:
                 dec.skip_item();
                 break;
@@ -1258,6 +1269,7 @@ void CDNS::QueryResponse::reset()
     asn = boost::none;
     country_code = boost::none;
     round_trip_time = boost::none;
+    user_id = boost::none;
 }
 
 std::string CDNS::AddressEventCount::string()
@@ -2031,6 +2043,12 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         qr_filled = true;
     }
 
+    // User ID
+    if (gr.user_id) {
+        qr.user_id = *gr.user_id;
+        qr_filled = true;
+    }
+
     /**
      * Add Query Response to the Block
      */
@@ -2052,7 +2070,8 @@ bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
                             + !!qr.transaction_id + !!qr.qr_signature_index + !!qr.client_hoplimit
                             + !!qr.response_delay + !!qr.query_name_index + !!qr.query_size
                             + !!qr.response_size + !!qr.response_processing_data + !!qr.query_extended
-                            + !!qr.response_extended + !!qr.asn + !!qr.country_code + !!qr.round_trip_time;
+                            + !!qr.response_extended + !!qr.asn + !!qr.country_code + !!qr.round_trip_time
+                            + !!qr.user_id;
 
     if (fields == 0)
         return full() ? true : false;
@@ -2565,6 +2584,7 @@ CDNS::GenericQueryResponse CDNS::CdnsBlockRead::read_generic_qr(bool& end)
     gqr.asn = qr.asn;
     gqr.country_code = qr.country_code;
     gqr.round_trip_time = qr.round_trip_time;
+    gqr.user_id = qr.user_id;
 
     m_qr_read++;
     return gqr;

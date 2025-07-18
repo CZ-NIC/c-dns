@@ -150,7 +150,8 @@ void init_block(py::module& m)
         .def_readwrite("response_extended", &CDNS::QueryResponse::response_extended)
         .def_readwrite("asn", &CDNS::QueryResponse::asn)
         .def_readwrite("country_code", &CDNS::QueryResponse::country_code)
-        .def_readwrite("round_trip_time", &CDNS::QueryResponse::round_trip_time);
+        .def_readwrite("round_trip_time", &CDNS::QueryResponse::round_trip_time)
+        .def_readwrite("user_id", &CDNS::QueryResponse::user_id);
 
     py::class_<CDNS::AddressEventCount>(m, "AddressEventCount")
         .def(py::init())
