@@ -18,6 +18,7 @@ BuildRequires:  xz-devel
 %package devel
 Summary:    Exporter of the C-DNS format (development headers)
 Requires:   %{name}%{?_isa} = %{version}-%{release}
+Requires:   boost-devel
 Requires:   zlib-devel
 Requires:   xz-devel
 
