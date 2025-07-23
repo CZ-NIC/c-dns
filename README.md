@@ -32,10 +32,10 @@ You can disable building of CLI tools with `-DBUILD_CLI_TOOLS=OFF` option.
 To generate Doxygen documentation run `make doc`. Doxygen documentation for current release can be found [here](https://knot.pages.nic.cz/c-dns/).
 
 # Installation from packages
-Packages for Debian 11, 10, 9; Ubuntu 22.04, 20.04, 18.04, 16.04; Fedora 36, 35, 34, Rawhide;
+Packages for Debian 12, 11, 10, 9; Ubuntu 24.04, 22.04, 20.04, 18.04, 16.04; Fedora 42 - 36, Rawhide;
 EPEL 8 and Arch are available from [OBS (openSUSE Build Service)](https://build.opensuse.org/project/show/home:CZ-NIC:dns-probe).
 
-Python bindings are, for the moment, available only when building the library from sources. Linux packages for Python bindings will be available soon.
+Python bindings are, for the moment, available only when building the library from sources.
 
 #### Debian/Ubuntu
 ```shell
@@ -105,7 +105,7 @@ delete exporter;
 
 // Read C-DNS file
 std::ifstream ifs("output.out", std::ifstream::binary);
-CDNS::CdnsReader reader = new CDNS::CdnsReader(ifs);
+CDNS::CdnsReader* reader = new CDNS::CdnsReader(ifs);
 
 bool end = false;
 while (true) {
