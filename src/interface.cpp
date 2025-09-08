@@ -199,6 +199,12 @@ std::string CDNS::GenericQueryResponse::string()
     if (user_id)
         ss << "User ID: " << user_id.value() << std::endl;
 
+    if (policy_action)
+        ss << "Policy action: "<< std::to_string(static_cast<std::underlying_type<CDNS::PolicyActionValues>::type>(policy_action.value())) << std::endl;
+
+    if (policy_rule)
+        ss << "Policy rule: " << policy_rule.value() << std::endl;
+
     if (query_questions) {
         for (unsigned i = 0; i < query_questions.value().size(); i++) {
             ss << "Query question RR " << std::to_string(i) << ":" << std::endl;

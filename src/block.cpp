@@ -1052,6 +1052,12 @@ std::string CDNS::QueryResponse::string()
     if (user_id)
         ss << "User ID: " << user_id.value() << std::endl;
 
+    if (policy_action)
+        ss << "Policy action: " << std::to_string(static_cast<std::underlying_type<CDNS::PolicyActionValues>::type>(policy_action.value())) << std::endl;
+
+    if (policy_rule)
+        ss << "Policy rule: " << policy_rule.value() << std::endl;
+
     return ss.str();
 }
 
@@ -1060,7 +1066,8 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
     std::size_t fields = !!time_offset + !!client_address_index + !!client_port + !!transaction_id
                          + !!qr_signature_index + !!client_hoplimit + !!response_delay + !! query_name_index
                          + !!query_size + !!response_size + !!response_processing_data + !!query_extended
-                         + !!response_extended + !!asn + !!country_code + !!round_trip_time + !!user_id;
+                         + !!response_extended + !!asn + !!country_code + !!round_trip_time + !!user_id
+                         + !!policy_action + !!policy_rule;
 
     if (fields == 0)
         return 0;
@@ -1166,9 +1173,22 @@ std::size_t CDNS::QueryResponse::write(CdnsEncoder& enc, const Timestamp& earlie
         written += enc.write(round_trip_time.value());
     }
 
+    // Write User ID
     if (user_id) {
         written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::user_id));
         written += enc.write_textstring(user_id.value());
+    }
+
+    // Write Policy action
+    if (policy_action) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::policy_action));
+        written += enc.write(get_map_index(policy_action.value()));
+    }
+
+    // Write Policy rule
+    if (policy_rule) {
+        written += enc.write(get_map_index(CDNS::QueryResponseMapIndex::policy_rule));
+        written += enc.write_textstring(policy_rule.value());
     }
 
     return written;
@@ -1242,6 +1262,12 @@ void CDNS::QueryResponse::read(CdnsDecoder& dec)
             case get_map_index(QueryResponseMapIndex::user_id):
                 user_id = dec.read_textstring();
                 break;
+            case get_map_index(QueryResponseMapIndex::policy_action):
+                policy_action = static_cast<PolicyActionValues>(dec.read_unsigned());
+                break;
+            case get_map_index(QueryResponseMapIndex::policy_rule):
+                policy_rule = dec.read_textstring();
+                break;
             default:
                 dec.skip_item();
                 break;
@@ -1270,6 +1296,8 @@ void CDNS::QueryResponse::reset()
     country_code = boost::none;
     round_trip_time = boost::none;
     user_id = boost::none;
+    policy_action = boost::none;
+    policy_rule = boost::none;
 }
 
 std::string CDNS::AddressEventCount::string()
@@ -2049,6 +2077,18 @@ bool CDNS::CdnsBlock::add_question_response_record(const GenericQueryResponse& g
         qr_filled = true;
     }
 
+    // Policy action
+    if (gr.policy_action) {
+        qr.policy_action = *gr.policy_action;
+        qr_filled = true;
+    }
+
+    // Policy rule
+    if (gr.policy_rule) {
+        qr.policy_rule = *gr.policy_rule;
+        qr_filled = true;
+    }
+
     /**
      * Add Query Response to the Block
      */
@@ -2071,7 +2111,7 @@ bool CDNS::CdnsBlock::add_question_response_record(const QueryResponse& qr,
                             + !!qr.response_delay + !!qr.query_name_index + !!qr.query_size
                             + !!qr.response_size + !!qr.response_processing_data + !!qr.query_extended
                             + !!qr.response_extended + !!qr.asn + !!qr.country_code + !!qr.round_trip_time
-                            + !!qr.user_id;
+                            + !!qr.user_id + !!qr.policy_action + !!qr.policy_rule;
 
     if (fields == 0)
         return full() ? true : false;
@@ -2585,6 +2625,8 @@ CDNS::GenericQueryResponse CDNS::CdnsBlockRead::read_generic_qr(bool& end)
     gqr.country_code = qr.country_code;
     gqr.round_trip_time = qr.round_trip_time;
     gqr.user_id = qr.user_id;
+    gqr.policy_action = qr.policy_action;
+    gqr.policy_rule = qr.policy_rule;
 
     m_qr_read++;
     return gqr;

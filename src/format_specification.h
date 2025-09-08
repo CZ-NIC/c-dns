@@ -289,8 +289,10 @@ namespace CDNS {
         country_code = -2, //!< Country code for client IP address
         round_trip_time = -3, //!< Estimated RTT of TCP connection in ticks
         user_id = -4, //!<< Unique user ID
+        policy_action = -5, //!<< Policy applied on query. Partially based on policy.action field from dnstap schema
+        policy_rule = -6, //!<< Rule that triggered policy application on query. Based on policy.rule field from dnstap schema
 
-        query_response_size = 17
+        query_response_size = 19
     };
 
     /**
@@ -514,5 +516,28 @@ namespace CDNS {
         icmpv6_time_exceeded = 3,
         icmpv6_dest_unreachable = 4,
         icmpv6_packet_too_big = 5
+    };
+
+    /**
+     * @enum PolicyActionValues
+     * @brief Policy Action field possible values (partially based on dnstap schema)
+     */
+    enum class PolicyActionValues : uint8_t {
+        no_action = 0,
+
+        // Actions based on policy.action field from dnstap schema
+        nxdomain = 1,
+        nodata = 2,
+        pass = 3,
+        drop = 4,
+        truncate = 5,
+        local_data = 6,
+
+        // Resolver actions
+        allow = 128,
+        block = 129,
+        audit = 130,
+
+        other = 255
     };
 }
