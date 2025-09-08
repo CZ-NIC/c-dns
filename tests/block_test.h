@@ -159,6 +159,8 @@ namespace CDNS {
         EXPECT_FALSE(qr.country_code);
         EXPECT_FALSE(qr.round_trip_time);
         EXPECT_FALSE(qr.user_id);
+        EXPECT_FALSE(qr.policy_action);
+        EXPECT_FALSE(qr.policy_rule);
     }
 
     TEST(AddressEventCountTest, AECCTest) {
@@ -461,6 +463,8 @@ namespace CDNS {
         qr.asn = "1234";
         qr.round_trip_time = 1234;
         qr.user_id = "291a2403-735f-4c94-917a-d9eeadb374a4";
+        qr.policy_action = CDNS::PolicyActionValues::audit;
+        qr.policy_rule = "RPZ-2";
 
         block.add_question_response_record(qr);
         EXPECT_EQ(block.get_item_count(), 1);
@@ -478,6 +482,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.asn, "1234");
         EXPECT_EQ(*gqr.round_trip_time, 1234);
         EXPECT_EQ(*gqr.user_id, "291a2403-735f-4c94-917a-d9eeadb374a4");
+        EXPECT_EQ(*gqr.policy_action, CDNS::PolicyActionValues::audit);
+        EXPECT_EQ(*gqr.policy_rule, "RPZ-2");
         EXPECT_FALSE(gqr.query_size);
 
         gqr = block.read_generic_qr(end);
@@ -488,6 +494,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.query_size, 150);
         EXPECT_EQ(*gqr.asn, "1234");
         EXPECT_EQ(*gqr.user_id, "291a2403-735f-4c94-917a-d9eeadb374a4");
+        EXPECT_EQ(*gqr.policy_action, CDNS::PolicyActionValues::audit);
+        EXPECT_EQ(*gqr.policy_rule, "RPZ-2");
         EXPECT_EQ(*gqr.round_trip_time, 1234);
 
         gqr = block.read_generic_qr(end);
@@ -498,6 +506,8 @@ namespace CDNS {
         EXPECT_FALSE(gqr.asn);
         EXPECT_FALSE(gqr.round_trip_time);
         EXPECT_FALSE(gqr.user_id);
+        EXPECT_FALSE(gqr.policy_action);
+        EXPECT_FALSE(gqr.policy_rule);
     }
 
     TEST(BlockReadTest, BlockReadGenericAECTest) {

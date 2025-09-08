@@ -26,6 +26,8 @@ namespace CDNS {
         std::string cc("CZ");
         std::string asn("1234"), asn2("5678");
         std::string uid("291a2403-735f-4c94-917a-d9eeadb374a4");
+        CDNS::PolicyActionValues policy_action(CDNS::PolicyActionValues::allow);
+        std::string policy_rule("RPZ-1");
         int64_t rtt = 42;
 
         GenericQueryResponse gqr;
@@ -39,6 +41,8 @@ namespace CDNS {
         gqr.asn = asn2;
         gqr.round_trip_time = rtt;
         gqr.user_id = uid;
+        gqr.policy_action = policy_action;
+        gqr.policy_rule = policy_rule;
         exporter->buffer_qr(gqr);
 
         GenericMalformedMessage gmm;
@@ -101,6 +105,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.asn, "1234");
         EXPECT_EQ(*gqr.country_code, "CZ");
         EXPECT_FALSE(gqr.user_id);
+        EXPECT_FALSE(gqr.policy_action);
+        EXPECT_FALSE(gqr.policy_rule);
 
         gqr = block.read_generic_qr(eof);
         ASSERT_FALSE(eof);
@@ -112,6 +118,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.country_code, "CZ");
         EXPECT_EQ(*gqr.round_trip_time, 42);
         EXPECT_EQ(*gqr.user_id, "291a2403-735f-4c94-917a-d9eeadb374a4");
+        EXPECT_EQ(*gqr.policy_action, CDNS::PolicyActionValues::allow);
+        EXPECT_EQ(*gqr.policy_rule, "RPZ-1");
 
         gqr = block.read_generic_qr(eof);
         ASSERT_TRUE(eof);
@@ -163,6 +171,8 @@ namespace CDNS {
         EXPECT_EQ(*gqr.country_code, "CZ");
         EXPECT_EQ(*gqr.round_trip_time, 42);
         EXPECT_EQ(*gqr.user_id, "291a2403-735f-4c94-917a-d9eeadb374a4");
+        EXPECT_EQ(*gqr.policy_action, CDNS::PolicyActionValues::allow);
+        EXPECT_EQ(*gqr.policy_rule, "RPZ-1");
 
         gqr = block.read_generic_qr(eof);
         ASSERT_TRUE(eof);
