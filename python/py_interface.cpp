@@ -63,7 +63,9 @@ void init_interface(py::module& m)
         .def_readwrite("asn", &CDNS::GenericQueryResponse::asn)
         .def_readwrite("country_code", &CDNS::GenericQueryResponse::country_code)
         .def_readwrite("round_trip_time", &CDNS::GenericQueryResponse::round_trip_time)
-        .def_readwrite("user_id", &CDNS::GenericQueryResponse::user_id);
+        .def_readwrite("user_id", &CDNS::GenericQueryResponse::user_id)
+        .def_readwrite("policy_action", &CDNS::GenericQueryResponse::policy_action)
+        .def_readwrite("policy_rule", &CDNS::GenericQueryResponse::policy_rule);
 
     py::class_<CDNS::GenericAddressEventCount>(m, "GenericAddressEventCount")
         .def(py::init())
