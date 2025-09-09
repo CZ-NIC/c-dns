@@ -99,6 +99,8 @@ namespace CDNS {
         boost::optional<std::string> country_code; //!< Country code for client IP address
         boost::optional<int64_t> round_trip_time; //!< Estimated RTT of TCP connection in ticks
         boost::optional<std::string> user_id; //!< Unique user ID
+        boost::optional<PolicyActionValues> policy_action; //!< Policy applied on query. Partially based on policy.action field from dnstap schema
+        boost::optional<std::string> policy_rule; //!< Rule that triggered policy application on query. Based on policy.rule field from dnstap schema
     };
 
     /**

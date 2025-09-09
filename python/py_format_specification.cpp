@@ -192,6 +192,8 @@ void init_format_specification(py::module& m)
         .value("country_code", CDNS::QueryResponseMapIndex::country_code)
         .value("round_trip_time", CDNS::QueryResponseMapIndex::round_trip_time)
         .value("user_id", CDNS::QueryResponseMapIndex::user_id)
+        .value("policy_action", CDNS::QueryResponseMapIndex::policy_action)
+        .value("policy_rule", CDNS::QueryResponseMapIndex::policy_rule)
         .value("query_response_size", CDNS::QueryResponseMapIndex::query_response_size)
         .export_values();
 
