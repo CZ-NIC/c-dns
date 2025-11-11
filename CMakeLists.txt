@@ -80,7 +80,11 @@ if (BUILD_CLI_TOOLS)
     add_executable(cdns-items src/bin/cdns_items.cpp)
     target_link_libraries(cdns-items PUBLIC cdns)
 
-    install(TARGETS cdns-merge cdns-itemcount cdns-preamble cdns-blocks cdns-items RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    # cdns-query-pcap cli tool
+    add_executable(cdns-query-pcap src/bin/cdns_query_pcap.cpp)
+    target_link_libraries(cdns-query-pcap PUBLIC cdns)
+
+    install(TARGETS cdns-merge cdns-itemcount cdns-preamble cdns-blocks cdns-items cdns-query-pcap RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif(BUILD_CLI_TOOLS)
 
 if (BUILD_PYTHON_BINDINGS)
